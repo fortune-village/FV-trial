@@ -1,0 +1,3654 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Fortune Village｜村への招待状</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+/* 中央会議室背景 */
+.bg.bg-council {
+  mix-blend-mode: normal !important;
+  background: url("common/bg_council.png") center top / cover no-repeat !important;
+}
+
+/* 今日の占いボタン */
+.btn-fortune {
+  position: absolute;
+  bottom: 220px;
+  right: 14px;
+  z-index: 25;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 185, 120, 0.52);
+  background: rgba(16, 10, 26, 0.72);
+  color: rgba(255, 235, 195, 0.88);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.btn-fortune.visible { opacity: 1; pointer-events: auto; }
+.btn-fortune:active { transform: scale(0.95); }
+
+/* 占いパネル */
+.fortune-panel {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 48px;
+  bottom: 10px;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(216,185,120,0.12), transparent 35%),
+    linear-gradient(180deg, rgba(20,10,35,0.97), rgba(12,6,22,0.98));
+  border: 1px solid rgba(216,185,120,0.42);
+  border-radius: 20px;
+  box-shadow: 0 18px 38px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.06);
+  padding: 20px 20px 24px;
+  z-index: 26;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 450ms ease, transform 450ms ease;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.fortune-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.fortune-date {
+  font-size: 11px;
+  color: rgba(216,185,120,0.55);
+  letter-spacing: 0.12em;
+  font-family: "Palatino Linotype", Palatino, serif;
+}
+.fortune-hexagram {
+  font-size: 72px;
+  line-height: 1;
+  filter: drop-shadow(0 0 12px rgba(216,185,120,0.4));
+}
+.fortune-name {
+  font-size: 18px;
+  color: rgba(216,185,120,0.92);
+  letter-spacing: 0.2em;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+}
+.fortune-reading {
+  font-size: 13px;
+  color: rgba(250,235,200,0.82);
+  line-height: 2.0;
+  letter-spacing: 0.06em;
+  text-align: center;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  padding: 0 8px;
+}
+.fortune-village-msg {
+  font-size: 12px;
+  color: rgba(216,185,120,0.65);
+  line-height: 1.9;
+  text-align: center;
+  letter-spacing: 0.05em;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  border-top: 1px solid rgba(216,185,120,0.2);
+  padding-top: 14px;
+  width: 100%;
+}
+.fortune-btn-draw {
+  padding: 14px 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(216,185,120,0.6);
+  background: rgba(30,18,50,0.85);
+  color: rgba(255,235,195,0.95);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.fortune-btn-draw:active { opacity: 0.7; }
+.fortune-already {
+  font-size: 11px;
+  color: rgba(216,185,120,0.45);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+.fortune-close {
+  font-size: 11px;
+  color: rgba(255,235,195,0.45);
+  letter-spacing: 0.1em;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-top: 4px;
+}
+
+/* パラメータパネル */
+.param-panel {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 48px;
+  bottom: 10px;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(216,185,120,0.08), transparent 28%),
+    linear-gradient(180deg, rgba(244, 226, 190, 0.97), rgba(213, 184, 142, 0.97)),
+    url("common/parchment.png"),
+    linear-gradient(180deg, rgba(244, 226, 190, 0.98), rgba(213, 184, 142, 0.98));
+  background-size: cover, cover, cover, cover;
+  border: 2px solid rgba(128, 76, 84, 0.88);
+  border-radius: 20px;
+  box-shadow: 0 18px 38px rgba(0,0,0,0.48), inset 0 0 0 1px rgba(255,255,255,0.32);
+  padding: 14px 16px 18px;
+  z-index: 11;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 450ms ease, transform 450ms ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.param-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.param-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+/* レーダーチャート */
+.radar-svg {
+  width: 180px;
+  height: 180px;
+}
+.radar-grid { fill: none; stroke: rgba(128,76,84,0.18); stroke-width: 1; }
+.radar-axis { stroke: rgba(128,76,84,0.22); stroke-width: 1; }
+.radar-data {
+  fill: rgba(184,142,68,0.28);
+  stroke: rgba(184,142,68,0.85);
+  stroke-width: 1.5;
+}
+.radar-label {
+  font-size: 9px;
+  fill: rgba(45,30,30,0.80);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+/* メーターバー */
+.meter-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.meter-item {
+  display: grid;
+  grid-template-columns: 72px 1fr 28px;
+  align-items: center;
+  gap: 8px;
+}
+.meter-label {
+  font-size: 10px;
+  color: rgba(45,30,30,0.82);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+.meter-bar {
+  height: 8px;
+  background: rgba(128,76,84,0.14);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(128,76,84,0.7), rgba(184,142,68,0.9));
+  transition: width 800ms ease;
+}
+.meter-value {
+  font-size: 10px;
+  color: rgba(45,30,30,0.65);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  text-align: right;
+}
+.param-note {
+  font-size: 9.5px;
+  color: rgba(45,30,30,0.45);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  text-align: center;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+  padding-top: 4px;
+  border-top: 1px solid rgba(151,109,54,0.2);
+  width: 100%;
+}
+
+/* 北エリア背景（命式由来素材・clientBaseから動的注入。以下はフォールバック） */
+.bg.bg-north         { mix-blend-mode: normal !important; background: url("北エリア.png")  center 30% / cover no-repeat !important; }
+.bg.bg-north-street  { mix-blend-mode: normal !important; background: url("北_街並み.png") center 30% / cover no-repeat !important; }
+.bg.bg-north-library { mix-blend-mode: normal !important; background: url("北_図書館.png") center 40% / cover no-repeat !important; }
+.bg.bg-north-market  { mix-blend-mode: normal !important; background: url("北_交易所.png") center 25% / cover no-repeat !important; }
+
+/* 選択肢4つの場合は2×2グリッド */
+.choice-box.grid-2col {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.choice-box.grid-2col .choice {
+  font-size: 11px;
+  padding: 18px 8px;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+
+/* 選択肢5つの場合：2×2 + フル幅1つ */
+.choice-box.grid-2col-plus1 {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.choice-box.grid-2col-plus1 .choice {
+  font-size: 11px;
+  padding: 18px 8px;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+.choice-box.grid-2col-plus1 .choice:last-child {
+  grid-column: 1 / -1;
+  background: rgba(20, 12, 30, 0.65);
+  border-color: rgba(216, 185, 120, 0.30);
+}
+
+/* 選択肢6つの場合は2×3グリッド */
+.choice-box.grid-2col-3row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.choice-box.grid-2col-3row .choice {
+  font-size: 10px;
+  padding: 14px 6px;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+/* compass-markを非表示（bg_room.pngに不要） */
+.compass-mark { display: none; }
+
+/* ── 村の案内板オーバーレイ ── */
+.guide-board-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 7500;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(216,185,120,0.14), transparent 38%),
+    linear-gradient(180deg, rgba(244,226,190,0.97), rgba(213,184,142,0.97)),
+    url("common/parchment.png");
+  background-size: cover, cover, cover;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+.guide-board-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.guide-board-inner {
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* タイトル */
+.guide-board-deco {
+  width: 60px; height: 1px;
+  background: rgba(128,76,84,0.5);
+  margin: 0 auto 10px;
+}
+.guide-board-title {
+  font-size: 22px;
+  letter-spacing: 0.22em;
+  color: rgba(60,30,30,0.92);
+  text-align: center;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  margin-bottom: 4px;
+}
+.guide-board-subtitle {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: rgba(128,76,84,0.82);
+  text-align: center;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  margin-bottom: 14px;
+}
+.guide-board-desc {
+  font-size: 12px;
+  line-height: 1.9;
+  letter-spacing: 0.06em;
+  color: rgba(60,30,30,0.72);
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+/* コンパス */
+.guide-compass-wrap {
+  position: relative;
+  margin: 0 auto 28px;
+}
+.guide-compass-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 6px;
+  align-items: center;
+}
+.guide-area-card {
+  background: rgba(255,248,236,0.82);
+  border: 1px solid rgba(128,76,84,0.42);
+  border-radius: 10px;
+  padding: 10px 6px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(92,48,38,0.08);
+}
+.guide-area-card.center {
+  background: rgba(126,73,80,0.12);
+  border-color: rgba(128,76,84,0.62);
+  border-width: 1.5px;
+}
+.guide-area-card.empty {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.guide-area-dir {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(128,76,84,0.58);
+  font-family: "Palatino Linotype",Palatino,serif;
+  margin-bottom: 3px;
+}
+.guide-area-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(60,30,30,0.9);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  margin-bottom: 4px;
+}
+.guide-area-theme {
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  color: rgba(80,42,38,0.78);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+}
+
+/* 専用ガイド */
+.guide-personal-section {
+  background: rgba(255,248,236,0.72);
+  border: 1.5px solid rgba(128,76,84,0.52);
+  border-radius: 14px;
+  padding: 18px 18px 14px;
+  margin-bottom: 18px;
+}
+.guide-personal-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: rgba(255,248,236,0.96);
+  background: linear-gradient(90deg, rgba(126,73,80,0.96), rgba(91,52,68,0.96));
+  border-radius: 999px;
+  padding: 6px 16px;
+  text-align: center;
+  margin-bottom: 14px;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+}
+.guide-personal-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(128,76,84,0.16);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+}
+.guide-personal-item:last-child { border-bottom: none; }
+.guide-personal-label {
+  font-size: 12px;
+  color: rgba(60,30,30,0.82);
+  flex: 1;
+  letter-spacing: 0.06em;
+}
+.guide-personal-arrow {
+  font-size: 11px;
+  color: rgba(128,76,84,0.62);
+}
+.guide-personal-area {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(126,73,80,0.92);
+  letter-spacing: 0.08em;
+}
+
+/* 注釈 */
+.guide-board-note {
+  font-size: 11px;
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+  color: rgba(60,30,30,0.58);
+  text-align: center;
+  margin-bottom: 28px;
+  padding: 0 8px;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+}
+
+/* 閉じるボタン */
+.guide-board-close {
+  display: block;
+  margin: 0 auto;
+  padding: 12px 36px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(128,76,84,0.72);
+  background: linear-gradient(180deg, rgba(126,73,80,0.92), rgba(91,52,68,0.92));
+  color: rgba(255,241,218,0.96);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(63,32,35,0.22);
+}
+.choice.disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+.choice-disabled-tag {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  opacity: 0.8;
+}
+
+/* FVについて テキストページ */
+.about-text-body {
+  font-size: 13.5px;
+  line-height: 2.1;
+  letter-spacing: 0.04em;
+  color: rgba(45,28,28,0.88);
+  font-family: "Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",Georgia,serif;
+  text-align: justify;
+  margin-bottom: 32px;
+}
+.about-text-body p {
+  margin-bottom: 1.4em;
+}
+
+/* ── エリアタイトルカード ── */
+.area-title-card {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(216,185,120,0.08), transparent 55%),
+    linear-gradient(180deg, rgba(8,4,18,0.97) 0%, rgba(18,8,28,0.98) 100%);
+  opacity: 0;
+  pointer-events: none;
+  /* opacity はJSで直接制御 */
+}
+.area-title-card.show {
+  pointer-events: auto;
+}
+/* テキスト要素：初期状態は右にオフセット＋非表示 */
+.area-title-card-rule,
+.area-title-card-en,
+.area-title-card-ja,
+.area-title-card-sub,
+.area-title-card-rule-bottom {
+  opacity: 0;
+  transform: translateX(22px);
+}
+.area-title-card-rule {
+  width: 56px;
+  height: 1px;
+  background: rgba(216,185,120,0.45);
+  margin-bottom: 4px;
+}
+.area-title-card-en {
+  font-size: 11px;
+  letter-spacing: 0.48em;
+  color: rgba(216,185,120,0.52);
+  font-family: "Palatino Linotype", Palatino, serif;
+}
+.area-title-card-ja {
+  font-size: 32px;
+  letter-spacing: 0.22em;
+  color: rgba(250,238,218,0.95);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+  text-shadow: 0 0 28px rgba(216,185,120,0.28);
+  margin: 4px 0;
+}
+.area-title-card-sub {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: rgba(216,185,120,0.55);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  margin-top: 2px;
+}
+.area-title-card-rule-bottom {
+  width: 56px;
+  height: 1px;
+  background: rgba(216,185,120,0.45);
+  margin-top: 4px;
+}
+
+/* 開発中バナー */
+.dev-banner {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 30;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(216,185,120,0.45);
+  background: rgba(16,10,26,0.82);
+  color: rgba(255,220,150,0.85);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  -webkit-tap-highlight-color: transparent;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+.dev-banner:active { opacity: 0.7; }
+
+/* フィードバックモーダル */
+.feedback-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(6,4,14,0.78);
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+.feedback-modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.feedback-box {
+  width: 100%;
+  background: linear-gradient(180deg, rgba(244,226,190,0.97), rgba(213,184,142,0.97));
+  border: 2px solid rgba(128,76,84,0.88);
+  border-radius: 20px;
+  padding: 18px 18px 16px;
+  box-shadow: 0 18px 38px rgba(0,0,0,0.5);
+}
+.feedback-title {
+  font-size: 13px;
+  color: rgba(45,30,30,0.88);
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 6px;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+}
+.feedback-subtitle {
+  font-size: 10.5px;
+  color: rgba(45,30,30,0.55);
+  text-align: center;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+}
+.feedback-textarea {
+  width: 100%;
+  height: 110px;
+  border-radius: 10px;
+  border: 1px solid rgba(128,76,84,0.45);
+  background: rgba(255,250,240,0.9);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  color: rgba(45,30,30,0.9);
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+}
+.feedback-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+.feedback-btn {
+  flex: 1;
+  padding: 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(128,76,84,0.6);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.feedback-btn-cancel {
+  background: rgba(255,250,240,0.7);
+  color: rgba(45,30,30,0.65);
+}
+.feedback-btn-send {
+  background: linear-gradient(90deg, rgba(126,73,80,0.95), rgba(91,52,68,0.95));
+  color: rgba(255,241,218,0.95);
+  border-color: rgba(216,185,120,0.6);
+}
+.feedback-sent {
+  text-align: center;
+  padding: 20px 0 10px;
+  font-size: 14px;
+  color: rgba(45,30,30,0.82);
+  letter-spacing: 0.08em;
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  line-height: 2;
+}
+
+/* bg_room.png をbg-roomに適用 */
+.bg.bg-room {
+  mix-blend-mode: normal !important;
+  background: url("common/bg_room.png") center top / cover no-repeat !important;
+}
+
+/* sceneLayerはhomeScreenと同じ方式でフェード */
+#sceneLayer {
+  position: absolute;
+  inset: 0;
+}
+
+/* bg::afterの斜め線パターンを除去 */
+.bg::after {
+  background:
+    linear-gradient(90deg, rgba(91, 43, 34, 0.10), transparent 16%, transparent 84%, rgba(91, 43, 34, 0.10)),
+    radial-gradient(circle at 12% 10%, rgba(121, 62, 45, 0.12), transparent 18%),
+    radial-gradient(circle at 88% 88%, rgba(98, 48, 39, 0.14), transparent 22%),
+    linear-gradient(180deg, rgba(255,248,224,0.15), rgba(92,46,33,0.12));
+}
+
+/* iOS黒帯・スクロール対策 */
+html {
+  height: 100%;
+  overflow: hidden;
+  background: #c99d6e;
+}
+body {
+  height: 100%;
+  overflow: hidden;
+  background: #c99d6e;
+}
+#app {
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+/* ホーム画面 */
+.home-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 28px;
+  z-index: 20;
+  padding: 18% 8% 0 8%;
+  background-image: url("common/home_bg4.png");
+  background-size: cover;
+  background-position: center top;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 600ms ease;
+}
+.home-screen.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.home-version {
+  position: absolute;
+  bottom: 18px;
+  right: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: rgba(235, 215, 170, 0.88);
+  font-family: "Palatino Linotype", Palatino, serif;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.8);
+}
+.home-logo { text-align: center; }
+.home-logo-img {
+  width: 90%;
+  max-width: 320px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.45));
+}
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 320px;
+}
+.home-btn {
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: 999px;
+  border: 2px solid rgba(184, 142, 68, 0.88);
+  background: linear-gradient(180deg, rgba(52, 32, 14, 0.94), rgba(28, 16, 6, 0.96));
+  color: rgba(255, 235, 195, 0.96);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45), inset 0 1px 0 rgba(220,180,100,0.22);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+  transition: transform 100ms ease, box-shadow 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-btn:active:not(.disabled) {
+  transform: scale(0.97);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.45);
+}
+.home-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* 羊皮紙フェードカバー */
+.parchment-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 9998;
+  background:
+    linear-gradient(180deg, #f3dfb9 0%, #dfbf8f 56%, #c99d6e 100%),
+    url("common/parchment.png");
+  background-size: cover;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* ナビメニュー（ホームボタン展開） */
+.nav-menu {
+  position: absolute;
+  top: 50px;
+  left: 14px;
+  z-index: 26;
+  background: rgba(16, 10, 26, 0.94);
+  border: 1px solid rgba(216, 185, 120, 0.52);
+  border-radius: 12px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease, transform 200ms ease;
+  transform: translateY(-6px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.nav-menu.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.nav-menu-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 235, 195, 0.92);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 100ms ease;
+}
+.nav-menu-btn:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* 固定ホームボタン */
+.btn-home-fixed {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 25;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 185, 120, 0.52);
+  background: rgba(16, 10, 26, 0.72);
+  color: rgba(255, 235, 195, 0.88);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease, transform 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.btn-home-fixed.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.btn-home-fixed:active {
+  transform: scale(0.95);
+}
+/* キャラクター選択パネル */
+.char-select-panel {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(216,185,120,0.08), transparent 28%),
+    linear-gradient(180deg, rgba(244, 226, 190, 0.95), rgba(213, 184, 142, 0.95)),
+    url("common/parchment.png"),
+    linear-gradient(180deg, rgba(244, 226, 190, 0.96), rgba(213, 184, 142, 0.96));
+  background-size: cover, cover, cover, cover;
+  border: 2px solid rgba(128, 76, 84, 0.88);
+  border-radius: 20px;
+  box-shadow: 0 18px 38px rgba(0,0,0,0.48), inset 0 0 0 1px rgba(255,255,255,0.32);
+  padding: 16px 18px 20px;
+  z-index: 11;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 450ms ease, transform 450ms ease;
+}
+.char-select-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.char-select-title {
+  font-size: 13px;
+  color: rgba(45, 30, 30, 0.88);
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(151, 109, 54, 0.3);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+}
+.char-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.char-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 185, 120, 0.52);
+  background: rgba(16, 10, 26, 0.84);
+  color: rgba(255, 238, 218, 0.92);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.char-btn:active:not(.disabled) { transform: scale(0.97); }
+.char-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.char-tag {
+  font-size: 10px;
+  color: rgba(255, 238, 218, 0.45);
+  margin-left: 8px;
+  letter-spacing: 0.08em;
+}
+
+/* パネル内戻るボタン */
+.panel-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(151, 109, 54, 0.3);
+}
+.panel-back-btn {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  color: rgba(45, 30, 30, 0.60);
+  font-size: 12px;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+  cursor: pointer;
+  padding: 4px 2px;
+  letter-spacing: 0.04em;
+  -webkit-tap-highlight-color: transparent;
+}
+.panel-back-btn:active { opacity: 0.5; }
+.panel-title {
+  font-size: 13px;
+  color: rgba(45, 30, 30, 0.88);
+  letter-spacing: 0.1em;
+  text-align: center;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+}
+
+.area-select-panel {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(216,185,120,0.08), transparent 28%),
+    linear-gradient(180deg, rgba(244, 226, 190, 0.95), rgba(213, 184, 142, 0.95)),
+    url("common/parchment.png"),
+    linear-gradient(180deg, rgba(244, 226, 190, 0.96), rgba(213, 184, 142, 0.96));
+  background-size: cover, cover, cover, cover;
+  border: 2px solid rgba(128, 76, 84, 0.88);
+  border-radius: 20px;
+  box-shadow: 0 18px 38px rgba(0,0,0,0.48), inset 0 0 0 1px rgba(255,255,255,0.32);
+  padding: 16px 18px 20px;
+  z-index: 11;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 450ms ease, transform 450ms ease;
+}
+.area-select-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.area-select-title {
+  font-size: 13px;
+  color: rgba(45, 30, 30, 0.88);
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(151, 109, 54, 0.3);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+}
+.area-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 8px;
+}
+.facility-extra-btns {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+.facility-extra-btns .area-btn {
+  width: 60%;
+}
+.area-btn {
+  padding: 12px 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 185, 120, 0.52);
+  background: rgba(16, 10, 26, 0.84);
+  color: rgba(255, 238, 218, 0.92);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", Georgia, serif;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1.3;
+}
+.area-btn:active:not(.disabled) { transform: scale(0.97); }
+.area-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.area-north     { grid-column: 2; grid-row: 1; }
+.area-west      { grid-column: 1; grid-row: 2; }
+.area-center-btn{ grid-column: 2; grid-row: 2; }
+.area-east      { grid-column: 3; grid-row: 2; }
+.area-south     { grid-column: 2; grid-row: 3; }
+.area-tag {
+  display: block;
+  font-size: 10px;
+  color: rgba(255, 238, 218, 0.45);
+  margin-top: 3px;
+  letter-spacing: 0.08em;
+}
+
+/* ── チャットオーバーレイ ── */
+.chat-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(12,7,3,0.96) 0%, rgba(28,14,6,0.97) 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+.chat-overlay.visible { opacity: 1; pointer-events: auto; }
+.chat-top-bar {
+  position: sticky; top: 0; z-index: 32;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(216,185,120,0.14);
+  background: rgba(12,7,3,0.98);
+  flex-shrink: 0;
+}
+.chat-top-title { font-size:11px; letter-spacing:0.18em; color:rgba(216,185,120,0.65); font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.chat-close-btn { padding:6px 12px; border-radius:999px; border:1px solid rgba(216,185,120,0.3); background:rgba(16,10,5,0.7); color:rgba(216,185,120,0.7); font-size:11px; cursor:pointer; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; -webkit-tap-highlight-color:transparent; }
+.chat-char-area { display:flex; justify-content:center; padding:12px 0 4px; flex-shrink:0; }
+.chat-char-name { text-align:center; font-size:11px; letter-spacing:0.18em; color:rgba(216,185,120,0.6); margin-top:4px; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.chat-scroll-area { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; }
+.chat-history { padding:8px 14px; display:flex; flex-direction:column; gap:8px; }
+.chat-bubble-user { align-self:flex-end; max-width:78%; background:rgba(55,28,10,0.88); border:1px solid rgba(216,185,120,0.22); border-radius:14px 14px 3px 14px; padding:9px 13px; }
+.chat-bubble-roan { align-self:flex-start; max-width:80%; background:rgba(240,220,185,0.07); border:1px solid rgba(216,185,120,0.15); border-radius:14px 14px 14px 3px; padding:9px 13px; }
+.chat-bubble-label { font-size:9px; letter-spacing:0.12em; color:rgba(216,185,120,0.42); display:block; margin-bottom:4px; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.chat-bubble-text { font-size:12.5px; line-height:1.75; color:rgba(240,220,190,0.84); white-space:pre-wrap; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.chat-textbox { margin:0 12px 8px; background:linear-gradient(175deg,rgba(248,232,196,0.94),rgba(210,180,136,0.94)); border:2px solid rgba(120,70,78,0.85); border-radius:16px; padding:11px 15px 13px; box-shadow:0 8px 28px rgba(0,0,0,0.55); min-height:76px; flex-shrink:0; }
+.chat-textbox-name { font-size:11px; letter-spacing:0.12em; color:rgba(75,38,22,0.75); padding-bottom:7px; margin-bottom:7px; border-bottom:1px solid rgba(151,109,54,0.28); font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.chat-textbox-body { font-size:13.5px; line-height:1.8; color:rgba(40,20,8,0.92); min-height:44px; white-space:pre-wrap; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.chat-cursor { display:inline-block; width:2px; height:0.9em; background:rgba(70,35,15,0.7); margin-left:1px; vertical-align:text-bottom; animation:chatBlink 0.75s step-end infinite; }
+@keyframes chatBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+.chat-input-area { flex-shrink:0; margin:0; padding:11px 13px; padding-bottom:max(12px,env(safe-area-inset-bottom,12px)); background:linear-gradient(175deg,rgba(248,232,196,0.97),rgba(210,180,136,0.97)); border:none; border-top:2px solid rgba(120,70,78,0.5); display:flex; gap:10px; align-items:flex-end; }
+.chat-input { flex:1; background:rgba(255,250,238,0.88); border:1px solid rgba(151,109,54,0.28); border-radius:11px; padding:9px 12px; font-size:13px; line-height:1.6; color:rgba(38,18,6,0.9); font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; resize:none; outline:none; -webkit-appearance:none; }
+.chat-send-btn { padding:10px 18px; border-radius:999px; border:none; background:linear-gradient(180deg,rgba(108,48,58,0.96),rgba(72,28,36,0.98)); color:rgba(255,238,210,0.95); font-size:13px; letter-spacing:0.08em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; cursor:pointer; white-space:nowrap; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
+.chat-send-btn:disabled { opacity:0.36; }
+/* パネル表示中は選択肢を隠す */
+#app.panel-open #choices { display: none !important; }
+.area-select-panel.visible { z-index: 22 !important; }
+
+/* ── スフィアリスト共通スタイル ── */
+.sphere-list { display: flex; flex-direction: column; gap: 10px; padding: 8px 0 16px; }
+.sphere-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(216,185,120,0.16);
+  background: rgba(255,255,255,0.03);
+  transition: background 200ms;
+}
+.sphere-item.collected {
+  border-color: rgba(216,185,120,0.38);
+  background: rgba(216,185,120,0.06);
+}
+/* CSS製スフィア（画像差し替えまでの代替） */
+.sphere-orb {
+  width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+  position: relative;
+  background: radial-gradient(circle at 36% 32%, rgba(255,255,255,0.55), var(--orb-color, #888) 48%, var(--orb-dark, #333) 100%);
+  box-shadow: 0 0 18px var(--orb-glow, rgba(200,200,200,0.3)), inset 0 0 10px rgba(0,0,0,0.35);
+  transition: box-shadow 400ms, filter 400ms;
+}
+.sphere-orb.locked {
+  filter: grayscale(1) brightness(0.22);
+  box-shadow: none;
+}
+.sphere-orb img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.sphere-info { flex: 1; }
+.sphere-position { font-size:10px; color:rgba(216,185,120,0.45); letter-spacing:0.12em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; margin-bottom:3px; }
+.sphere-star { font-size:12px; color:rgba(250,235,200,0.72); letter-spacing:0.08em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; margin-bottom:2px; }
+.sphere-name { font-size:13px; color:rgba(250,238,218,0.92); letter-spacing:0.06em; font-family:"Palatino Linotype",Palatino,serif; }
+.sphere-name.locked { color:rgba(150,140,130,0.38); }
+.sphere-status { font-size:11px; margin-top:4px; letter-spacing:0.08em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.sphere-status.got { color:rgba(216,185,120,0.75); }
+.sphere-status.not { color:rgba(150,140,130,0.35); }
+/* デバッグ枠 */
+.sphere-debug {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px dashed rgba(216,185,120,0.22);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+}
+.sphere-debug-title { font-size:10px; color:rgba(216,185,120,0.35); letter-spacing:0.1em; margin-bottom:8px; text-align:center; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.sphere-debug-btns { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; }
+.sphere-debug-btn {
+  padding:7px 13px; border-radius:999px; border:1px solid rgba(216,185,120,0.28);
+  background:rgba(30,16,44,0.82); color:rgba(216,185,120,0.65); font-size:10px;
+  letter-spacing:0.06em; cursor:pointer; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.sphere-debug-btn:active { opacity:0.6; }
+/* 取得演出オーバーレイ */
+.sphere-acquire-flash {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(6,3,14,0.88);
+  opacity: 0; pointer-events: none;
+  transition: opacity 350ms ease;
+}
+.sphere-acquire-flash.show { opacity: 1; pointer-events: auto; }
+.sphere-acquire-orb {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: radial-gradient(circle at 36% 32%, rgba(255,255,255,0.65), var(--orb-color, #aaa) 48%, var(--orb-dark, #333) 100%);
+  box-shadow: 0 0 60px var(--orb-glow, rgba(200,200,200,0.5));
+  animation: spherePulse 1.6s ease-in-out infinite;
+  margin-bottom: 22px;
+}
+.sphere-acquire-orb img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+@keyframes spherePulse { 0%,100%{box-shadow:0 0 40px var(--orb-glow,rgba(200,200,200,0.4))} 50%{box-shadow:0 0 80px var(--orb-glow,rgba(200,200,200,0.7))} }
+.sphere-acquire-label { font-size:10px; letter-spacing:0.24em; color:rgba(216,185,120,0.55); margin-bottom:8px; font-family:"Palatino Linotype",Palatino,serif; }
+.sphere-acquire-name { font-size:20px; letter-spacing:0.14em; color:rgba(250,238,218,0.96); text-shadow:0 0 20px rgba(216,185,120,0.4); font-family:"Palatino Linotype",Palatino,serif; margin-bottom:6px; }
+.sphere-acquire-star { font-size:12px; color:rgba(216,185,120,0.6); letter-spacing:0.1em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; margin-bottom:28px; }
+.sphere-acquire-tap { font-size:11px; letter-spacing:0.18em; color:rgba(216,185,120,0.4); font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; animation:pulse 1.8s ease-in-out infinite; }
+
+/* ── かけら帳 ── */
+.shard-book-overlay {
+  position:fixed; inset:0; z-index:30; display:flex; flex-direction:column;
+  background:linear-gradient(180deg,rgba(8,4,18,0.97),rgba(18,8,28,0.98));
+  opacity:0; pointer-events:none; transition:opacity 400ms ease;
+}
+.shard-book-overlay.visible { opacity:1; pointer-events:auto; }
+.shard-book-top {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; border-bottom:1px solid rgba(216,185,120,0.14);
+  background:rgba(8,4,18,0.98); flex-shrink:0;
+}
+.shard-book-title { font-size:12px; letter-spacing:0.2em; color:rgba(216,185,120,0.72); font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.shard-book-close { padding:6px 12px; border-radius:999px; border:1px solid rgba(216,185,120,0.3); background:rgba(16,10,5,0.7); color:rgba(216,185,120,0.7); font-size:11px; cursor:pointer; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; -webkit-tap-highlight-color:transparent; }
+/* エリアタブ */
+.shard-area-tabs {
+  display:flex; gap:6px; padding:12px 14px 0; flex-shrink:0; overflow-x:auto;
+  -webkit-overflow-scrolling:touch; scrollbar-width:none;
+}
+.shard-area-tabs::-webkit-scrollbar { display:none; }
+.shard-area-tab {
+  padding:7px 16px; border-radius:999px; border:1px solid rgba(216,185,120,0.22);
+  background:rgba(255,255,255,0.03); color:rgba(216,185,120,0.45); font-size:12px;
+  letter-spacing:0.12em; cursor:pointer; white-space:nowrap; flex-shrink:0;
+  font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  -webkit-tap-highlight-color:transparent; transition:all 200ms;
+}
+.shard-area-tab.active {
+  background:rgba(216,185,120,0.14); border-color:rgba(216,185,120,0.6);
+  color:rgba(216,185,120,0.92);
+}
+.shard-area-tab.cleared { border-color:rgba(216,185,120,0.5); }
+.shard-area-tab .tab-check { font-size:9px; margin-left:4px; color:rgba(216,185,120,0.7); }
+/* コンテンツ */
+.shard-book-content { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:14px 14px 24px; }
+.shard-area-section { display:none; }
+.shard-area-section.active { display:block; }
+.shard-section-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(216,185,120,0.14);
+}
+.shard-section-title { font-size:13px; color:rgba(250,235,200,0.82); letter-spacing:0.12em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.shard-section-count { font-size:11px; color:rgba(216,185,120,0.5); letter-spacing:0.08em; font-family:"Palatino Linotype",Palatino,serif; }
+/* かけらグリッド */
+.shard-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
+.shard-item {
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  border-radius:12px; border:1px solid rgba(216,185,120,0.1);
+  background:rgba(255,255,255,0.02); transition:background 200ms;
+}
+.shard-item.collected { border-color:rgba(216,185,120,0.3); background:rgba(216,185,120,0.05); }
+/* ダイヤモンド型かけら */
+.shard-gem {
+  width:26px; height:26px; flex-shrink:0;
+  background:radial-gradient(circle at 38% 32%, rgba(255,255,255,0.6), var(--shard-color,#888) 55%, var(--shard-dark,#333));
+  clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);
+  filter:drop-shadow(0 0 5px var(--shard-glow,rgba(200,200,200,0.4)));
+  transition:filter 300ms;
+}
+.shard-gem.locked { filter:grayscale(1) brightness(0.18); }
+.shard-item-info { flex:1; min-width:0; }
+.shard-item-star { font-size:10px; color:rgba(250,230,200,0.7); letter-spacing:0.04em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.shard-item-status { font-size:9px; margin-top:2px; letter-spacing:0.06em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.shard-item-status.got { color:rgba(216,185,120,0.65); }
+.shard-item-status.not { color:rgba(150,140,130,0.3); }
+/* 地下扉ステータス */
+.shard-door-panel {
+  padding:14px; border-radius:14px;
+  border:1px solid rgba(216,185,120,0.2);
+  background:rgba(255,255,255,0.02);
+  margin-bottom:14px; text-align:center;
+}
+.shard-door-panel.unlocked { border-color:rgba(216,185,120,0.55); background:rgba(216,185,120,0.07); }
+.shard-door-label { font-size:10px; color:rgba(216,185,120,0.45); letter-spacing:0.14em; margin-bottom:6px; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.shard-door-bar { height:4px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; margin:8px 0 6px; }
+.shard-door-fill { height:100%; background:linear-gradient(90deg,rgba(141,89,96,0.9),rgba(216,185,120,0.9)); border-radius:999px; transition:width 600ms ease; }
+.shard-door-status { font-size:12px; letter-spacing:0.1em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.shard-door-status.locked-txt { color:rgba(216,185,120,0.4); }
+.shard-door-status.unlocked-txt { color:rgba(216,185,120,0.9); }
+/* デバッグ */
+.shard-debug { margin-top:8px; padding:10px; border:1px dashed rgba(216,185,120,0.18); border-radius:10px; }
+.shard-debug-title { font-size:10px; color:rgba(216,185,120,0.3); letter-spacing:0.1em; text-align:center; margin-bottom:7px; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.shard-debug-btns { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+.shard-debug-btn { padding:6px 11px; border-radius:999px; border:1px solid rgba(216,185,120,0.22); background:rgba(30,16,44,0.82); color:rgba(216,185,120,0.58); font-size:9px; letter-spacing:0.04em; cursor:pointer; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; -webkit-tap-highlight-color:transparent; }
+.shard-debug-btn:active { opacity:0.6; }
+/* かけら取得フラッシュ（小） */
+.shard-acquire-flash {
+  position:fixed; inset:0; z-index:55;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:rgba(6,3,14,0.82); opacity:0; pointer-events:none; transition:opacity 300ms ease;
+}
+.shard-acquire-flash.show { opacity:1; pointer-events:auto; }
+.shard-acquire-gem {
+  width:72px; height:72px; margin-bottom:20px;
+  background:radial-gradient(circle at 38% 32%, rgba(255,255,255,0.65), var(--shard-color,#aaa) 55%, var(--shard-dark,#333));
+  clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);
+  animation:shardPulse 1.4s ease-in-out infinite;
+  filter:drop-shadow(0 0 18px var(--shard-glow,rgba(200,200,200,0.5)));
+}
+@keyframes shardPulse { 0%,100%{filter:drop-shadow(0 0 12px var(--shard-glow,rgba(200,200,200,0.4)))} 50%{filter:drop-shadow(0 0 28px var(--shard-glow,rgba(200,200,200,0.7)))} }
+.shard-acquire-label { font-size:10px; letter-spacing:0.22em; color:rgba(216,185,120,0.5); margin-bottom:6px; font-family:"Palatino Linotype",Palatino,serif; }
+.shard-acquire-name { font-size:17px; letter-spacing:0.12em; color:rgba(250,238,218,0.95); text-shadow:0 0 16px rgba(216,185,120,0.35); font-family:"Palatino Linotype",Palatino,serif; margin-bottom:4px; }
+.shard-acquire-area { font-size:11px; color:rgba(216,185,120,0.55); letter-spacing:0.1em; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; margin-bottom:24px; }
+.shard-acquire-tap { font-size:11px; letter-spacing:0.16em; color:rgba(216,185,120,0.38); font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; animation:pulse 1.8s ease-in-out infinite; }
+
+/* ── スフィアの記録（統合コレクション画面） ── */
+.collection-overlay {
+  position:fixed; inset:0; z-index:30; display:flex; flex-direction:column;
+  background:linear-gradient(180deg,rgba(8,4,18,0.97),rgba(18,8,28,0.98));
+  opacity:0; pointer-events:none; transition:opacity 400ms ease;
+}
+.collection-overlay.visible { opacity:1; pointer-events:auto; }
+.collection-top-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; border-bottom:1px solid rgba(216,185,120,0.14);
+  background:rgba(8,4,18,0.98); flex-shrink:0;
+}
+.collection-top-title { font-size:12px; letter-spacing:0.2em; color:rgba(216,185,120,0.72); font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; }
+.collection-close-btn { padding:6px 12px; border-radius:999px; border:1px solid rgba(216,185,120,0.3); background:rgba(16,10,5,0.7); color:rgba(216,185,120,0.7); font-size:11px; cursor:pointer; font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif; -webkit-tap-highlight-color:transparent; }
+/* メインタブ */
+.collection-main-tabs {
+  display:flex; gap:0; flex-shrink:0;
+  border-bottom:1px solid rgba(216,185,120,0.14);
+  background:rgba(8,4,18,0.96);
+}
+.collection-main-tab {
+  flex:1; padding:11px 8px; border:none; background:transparent;
+  color:rgba(216,185,120,0.4); font-size:12px; letter-spacing:0.14em;
+  font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  cursor:pointer; border-bottom:2px solid transparent;
+  -webkit-tap-highlight-color:transparent; transition:all 200ms;
+}
+.collection-main-tab.active {
+  color:rgba(216,185,120,0.92);
+  border-bottom-color:rgba(216,185,120,0.7);
+}
+/* セクション */
+.collection-section { display:none; flex:1; flex-direction:column; overflow:hidden; }
+.collection-section.active { display:flex; }
+/* スフィアセクション */
+.collection-sphere-list { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:14px 14px 24px; }
+/* しずくセクション */
+.collection-shizuku-inner { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+
+</style>
+</head>
+<body>
+<div id="app" aria-label="Fortune Village Trial Novel UI">
+  <div id="bg" class="bg bg-dark"></div>
+  <div class="parchment-glow"></div>
+  <div class="compass-mark"></div>
+  <div id="titleImage" class="title-screen-image"></div>
+  <div id="titleTap" class="title-tap">TAP / CLICK</div>
+
+  <video id="sceneVideoA" class="scene-video" playsinline preload="auto" muted></video>
+  <video id="sceneVideoB" class="scene-video" playsinline preload="auto" muted></video>
+  <div id="parchmentCover" class="parchment-cover"></div>
+  <div id="videoBlackCover" class="video-black-cover"></div>
+
+  <!-- シーンレイヤー（ホーム画面と同じ方式でフェード） -->
+  <div id="sceneLayer">
+
+  <div id="logo" class="fv-logo">
+    <div class="logo-en">FORTUNE VILLAGE</div>
+    <div class="logo-ja">村への招待状</div>
+    <div class="logo-sub">あなたの宿命から紡ぎだされた村へ</div>
+    <div class="logo-line"></div>
+  </div>
+
+  <div id="monitor" class="monitor-frame">
+    <div id="monitorImage" class="monitor-image">FORTUNE VILLAGE<br>SCREEN</div>
+  </div>
+
+  <div id="char" class="char-sprite hidden">
+    <img src="" alt="" id="charImg" />
+  </div>
+
+  <!-- 村のパラメータパネル -->
+  <div id="paramPanel" class="param-panel">
+    <div class="panel-header">
+      <span class="panel-title">村のパラメータ</span>
+    </div>
+    <div class="param-body">
+      <!-- レーダーチャート -->
+      <svg class="radar-svg" viewBox="0 0 160 160">
+        <!-- グリッド -->
+        <polygon class="radar-grid" id="rg75" points=""/>
+        <polygon class="radar-grid" id="rg50" points=""/>
+        <polygon class="radar-grid" id="rg25" points=""/>
+        <!-- 軸 -->
+        <line class="radar-axis" id="ax0" x1="80" y1="80" x2="0" y2="0"/>
+        <line class="radar-axis" id="ax1" x1="80" y1="80" x2="0" y2="0"/>
+        <line class="radar-axis" id="ax2" x1="80" y1="80" x2="0" y2="0"/>
+        <line class="radar-axis" id="ax3" x1="80" y1="80" x2="0" y2="0"/>
+        <line class="radar-axis" id="ax4" x1="80" y1="80" x2="0" y2="0"/>
+        <!-- データ -->
+        <polygon class="radar-data" id="radarData" points=""/>
+        <!-- ラベル -->
+        <text class="radar-label" id="rl0"></text>
+        <text class="radar-label" id="rl1"></text>
+        <text class="radar-label" id="rl2"></text>
+        <text class="radar-label" id="rl3"></text>
+        <text class="radar-label" id="rl4"></text>
+      </svg>
+      <!-- メーターバー -->
+      <div class="meter-list" id="meterList"></div>
+      <div class="param-note">※ 現在はサンプル表示です。<br>命式データ接続後に実際の数値に更新されます。</div>
+    </div>
+  </div>
+
+  <!-- エリア内サブ選択パネル -->
+  <div id="areaSubSelect" class="area-select-panel">
+    <div class="panel-header">
+      <button class="panel-back-btn" id="btnAreaSubBack">← 戻る</button>
+      <span class="panel-title" id="areaSubTitle">北エリア</span>
+    </div>
+    <div class="char-list">
+      <button class="char-btn" id="btnAreaScene">エリアの様子を見に行く</button>
+      <button class="char-btn disabled" id="btnAreaFacility">施設の様子を見に行く<span class="char-tag">準備中</span></button>
+      <button class="char-btn disabled" id="btnAreaChar">エリア代表に会いに行く<span class="char-tag">準備中</span></button>
+    </div>
+  </div>
+
+  <!-- 中央施設パネル -->
+  <div id="centralFacilitySelect" class="area-select-panel">
+    <div class="panel-header">
+      <span class="panel-title">中央の施設</span>
+    </div>
+    <div class="char-list">
+      <button class="char-btn" id="btnCentralCouncil">中央会議室へ行く</button>
+      <button class="char-btn" id="btnCentralGuide">村の読み方を確認する</button>
+      <button class="char-btn" id="btnCentralParams">村のパラメータ</button>
+      <button class="char-btn" id="btnCharList">エリア代表一覧</button>
+    </div>
+  </div>
+
+  <!-- エリア選択パネル -->
+  <div id="areaSelect" class="area-select-panel">
+    <div class="panel-header">
+      <span class="panel-title">どちらのエリアをご覧になりますか</span>
+    </div>
+    <div class="area-grid">
+      <button class="area-btn area-north" id="btnNorth">北エリア</button>
+      <button class="area-btn disabled area-west">西エリア<span class="area-tag">準備中</span></button>
+      <button class="area-btn disabled area-center-btn">中央エリア<span class="area-tag">準備中</span></button>
+      <button class="area-btn disabled area-east">東エリア<span class="area-tag">準備中</span></button>
+      <button class="area-btn disabled area-south">南エリア<span class="area-tag">準備中</span></button>
+    </div>
+  </div>
+
+  <!-- 施設選択パネル -->
+  <div id="facilitySelect" class="area-select-panel">
+    <div class="panel-header">
+      <span class="panel-title">どの施設をご覧になりますか</span>
+    </div>
+    <div class="area-grid">
+      <button class="area-btn disabled area-north"><span class="area-tag" style="opacity:0.7;margin-top:0;margin-bottom:2px;">北エリア</span>図書館</button>
+      <button class="area-btn disabled area-west"><span class="area-tag" style="opacity:0.7;margin-top:0;margin-bottom:2px;">西エリア</span>法務館</button>
+      <button class="area-btn disabled area-center-btn"><span class="area-tag" style="opacity:0.7;margin-top:0;margin-bottom:2px;">中央エリア</span>準備中</button>
+      <button class="area-btn disabled area-east"><span class="area-tag" style="opacity:0.7;margin-top:0;margin-bottom:2px;">東エリア</span>ギルドホール</button>
+      <button class="area-btn disabled area-south"><span class="area-tag" style="opacity:0.7;margin-top:0;margin-bottom:2px;">南エリア</span>芸術ホール</button>
+    </div>
+  </div>
+
+  <!-- キャラクター選択パネル -->
+  <div id="charSelect" class="char-select-panel">
+    <div class="panel-header">
+      <span class="panel-title">エリア代表一覧</span>
+    </div>
+    <div class="char-list">
+      <button class="char-btn disabled">東エリア代表<span class="char-tag">準備中</span></button>
+      <button class="char-btn disabled">西エリア代表<span class="char-tag">準備中</span></button>
+      <button class="char-btn disabled">南エリア代表<span class="char-tag">準備中</span></button>
+      <button class="char-btn disabled">北エリア代表<span class="char-tag">準備中</span></button>
+      <button class="char-btn disabled">中央エリア代表<span class="char-tag">準備中</span></button>
+    </div>
+  </div>
+
+  <div id="choices" class="choice-box"></div>
+  <div class="progress"><span id="progressBar"></span></div>
+
+  <div class="textbox">
+    <div id="name" class="name-bar">SYSTEM</div>
+    <div id="text" class="text-body"></div>
+    <div class="tap-hint">TAP / CLICK</div>
+  </div>
+  </div><!-- /#sceneLayer -->
+
+  <!-- 今日の占いボタン -->
+  <button id="btnFortune" class="btn-fortune">今日の占い</button>
+
+  <!-- 占いパネル -->
+  <div id="fortunePanel" class="fortune-panel">
+    <div class="fortune-date" id="fortuneDate"></div>
+    <div id="fortuneContent"></div>
+    <div class="fortune-close" id="fortuneClose">× 閉じる</div>
+  </div>
+
+  <!-- 固定ホームボタン -->
+  <button id="btnHomeFixed" class="btn-home-fixed">⌂ ホーム</button>
+
+  <!-- ナビメニュー -->
+  <div id="navMenu" class="nav-menu">
+    <button class="nav-menu-btn" id="btnGoHome">ホームへ戻る</button>
+    <button class="nav-menu-btn" id="btnGoHouse">村長の家へ戻る</button>
+  </div>
+
+  <!-- 開発中バナー -->
+  <div id="devBanner" class="dev-banner" style="display:none;">🔧 開発中 · ご意見はこちら</div>
+
+  <!-- フィードバックモーダル -->
+  <div id="feedbackModal" class="feedback-modal">
+    <div class="feedback-box">
+      <div class="feedback-title">ご意見・ご感想</div>
+      <div class="feedback-subtitle">開発中のため、お気づきの点をお聞かせください</div>
+      <div id="feedbackInner">
+        <textarea id="feedbackText" class="feedback-textarea" placeholder="感想・気になった点・改善要望など、なんでもどうぞ"></textarea>
+        <div class="feedback-buttons">
+          <button class="feedback-btn feedback-btn-cancel" id="feedbackCancel">キャンセル</button>
+          <button class="feedback-btn feedback-btn-send" id="feedbackSend">送信する</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ロアン・チャットオーバーレイ -->
+  <div id="chatOverlay" class="chat-overlay">
+    <div class="chat-top-bar">
+      <span class="chat-top-title">⌂ FORTUNE VILLAGE · ロアンと話す</span>
+      <button id="chatCloseBtn" class="chat-close-btn">✕ 閉じる</button>
+    </div>
+    <div class="chat-char-area">
+      <div style="display:flex;flex-direction:column;align-items:center;width:100%">
+        <div style="height:52vh;width:100%;overflow:hidden;">
+          <img src="roan_high.png" alt="ロアン"
+            style="width:100%;height:auto;display:block;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.75));"
+            onerror="this.style.display='none';document.getElementById('roanSvg').style.display='block'">
+          <svg id="roanSvg" viewBox="0 0 110 180" width="110" height="180" style="display:none;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.75))">
+            <ellipse cx="55" cy="38" rx="25" ry="28" fill="#2c1a0e"/>
+            <ellipse cx="55" cy="43" rx="19" ry="20" fill="#6b3c22"/>
+            <path d="M25 75 Q34 68 55 73 Q76 68 85 75 L90 180 L20 180 Z" fill="#1e1210"/>
+          </svg>
+        </div>
+        <div class="chat-char-name">ロアン</div>
+      </div>
+    </div>
+    <div class="chat-scroll-area">
+      <div id="chatHistory" class="chat-history"></div>
+      <div class="chat-textbox">
+        <div class="chat-textbox-name">ロアン</div>
+        <div id="chatDisplay" class="chat-textbox-body">
+          <span style="color:rgba(80,50,28,0.58);font-style:italic">ようこそ。何かご質問はありますか？</span>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <textarea id="chatInput" class="chat-input" rows="2" placeholder="ロアンへ話しかける…"></textarea>
+      <button id="chatSendBtn" class="chat-send-btn">送る</button>
+    </div>
+  </div>
+
+  <!-- ホーム画面 -->
+  <div id="home" class="home-screen">
+    <div class="home-logo">
+      <img src="common/fv_logo.png" alt="Fortune Village" class="home-logo-img" />
+    </div>
+    <div class="home-buttons">
+      <button class="home-btn" id="btnContinue" style="display:none; border-color: rgba(216,185,120,0.9); background: linear-gradient(180deg, rgba(62,38,14,0.96), rgba(38,22,6,0.98));">続きから ▶</button>
+      <button class="home-btn" id="btnAbout">フォーチュン・ヴィレッジについて</button>
+      <button class="home-btn" id="btnVillage">村長の家へ</button>
+      <button class="home-btn disabled">準備中</button>
+    </div>
+    <div class="home-version">β ver. 0.2.8</div>
+  </div>
+
+  <!-- FVについて テキストページオーバーレイ -->
+  <div id="aboutTextOverlay" class="guide-board-overlay">
+    <div class="guide-board-inner">
+      <div class="guide-board-deco"></div>
+      <h1 class="guide-board-title" id="aboutTextTitle">はじめに</h1>
+      <div class="guide-board-deco"></div>
+      <div id="aboutTextBody" class="about-text-body"></div>
+      <button class="guide-board-close" id="aboutTextCloseBtn">閉じる</button>
+    </div>
+  </div>
+
+  <!-- 村の案内板オーバーレイ -->
+  <div id="guideBoardOverlay" class="guide-board-overlay">
+    <div class="guide-board-inner">
+      <div class="guide-board-deco"></div>
+      <h1 class="guide-board-title">村の案内板</h1>
+      <p class="guide-board-subtitle">― 鑑定書の読み方ガイド ―</p>
+      <div class="guide-board-deco"></div>
+      <p class="guide-board-desc">このページは、村を読むための入口です。<br>各エリアに表れる人生テーマと、<br>専用の注目点を案内します。</p>
+
+      <!-- コンパス -->
+      <div class="guide-compass-wrap">
+        <div class="guide-compass-grid">
+          <!-- 行1 -->
+          <div class="guide-area-card empty"></div>
+          <div class="guide-area-card">
+            <div class="guide-area-dir">N · 北</div>
+            <div class="guide-area-name">北エリア</div>
+            <div class="guide-area-theme">親・学び・継承</div>
+          </div>
+          <div class="guide-area-card empty"></div>
+          <!-- 行2 -->
+          <div class="guide-area-card">
+            <div class="guide-area-dir">W · 西</div>
+            <div class="guide-area-name">西エリア</div>
+            <div class="guide-area-theme">配偶者<br>パートナー</div>
+          </div>
+          <div class="guide-area-card center">
+            <div class="guide-area-name">中央エリア</div>
+            <div class="guide-area-theme">自分自身<br>心・判断軸</div>
+          </div>
+          <div class="guide-area-card">
+            <div class="guide-area-dir">E · 東</div>
+            <div class="guide-area-name">東エリア</div>
+            <div class="guide-area-theme">仕事・幸福</div>
+          </div>
+          <!-- 行3 -->
+          <div class="guide-area-card empty"></div>
+          <div class="guide-area-card">
+            <div class="guide-area-dir">S · 南</div>
+            <div class="guide-area-name">南エリア</div>
+            <div class="guide-area-theme">表現・未来<br>子ども</div>
+          </div>
+          <div class="guide-area-card empty"></div>
+        </div>
+      </div>
+
+      <!-- 専用ガイド -->
+      <div class="guide-personal-section">
+        <div class="guide-personal-title" id="guidePersonalTitle">○○様専用ガイド</div>
+        <div id="guidePersonalItems"></div>
+      </div>
+
+      <!-- 注釈 -->
+      <p class="guide-board-note">同じテーマでも、人によって注目するエリアは少しずつ変わります。この案内板では、基本の見方に加えて、あなたの村で特に目を向けたい場所を示しています。</p>
+
+      <button class="guide-board-close" id="guideBoardCloseBtn">閉じる</button>
+    </div>
+  </div>
+
+  <!-- FVについて サブメニューパネル -->
+  <div id="aboutPanel" class="area-select-panel">
+    <div class="panel-header">
+      <span class="panel-title">フォーチュン・ヴィレッジについて</span>
+    </div>
+    <div class="char-list">
+      <button class="char-btn" id="btnAboutIntro">はじめに</button>
+      <button class="char-btn" id="btnAboutWhat">フォーチュン・ヴィレッジとは</button>
+      <button class="char-btn" id="btnAboutChars">キャラクターについて</button>
+      <button class="char-btn" id="btnAboutIndustry">村の産業について</button>
+      <button class="char-btn" id="btnAboutGuideBoard">村の読み方のガイド</button>
+      <button class="char-btn" id="btnAboutVideo">動画を見る</button>
+    </div>
+  </div>
+
+  <!-- エリアタイトルカード -->
+  <div id="areaTitleCard" class="area-title-card">
+    <div id="areaTitleCardRule" class="area-title-card-rule"></div>
+    <div id="areaTitleCardEn" class="area-title-card-en">NORTH</div>
+    <div id="areaTitleCardJa" class="area-title-card-ja">北エリア</div>
+    <div id="areaTitleCardSub" class="area-title-card-sub">知恵と記録の地</div>
+    <div id="areaTitleCardRuleBottom" class="area-title-card-rule-bottom"></div>
+  </div>
+
+  <!-- スフィア取得演出 -->
+  <div id="sphereAcquireFlash" class="sphere-acquire-flash">
+    <div id="sphereAcquireOrb" class="sphere-acquire-orb"></div>
+    <div class="sphere-acquire-label">SPHERE OBTAINED</div>
+    <div id="sphereAcquireName" class="sphere-acquire-name"></div>
+    <div id="sphereAcquireStar" class="sphere-acquire-star"></div>
+    <div class="sphere-acquire-tap">タップして続ける</div>
+  </div>
+
+  <!-- しずく取得演出 -->
+  <div id="shizukuAcquireFlash" class="shard-acquire-flash">
+    <div id="shizukuAcquireGem" class="shard-acquire-gem"></div>
+    <div class="shard-acquire-label">SHIZUKU OBTAINED</div>
+    <div id="shizukuAcquireName" class="shard-acquire-name"></div>
+    <div id="shizukuAcquireArea" class="shard-acquire-area"></div>
+    <div class="shard-acquire-tap">タップして続ける</div>
+  </div>
+
+  <!-- スフィアの記録（統合コレクション） -->
+  <div id="collectionOverlay" class="collection-overlay">
+    <div class="collection-top-bar">
+      <span class="collection-top-title">◈ スフィアの記録</span>
+      <button id="collectionCloseBtn" class="collection-close-btn">✕ 閉じる</button>
+    </div>
+    <div class="collection-main-tabs">
+      <button class="collection-main-tab active" id="tabSpheres">スフィア</button>
+      <button class="collection-main-tab" id="tabShizuku">しずく</button>
+    </div>
+    <!-- スフィアセクション -->
+    <div id="sectionSpheres" class="collection-section active">
+      <div class="collection-sphere-list">
+        <div id="sphereList" class="sphere-list"></div>
+        <div id="sphereDebug" class="sphere-debug">
+          <div class="sphere-debug-title">🔧 テスト用</div>
+          <div id="sphereDebugBtns" class="sphere-debug-btns"></div>
+        </div>
+      </div>
+    </div>
+    <!-- しずくセクション -->
+    <div id="sectionShizuku" class="collection-section">
+      <div class="collection-shizuku-inner">
+        <div class="shard-area-tabs" id="shizukuAreaTabs"></div>
+        <div class="shard-book-content" id="shizukuContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+// ── クライアント読み込み ──
+const urlParams = new URLSearchParams(window.location.search);
+const clientId = urlParams.get('c') || 'sample';
+const clientBase = `clients/${clientId}/`;
+
+const CLIENT = {
+  char: { name: "ロアン", central: "char_central.png" },
+  params: { north: 75, east: 60, south: 85, west: 50, central: 70 },
+  stars: ["貫索星", "禄存星", "車騎星", "玉堂星", "貫索星"], // data.jsonで上書き
+  guidePersonal: null
+};
+
+fetch(`${clientBase}data.json`)
+  .then(r => r.json())
+  .then(data => {
+    Object.assign(CLIENT.char, data.char);
+    Object.assign(CLIENT.params, data.params);
+    if (data.stars) CLIENT.stars = data.stars;
+    if (data.guidePersonal) CLIENT.guidePersonal = data.guidePersonal;
+
+    // キャラ画像・名前
+    const img = document.getElementById('charImg');
+    img.src = clientBase + CLIENT.char.central;
+    img.alt = CLIENT.char.name;
+
+    // シーン名を更新
+    [introScenes, guideScenes, councilScenes, northAreaScenes].forEach(arr => {
+      arr.forEach(s => { if (s.name) s.name = CLIENT.char.name; });
+    });
+
+    // パラメータ反映
+    paramData[0].value = CLIENT.params.north;
+    paramData[1].value = CLIENT.params.east;
+    paramData[2].value = CLIENT.params.south;
+    paramData[3].value = CLIENT.params.west;
+    paramData[4].value = CLIENT.params.central;
+
+    // キャラ位置を個別調整
+    const bustX = CLIENT.char.bustX ?? 8;
+    const bustY = CLIENT.char.bustY ?? 30;
+    const st2 = document.createElement('style');
+    st2.textContent = `.char-sprite.bust img { transform: translate(${bustX}px, ${bustY}px) !important; }`;
+    document.head.appendChild(st2);
+
+    // 北エリア背景を動的に設定（命式由来素材のため clientBase から参照）
+    const northBgs = [
+      { cls: 'bg-north',         file: '北エリア.png',  pos: 'center 30%' },
+      { cls: 'bg-north-street',  file: '北_街並み.png', pos: 'center 30%' },
+      { cls: 'bg-north-library', file: '北_図書館.png', pos: 'center 40%' },
+      { cls: 'bg-north-market',  file: '北_交易所.png', pos: 'center 25%' },
+    ];
+    const st = document.createElement('style');
+    st.textContent = northBgs.map(({ cls, file, pos }) =>
+      `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}") ${pos} / cover no-repeat !important; }`
+    ).join('\n');
+    document.head.appendChild(st);
+  })
+  .catch(() => console.warn('クライアントデータ読み込み失敗'));
+
+// ── イントロシーン（村長の家） ──
+const introScenes = [
+  {
+    bg: "bg-room",
+    char: true,
+    monitor: false,
+    name: "ロアン",
+    text: "おかえりなさい。ここは村長の家です。",
+    charMode: "bust"
+  },
+  {
+    bg: "bg-room",
+    char: true,
+    monitor: false,
+    name: "ロアン",
+    text: "今日のご予定をお伺いします。",
+    charMode: "bust",
+    choices: ["外へ出る", "村役場へ行く", "スフィアの記録を見る", "今日の占い", "ロアンに話しかける"]
+  }
+];
+
+// ── 今日の占い（八卦） ──
+const TRIGRAMS = [
+  { symbol: '☰', name: '乾（けん）', element: '天', village: '空高く澄んだ光が、村全体に降り注いでいます。', reading: '力強い創造の気が満ちています。新しいことを始めるに、これ以上ない日です。自分の意志を信じて進みましょう。' },
+  { symbol: '☷', name: '坤（こん）', element: '地', village: '大地のように、村が静かにすべてを受け止めています。', reading: '柔らかく受け入れる力が高まっています。急がず、育てる気持ちで物事に向き合う日です。' },
+  { symbol: '☳', name: '震（しん）', element: '雷', village: '村に活気ある風が吹き込み、眠っていたものが目を覚ます気配があります。', reading: '新しい動きが始まる予感があります。変化を恐れず、一歩踏み出してみましょう。' },
+  { symbol: '☴', name: '巽（そん）', element: '風', village: '風が村の隅々まで静かに届き、言葉が遠くまで運ばれていきます。', reading: '柔軟に、しかし着実に。伝える力が高まっています。大切な話をするのに良い日です。' },
+  { symbol: '☵', name: '坎（かん）', element: '水', village: '村の川が深く流れています。見えない底にこそ、大切なものが眠っています。', reading: '流れに逆らわず、深く内側を見つめる日です。困難があっても、それは新たな流れの始まりです。' },
+  { symbol: '☲', name: '離（り）', element: '火', village: '村の中央に明るい灯りがともり、遠くからでもよく見えています。', reading: '明晰さと洞察力が高まっています。見落としていたことに気がつく一日です。' },
+  { symbol: '☶', name: '艮（ごん）', element: '山', village: '村の北の山が、いつもより穏やかに静かに立っています。', reading: '立ち止まり、じっくりと考える日です。焦らず、今ある場所をしっかり固めましょう。' },
+  { symbol: '☱', name: '兌（だ）', element: '沢', village: '村の井戸に澄んだ水が満ち、人々の顔が明るくなっています。', reading: '喜びと交流の気が流れています。人と言葉を交わすと、思わぬ縁が生まれる日です。' }
+];
+
+function getTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+function getTodayTrigram() {
+  const d = new Date();
+  const seed = d.getFullYear() * 10000 + (d.getMonth()+1) * 100 + d.getDate();
+  return TRIGRAMS[seed % 8];
+}
+
+function formatJapaneseDate() {
+  const d = new Date();
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+}
+
+function showFortunePanel() {
+  $("choices").classList.remove("show"); $("choices").style.display = "none";
+  const panel = $("fortunePanel");
+  $("fortuneDate").textContent = formatJapaneseDate() + ' の卦';
+  const todayKey = getTodayKey();
+  const stored = localStorage.getItem('fv_fortune');
+  const data = stored ? JSON.parse(stored) : null;
+
+  if (data && data.date === todayKey) {
+    // 今日すでに引いた
+    renderFortuneResult(data.index, true);
+  } else {
+    // まだ引いていない
+    $("fortuneContent").innerHTML = `
+      <div style="text-align:center;color:rgba(216,185,120,0.7);font-size:13px;letter-spacing:0.1em;font-family:'Hiragino Mincho ProN',serif;line-height:2;">
+        今日の村の気配を<br>読み取ります
+      </div>
+      <button class="fortune-btn-draw" id="btnDraw">卦を引く</button>`;
+    $("btnDraw").addEventListener("click", (e) => {
+      e.stopPropagation();
+      const t = getTodayTrigram();
+      const idx = TRIGRAMS.indexOf(t);
+      localStorage.setItem('fv_fortune', JSON.stringify({ date: todayKey, index: idx }));
+      renderFortuneResult(idx, false);
+    });
+  }
+
+  panel.classList.add("visible");
+  $("btnFortune").classList.remove("visible");
+}
+
+function renderFortuneResult(index, alreadyRead) {
+  const t = TRIGRAMS[index];
+  $("fortuneContent").innerHTML = `
+    ${alreadyRead ? '<div class="fortune-already">本日はすでに卦を引いています</div>' : ''}
+    <div class="fortune-hexagram">${t.symbol}</div>
+    <div class="fortune-name">${t.name}　${t.element}</div>
+    <div class="fortune-reading">${t.reading}</div>
+    <div class="fortune-village-msg">${t.village}</div>`;
+}
+
+function closeFortunePanel() {
+  $("fortunePanel").classList.remove("visible");
+  if (currentScreen === 'intro' && sceneIndex === 0) {
+    $("btnFortune").classList.add("visible");
+  }
+}
+
+// ── 村のパラメータ ──
+const paramData = [
+  { key: 'north',   label: '知識・記録力', area: '北', value: 75, color: 'rgba(80,120,180,0.85)' },
+  { key: 'east',    label: '活動・実行力', area: '東', value: 60, color: 'rgba(80,160,100,0.85)' },
+  { key: 'south',   label: '表現・創造力', area: '南', value: 85, color: 'rgba(190,80,80,0.85)'  },
+  { key: 'west',    label: '調和・関係力', area: '西', value: 50, color: 'rgba(184,142,68,0.85)' },
+  { key: 'central', label: '統合・判断力', area: '中央', value: 70, color: 'rgba(130,80,160,0.85)'}
+];
+const radarAngles = [-90, -18, 54, 126, 198]; // 北東南西中央
+const radarCX = 80, radarCY = 80, radarMaxR = 62;
+
+function radarPoint(i, ratio) {
+  const a = radarAngles[i] * Math.PI / 180;
+  return [radarCX + radarMaxR * ratio * Math.cos(a), radarCY + radarMaxR * ratio * Math.sin(a)];
+}
+
+function buildRadarChart() {
+  // グリッド
+  [0.75, 0.5, 0.25].forEach((r, ri) => {
+    const pts = radarAngles.map((_, i) => radarPoint(i, r).join(',')).join(' ');
+    document.getElementById(['rg75','rg50','rg25'][ri]).setAttribute('points', pts);
+  });
+  // 軸 & ラベル
+  radarAngles.forEach((_, i) => {
+    const [x2, y2] = radarPoint(i, 1);
+    const ax = document.getElementById(`ax${i}`);
+    ax.setAttribute('x2', x2); ax.setAttribute('y2', y2);
+    const [lx, ly] = radarPoint(i, 1.22);
+    const rl = document.getElementById(`rl${i}`);
+    rl.setAttribute('x', lx); rl.setAttribute('y', ly);
+    rl.textContent = paramData[i].area;
+  });
+  // データ
+  updateRadarData();
+  // メーターバー
+  buildMeters();
+}
+
+function updateRadarData() {
+  const pts = paramData.map((p, i) => radarPoint(i, p.value / 100).join(',')).join(' ');
+  document.getElementById('radarData').setAttribute('points', pts);
+}
+
+function buildMeters() {
+  const list = document.getElementById('meterList');
+  list.innerHTML = '';
+  paramData.forEach(p => {
+    list.innerHTML += `
+      <div class="meter-item">
+        <div class="meter-label">${p.label}<br><span style="font-size:9px;opacity:0.6">${p.area}エリア</span></div>
+        <div class="meter-bar"><div class="meter-fill" style="width:0%;background:linear-gradient(90deg,${p.color},rgba(216,185,120,0.8))"></div></div>
+        <div class="meter-value">${p.value}</div>
+      </div>`;
+  });
+  // アニメーション
+  setTimeout(() => {
+    list.querySelectorAll('.meter-fill').forEach((el, i) => {
+      el.style.width = paramData[i].value + '%';
+    });
+  }, 100);
+}
+
+function showParams() {
+  currentScreen = 'params';
+  hideAllSceneElements();
+  setBg('bg-room');
+  $("char").classList.remove("hidden");
+  $("char").classList.add("bust");
+  buildRadarChart();
+  $("paramPanel").classList.add("visible");
+  $("btnHomeFixed").classList.add("visible");
+}
+
+// ── 村の読み方ガイドシーン ──
+const guideScenes = [
+  {
+    bg: "bg-room",
+    char: true,
+    monitor: false,
+    name: "ロアン",
+    text: "村の案内板をご覧いただきましょう。\n各エリアに表れる人生テーマと、読み方のポイントをご説明します。",
+    charMode: "bust"
+  },
+  {
+    type: "showGuideBoard"
+  }
+];
+
+// ── 中央会議室シーン ──
+const councilScenes = [
+  {
+    bg: "bg-council",
+    char: true,
+    monitor: false,
+    name: "ロアン",
+    text: "こちらが、中央会議室です。\n村の五つのエリアを結ぶ、この村の中枢となる場所です。",
+    charMode: "bust"
+  },
+  {
+    bg: "bg-council",
+    char: true,
+    monitor: false,
+    name: "ロアン",
+    text: "今日は、どのような議題でお集まりですか。",
+    charMode: "bust",
+    choices: [
+      "disabled:村の強みを活かす",
+      "disabled:村の課題を解決する",
+      "disabled:他の村との交易",
+      "disabled:今年の村の計画",
+      "disabled:今後の村の展望",
+      "disabled:村について深く知る"
+    ]
+  }
+];
+const northAreaScenes = [
+  // ① 中継：村長の家を出発
+  {
+    bg: "bg-room",
+    char: true,
+    monitor: false,
+    name: "ロアン",
+    text: "では、北エリアへご案内します。",
+    charMode: "bust"
+  },
+  // ② タイトルカード（自動再生・タップ不要）
+  {
+    type: "titleCard",
+    areaKey: "north"
+  },
+  // ③ 到着：北エリア（風景を主役に）
+  {
+    bg: "bg-north",
+    char: true,
+    monitor: false,
+    name: "ロアン",
+    text: "こちらが、北エリアです。\nどうぞ、ゆっくりとご覧ください。",
+    charMode: "bust"
+  },
+  // ③〜⑩ Stage6シーン
+  {
+    bg: "bg-north",        // 俯瞰：エリア全体
+    char: false,
+    monitor: false,
+    name: "ロアン",
+    text: "北の方角には、遠くまで山並みが静かに連なっています。\nその山並みは、このエリア全体を包み込むように広がり、時間をかけて物事を受け止めるような、落ち着いた空気をつくっています。"
+  },
+  {
+    bg: "bg-north-street", // 街並み
+    char: false,
+    monitor: false,
+    name: "ロアン",
+    text: "山を背にした街並みには、石造りの建物と瓦葺きの屋根が並んでいます。\n足元には風格のある石畳の道が続き、村の中でも、とくに静けさと重みを感じる景色になっています。"
+  },
+  {
+    bg: "bg-north-library", // 図書館・書院
+    char: false,
+    monitor: false,
+    name: "ロアン",
+    text: "道の奥に見えているのが、北エリアを支える図書館・書院です。\n石造りの落ち着いた建物は、周囲の街並みの中で、静かな存在感を放っています。\nここでは、知識や記録が大切に扱われ、時を越えて残るものとして守られています。"
+  },
+  {
+    bg: "bg-north-market",  // 交易所
+    char: false,
+    monitor: false,
+    name: "ロアン",
+    text: "その少し手前には、市場・交易所があります。\nここは、ただ品物が売り買いされる場所ではありません。\n必要なもの、積み重ねられた経験、誰かが残した知恵が、人から人へ、山の地層のように静かに受け継がれていく場所です。"
+  },
+  {
+    bg: "bg-north-street",  // 住民の営み
+    char: false,
+    monitor: false,
+    name: "ロアン",
+    text: "住民たちは、書物を読み、記録を確かめ、必要な品や経験を受け渡しています。\n人々の営みは急がず、ひとつずつ確かめるように進んでいきます。\n北エリアでは、知恵はその場だけで終わらず、残され、読み継がれ、次の誰かへと渡っていきます。"
+  },
+  {
+    bg: "bg-north-street",  // 知恵が広がる
+    char: false,
+    monitor: false,
+    name: "ロアン",
+    text: "こうして積み重ねられた知恵は、村の中へ少しずつ広がっていきます。\n記録され、確かめられ、人へ渡ることで、村全体に落ち着いた判断の流れが生まれていきます。"
+  },
+  {
+    bg: "bg-north-street",  // 現実の暮らしへの翻訳
+    char: false,
+    monitor: false,
+    name: "ロアン",
+    text: "現実の暮らしでは、学び直すこと、記録を残すこと、経験を誰かへ渡すこととして表れます。\nすぐに答えを出すよりも、物事を確かめ、積み重ね、必要な形で受け渡していく場面に、この北エリアの力が表れます。"
+  },
+  {
+    bg: "bg-north",
+    char: true,
+    monitor: false,
+    name: "ロアン",
+    text: "北の山並みは、変わらず静かにこの場所を見守っています。\n山に守られたこの場所では、知恵は静かに残され、読み継がれ、人へ渡りながら、村の奥深くに根づいていきます。\n\n目立つにぎわいとは違う形で、村の判断を支える。\n北エリアは、静かな深みを持った、大切な場所です。",
+    charMode: "bust"
+  },
+  {
+    bg: "bg-north",
+    char: true,
+    monitor: false,
+    name: "ロアン",
+    text: "いかがでしたか。\n他のエリアもご覧になりますか？",
+    charMode: "bust",
+    choices: ["別のエリアへ", "村長の家に戻る"]
+  }
+];
+
+// ── 状態変数 ──
+let currentSceneSet = introScenes;
+let sceneIndex = 0;
+let typing = false;
+let typeTimer = null;
+let fullText = "";
+let videoPlaying = false;
+let videosUnlocked = false;
+let activeVideoSlot = 0;
+let currentScreen = 'title'; // 'title' | 'home' | 'intro' | 'area_select' | 'area'
+const introVideos = ["common/opening.mp4", "common/scene_01_morning.mp4", "common/scene_02_morning.mp4"];
+
+// ── セーブ・ロード ──
+const SAVE_KEY = `fv_save_${clientId}`;
+
+const sceneSetMap = {
+  introScenes,
+  guideScenes,
+  councilScenes,
+  northAreaScenes,
+};
+
+function getSceneSetName(set) {
+  for (const [name, s] of Object.entries(sceneSetMap)) {
+    if (s === set) return name;
+  }
+  return null;
+}
+
+function saveProgress() {
+  const name = getSceneSetName(currentSceneSet);
+  if (!name) return;
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      screen: currentScreen,
+      sceneSetName: name,
+      sceneIndex: sceneIndex,
+      savedAt: new Date().toLocaleString('ja-JP', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    }));
+  } catch(e) { console.warn('セーブ失敗:', e); }
+  updateContinueBtn();
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) { return null; }
+}
+
+function clearProgress() {
+  localStorage.removeItem(SAVE_KEY);
+  updateContinueBtn();
+}
+
+function updateContinueBtn() {
+  const btn = $("btnContinue");
+  if (!btn) return;
+  const data = loadProgress();
+  if (data) {
+    btn.style.display = "block";
+    btn.textContent = `続きから　▶`;
+  } else {
+    btn.style.display = "none";
+  }
+}
+
+// ── スフィアシステム ──
+const STAR_TO_SPHERE = {
+  "貫索星": { id: "anchor",   name: "アンカー・スフィア", color: "#4ecb71", dark: "#1a5c2e", glow: "rgba(78,203,113,0.55)" },
+  "石門星": { id: "link",     name: "リンク・スフィア",   color: "#a8ff4e", dark: "#3a6010", glow: "rgba(168,255,78,0.55)" },
+  "鳳閣星": { id: "sol",      name: "ソル・スフィア",     color: "#ffb830", dark: "#7a4800", glow: "rgba(255,184,48,0.6)"  },
+  "調舒星": { id: "noct",     name: "ノクト・スフィア",   color: "#9b6cff", dark: "#2e0a5c", glow: "rgba(155,108,255,0.55)"},
+  "禄存星": { id: "favour",   name: "フェイヴァー・スフィア", color: "#ffcc66", dark: "#6b4400", glow: "rgba(255,204,102,0.6)" },
+  "司禄星": { id: "reserve",  name: "リザーブ・スフィア", color: "#c49a6c", dark: "#5a3a18", glow: "rgba(196,154,108,0.5)" },
+  "車騎星": { id: "vanguard", name: "ヴァンガード・スフィア", color: "#ffd700", dark: "#7a5a00", glow: "rgba(255,215,0,0.65)"  },
+  "牽牛星": { id: "order",    name: "オーダー・スフィア", color: "#cc66ff", dark: "#44006b", glow: "rgba(204,102,255,0.55)"},
+  "龍高星": { id: "ether",    name: "エーテル・スフィア", color: "#4da6ff", dark: "#003a7a", glow: "rgba(77,166,255,0.6)"  },
+  "玉堂星": { id: "libris",   name: "リブリス・スフィア", color: "#b8eeff", dark: "#1a4a6b", glow: "rgba(184,238,255,0.55)"},
+};
+const BODY_POSITIONS = ["頭", "胸", "右手", "左手", "腹"];
+
+function initSphereSlots() {
+  const save = loadProgress() || {};
+  if (!save.sphereSlots) {
+    save.sphereSlots = BODY_POSITIONS.map((pos, i) => ({
+      position: pos,
+      star: CLIENT.stars?.[i] || "貫索星",
+      collected: false
+    }));
+    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+  }
+  return save.sphereSlots;
+}
+
+function getSphereSlots() {
+  const save = loadProgress();
+  return save?.sphereSlots || initSphereSlots();
+}
+
+function collectSphere(slotIndex) {
+  const save = loadProgress() || {};
+  if (!save.sphereSlots) initSphereSlots();
+  const slot = save.sphereSlots[slotIndex];
+  if (!slot || slot.collected) return;
+  save.sphereSlots[slotIndex].collected = true;
+  localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+  showSphereAcquireFlash(slot, () => {
+    updateSpherePanel();
+  });
+}
+
+function showSphereAcquireFlash(slot, onClose) {
+  const sphere = STAR_TO_SPHERE[slot.star];
+  if (!sphere) return;
+  const flash = $("sphereAcquireFlash");
+  const orb = $("sphereAcquireOrb");
+  orb.style.setProperty("--orb-color", sphere.color);
+  orb.style.setProperty("--orb-dark", sphere.dark);
+  orb.style.setProperty("--orb-glow", sphere.glow);
+  // 画像がある場合は表示（なければCSS球のまま）
+  const imgPath = `spheres/${sphere.id}.png`;
+  orb.innerHTML = `<img src="${imgPath}" onerror="this.style.display='none'" alt="${sphere.name}">`;
+  $("sphereAcquireName").textContent = sphere.name;
+  $("sphereAcquireStar").textContent = "";
+  flash.classList.add("show");
+  const close = () => {
+    flash.classList.remove("show");
+    flash.removeEventListener("click", close);
+    if (onClose) onClose();
+  };
+  flash.addEventListener("click", close);
+}
+
+function updateSpherePanel() {
+  const slots = getSphereSlots();
+  const list = $("sphereList");
+  list.innerHTML = "";
+  const debugBtns = $("sphereDebugBtns");
+  debugBtns.innerHTML = "";
+
+  slots.forEach((slot, i) => {
+    const sphere = STAR_TO_SPHERE[slot.star] || { id:"unknown", name:"不明のスフィア", color:"#888", dark:"#333", glow:"rgba(150,150,150,0.3)" };
+    // リストアイテム
+    const item = document.createElement("div");
+    item.className = "sphere-item" + (slot.collected ? " collected" : "");
+    const orbEl = document.createElement("div");
+    orbEl.className = "sphere-orb" + (slot.collected ? "" : " locked");
+    orbEl.style.setProperty("--orb-color", sphere.color);
+    orbEl.style.setProperty("--orb-dark", sphere.dark);
+    orbEl.style.setProperty("--orb-glow", sphere.glow);
+    // 画像があれば使用
+    orbEl.innerHTML = `<img src="spheres/${sphere.id}.png" onerror="this.style.display='none'" alt="${sphere.name}">`;
+    const info = document.createElement("div");
+    info.className = "sphere-info";
+    info.innerHTML = `
+      <div class="sphere-name${slot.collected ? "" : " locked"}">${sphere.name}</div>
+      <div class="sphere-status ${slot.collected ? "got" : "not"}">${slot.collected ? "✦ 入手済み" : "◌ 未入手"}</div>
+    `;
+    item.appendChild(orbEl);
+    item.appendChild(info);
+    list.appendChild(item);
+
+    // デバッグボタン（未入手のもののみ）
+    if (!slot.collected) {
+      const btn = document.createElement("button");
+      btn.className = "sphere-debug-btn";
+      btn.textContent = sphere.name.replace("・スフィア", "");
+      btn.addEventListener("click", (e) => { e.stopPropagation(); collectSphere(i); });
+      debugBtns.appendChild(btn);
+    }
+  });
+
+  // すべて入手済みならデバッグ枠を非表示
+  if (slots.every(s => s.collected)) {
+    $("sphereDebug").style.display = "none";
+  }
+}
+
+// ── スフィアの記録（統合コレクション） ──
+let currentCollectionTab = "spheres"; // "spheres" | "shizuku"
+let currentShizukuTab = "north";
+
+function openCollection() {
+  initSphereSlots();
+  initShards();
+  switchCollectionTab(currentCollectionTab);
+  $("collectionOverlay").classList.add("visible");
+}
+
+function closeCollection() {
+  $("collectionOverlay").classList.remove("visible");
+}
+
+function switchCollectionTab(tab) {
+  currentCollectionTab = tab;
+  ["spheres","shizuku"].forEach(t => {
+    $("section" + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle("active", t === tab);
+    $("tab"    + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle("active", t === tab);
+  });
+  if (tab === "spheres") updateSpherePanel();
+  if (tab === "shizuku") { buildShizukuTabs(); renderShizukuSection(currentShizukuTab); }
+}
+
+// ── しずくシステム（旧：かけら） ──
+const AREA_KEYS  = ["north","east","south","west","central"];
+const AREA_NAMES = { north:"北", east:"東", south:"南", west:"西", central:"中央" };
+const ALL_STARS  = ["貫索星","石門星","鳳閣星","調舒星","禄存星","司禄星","車騎星","牽牛星","龍高星","玉堂星"];
+
+function initShards() {
+  const save = loadProgress() || {};
+  if (!save.shards) {
+    save.shards = {};
+    save.areaDoorsUnlocked = {};
+    AREA_KEYS.forEach(key => {
+      save.shards[key] = {};
+      ALL_STARS.forEach(star => { save.shards[key][star] = false; });
+      save.areaDoorsUnlocked[key] = false;
+    });
+    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+  }
+  return save;
+}
+
+function getShards() {
+  const save = loadProgress();
+  if (!save?.shards) return initShards();
+  return save;
+}
+
+function collectShizuku(areaKey, starName, onClose) {
+  const save = getShards();
+  if (save.shards[areaKey][starName]) return;
+  save.shards[areaKey][starName] = true;
+  const allCollected = ALL_STARS.every(s => save.shards[areaKey][s]);
+  if (allCollected) save.areaDoorsUnlocked[areaKey] = true;
+  localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+  showShizukuAcquireFlash(areaKey, starName, () => {
+    if (allCollected) showDoorUnlockedFlash(areaKey);
+    if (onClose) onClose();
+    renderShizukuSection(currentShizukuTab);
+  });
+}
+
+function showShizukuAcquireFlash(areaKey, starName, onClose) {
+  const sphere = STAR_TO_SPHERE[starName];
+  if (!sphere) return;
+  const flash = $("shizukuAcquireFlash");
+  const gem   = $("shizukuAcquireGem");
+  gem.style.setProperty("--shard-color", sphere.color);
+  gem.style.setProperty("--shard-dark",  sphere.dark);
+  gem.style.setProperty("--shard-glow",  sphere.glow);
+  $("shizukuAcquireName").textContent = sphere.name.replace("・スフィア","") + "のしずく";
+  $("shizukuAcquireArea").textContent = AREA_NAMES[areaKey] + "エリア";
+  flash.classList.add("show");
+  const close = () => {
+    flash.classList.remove("show");
+    flash.removeEventListener("click", close);
+    if (onClose) onClose();
+  };
+  flash.addEventListener("click", close);
+}
+
+function showDoorUnlockedFlash(areaKey) {
+  const msg = document.createElement("div");
+  msg.style.cssText = `
+    position:fixed;bottom:230px;left:50%;transform:translateX(-50%);
+    z-index:60;padding:10px 20px;border-radius:999px;
+    background:rgba(216,185,120,0.18);border:1px solid rgba(216,185,120,0.55);
+    color:rgba(216,185,120,0.95);font-size:12px;letter-spacing:0.14em;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    white-space:nowrap;opacity:0;transition:opacity 400ms;
+  `;
+  msg.textContent = `${AREA_NAMES[areaKey]}エリアの地下扉が解錠された`;
+  document.getElementById("app").appendChild(msg);
+  setTimeout(() => { msg.style.opacity = "1"; }, 30);
+  setTimeout(() => { msg.style.opacity = "0"; setTimeout(() => msg.remove(), 400); }, 2800);
+}
+
+function buildShizukuTabs() {
+  const save = getShards();
+  const tabsEl = $("shizukuAreaTabs");
+  tabsEl.innerHTML = "";
+  AREA_KEYS.forEach(key => {
+    const btn = document.createElement("button");
+    const unlocked = save.areaDoorsUnlocked[key];
+    const count = ALL_STARS.filter(s => save.shards[key][s]).length;
+    btn.className = "shard-area-tab" + (key === currentShizukuTab ? " active" : "") + (unlocked ? " cleared" : "");
+    btn.innerHTML = AREA_NAMES[key] + "エリア" + (unlocked ? `<span class='tab-check'>✦</span>` : ` <span class='tab-check'>${count}/10</span>`);
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      currentShizukuTab = key;
+      buildShizukuTabs();
+      renderShizukuSection(key);
+    });
+    tabsEl.appendChild(btn);
+  });
+}
+
+function renderShizukuSection(areaKey) {
+  const save = getShards();
+  const shards = save.shards[areaKey];
+  const unlocked = save.areaDoorsUnlocked[areaKey];
+  const count = ALL_STARS.filter(s => shards[s]).length;
+  const content = $("shizukuContent");
+  content.innerHTML = "";
+
+  // ヘッダー（エリア名のみ・禁止用語なし）
+  const header = document.createElement("div");
+  header.className = "shard-section-header";
+  header.innerHTML = `
+    <span class="shard-section-title">${AREA_NAMES[areaKey]}エリア</span>
+    <span class="shard-section-count">${count} / 10</span>
+  `;
+  content.appendChild(header);
+
+  // 地下扉ステータス
+  const door = document.createElement("div");
+  door.className = "shard-door-panel" + (unlocked ? " unlocked" : "");
+  door.innerHTML = `
+    <div class="shard-door-label">地下扉</div>
+    <div class="shard-door-bar"><div class="shard-door-fill" style="width:${count*10}%"></div></div>
+    <div class="shard-door-status ${unlocked ? "unlocked-txt" : "locked-txt"}">
+      ${unlocked ? "✦ 解錠済み" : `🔒 解錠まであと ${10 - count} 個`}
+    </div>
+  `;
+  content.appendChild(door);
+
+  // しずくグリッド（スフィアFV名のみ・星名なし）
+  const grid = document.createElement("div");
+  grid.className = "shard-grid";
+  ALL_STARS.forEach(star => {
+    const got = shards[star];
+    const sphere = STAR_TO_SPHERE[star] || { id:"unknown", name:"スフィア", color:"#888", dark:"#333", glow:"rgba(150,150,150,0.3)" };
+    const shortName = sphere.name.replace("・スフィア","");
+    const item = document.createElement("div");
+    item.className = "shard-item" + (got ? " collected" : "");
+    item.innerHTML = `
+      <div class="shard-gem ${got ? "" : "locked"}"
+           style="--shard-color:${sphere.color};--shard-dark:${sphere.dark};--shard-glow:${sphere.glow}"></div>
+      <div class="shard-item-info">
+        <div class="shard-item-star">${shortName}のしずく</div>
+        <div class="shard-item-status ${got ? "got" : "not"}">${got ? "✦ 入手済み" : "◌ 未入手"}</div>
+      </div>
+    `;
+    grid.appendChild(item);
+  });
+  content.appendChild(grid);
+
+  // テスト用ボタン（スフィアFV名のみ）
+  const debug = document.createElement("div");
+  debug.className = "shard-debug";
+  debug.innerHTML = `<div class="shard-debug-title">🔧 テスト用 — しずく取得</div><div class="shard-debug-btns" id="shizukuDebugBtns_${areaKey}"></div>`;
+  content.appendChild(debug);
+  const btnsEl = debug.querySelector(`#shizukuDebugBtns_${areaKey}`);
+  ALL_STARS.forEach(star => {
+    if (shards[star]) return;
+    const btn = document.createElement("button");
+    btn.className = "shard-debug-btn";
+    const sp = STAR_TO_SPHERE[star];
+    btn.textContent = sp ? sp.name.replace("・スフィア","") : "しずく";
+    btn.addEventListener("click", (e) => { e.stopPropagation(); collectShizuku(areaKey, star); });
+    btnsEl.appendChild(btn);
+  });
+  if (ALL_STARS.every(s => shards[s])) debug.style.display = "none";
+}
+
+// ── 背景パンアニメーション（requestAnimationFrame） ──
+const BG_PAN_CONFIG = {
+  "bg-north":         { scale: 1.08, x: [0,  -3],   y: [0,   -1.5], duration: 50000 },
+  "bg-north-street":  { scale: 1.08, x: [0,  -2],   y: [0,   -1],   duration: 50000 },
+  "bg-north-library": { scale: 1.08, x: [-1,  1],   y: [0,   -1],   duration: 50000 },
+  "bg-north-market":  { scale: 1.08, x: [0,  -2.5], y: [-0.5, 0.5], duration: 50000 },
+};
+
+let _panRaf = null;
+let _panStart = null;
+let _panKey = null;
+
+function startBgPan(bgClass) {
+  // 同じbgで既にパン中なら継続（リセットしない）
+  if (_panKey === bgClass && _panRaf !== null) return;
+  stopBgPan();
+  const cfg = BG_PAN_CONFIG[bgClass];
+  if (!cfg) return;
+  _panKey = bgClass;
+  _panStart = null;
+
+  function tick(now) {
+    if (!_panStart) _panStart = now;
+    const el = $("bg");
+    if (!el || !el.classList.contains(_panKey)) { stopBgPan(); return; }
+
+    const elapsed = now - _panStart;
+    const cycle = cfg.duration * 2;
+    const t = (elapsed % cycle) / cfg.duration;
+    const progress = t <= 1 ? t : 2 - t; // 0→1→0 ピンポン
+    // ease-in-out（cosカーブ）
+    const ease = 0.5 - 0.5 * Math.cos(Math.PI * progress);
+
+    const x = cfg.x[0] + (cfg.x[1] - cfg.x[0]) * ease;
+    const y = cfg.y[0] + (cfg.y[1] - cfg.y[0]) * ease;
+    el.style.transform = `scale(${cfg.scale}) translate(${x}%, ${y}%)`;
+
+    _panRaf = requestAnimationFrame(tick);
+  }
+  _panRaf = requestAnimationFrame(tick);
+}
+
+function stopBgPan() {
+  if (_panRaf) { cancelAnimationFrame(_panRaf); _panRaf = null; }
+  _panStart = null;
+  _panKey = null;
+  const el = $("bg");
+  if (el) el.style.transform = "";
+}
+
+// ── ユーティリティ ──
+function setBg(className) {
+  $("bg").className = `bg ${className}`;
+  if (BG_PAN_CONFIG[className]) {
+    startBgPan(className);
+  } else {
+    stopBgPan();
+  }
+}
+
+function setMonitor(type) {
+  const image = $("monitorImage");
+  image.className = "monitor-image";
+  if (type === "village") {
+    image.classList.add("village");
+    image.innerHTML = "YOUR VILLAGE<br>宿命から生まれた村の景色";
+  } else if (type === "chars") {
+    image.classList.add("chars");
+    image.innerHTML = "VILLAGE RESIDENTS<br>五つのエリアに暮らす住民たち";
+  } else {
+    image.innerHTML = "FORTUNE VILLAGE<br>村への招待状";
+  }
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\n/g, "<br>");
+}
+
+function typeText(text) {
+  clearInterval(typeTimer);
+  typing = true;
+  fullText = text;
+  const textEl = $("text");
+  textEl.innerHTML = "";
+  let i = 0;
+  typeTimer = setInterval(() => {
+    i++;
+    textEl.innerHTML = escapeHtml(text.slice(0, i)) + '<span class="cursor-blink"></span>';
+    if (i >= text.length) {
+      clearInterval(typeTimer);
+      typing = false;
+      textEl.innerHTML = escapeHtml(text);
+    }
+  }, 30);
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getVideo(slot) {
+  return $(slot === 0 ? "sceneVideoA" : "sceneVideoB");
+}
+
+// ── 画面制御 ──
+function hideChoices() {
+  const box = $("choices");
+  if (!box) return;
+  box.classList.remove("show", "grid-2col", "grid-2col-plus1", "grid-2col-3row");
+  box.style.setProperty("display", "none", "important");
+}
+
+function hideAllSceneElements() {
+  clearInterval(typeTimer);
+  typing = false;
+  $("titleImage").classList.remove("show");
+  $("titleTap").classList.remove("show");
+  document.querySelector(".textbox").classList.add("hidden");
+  $("logo").classList.remove("show");
+  $("char").classList.add("hidden");
+  $("monitor").classList.remove("show");
+  $("choices").classList.remove("show"); $("choices").style.display = "none";
+  $("areaSelect").classList.remove("visible");
+  $("areaSubSelect").classList.remove("visible");
+  $("facilitySelect").classList.remove("visible");
+  $("charSelect").classList.remove("visible");
+  $("centralFacilitySelect").classList.remove("visible");
+  $("paramPanel").classList.remove("visible");
+  $("fortunePanel").classList.remove("visible");
+  $("btnFortune").classList.remove("visible");
+  document.getElementById('app').classList.remove('panel-open');
+}
+
+function renderTitle() {
+  currentScreen = 'title';
+  setBg('bg-dark');
+  $("home").classList.remove("visible");
+  document.querySelector(".textbox").classList.add("hidden");
+  $("titleImage").classList.add("show");
+  $("titleTap").classList.add("show");
+}
+
+function showHome() {
+  clearNavStack();
+  currentScreen = 'home';
+  hideAllSceneElements();
+  setBg('bg-dark');
+  $("home").classList.add("visible");
+  $("btnHomeFixed").classList.remove("visible");
+  $("charSelect").classList.remove("visible");
+  $("facilitySelect").classList.remove("visible");
+  $("paramPanel").classList.remove("visible");
+  currentSceneSet = introScenes;
+  sceneIndex = 0;
+  updateContinueBtn(); // 続きからボタンの表示を更新
+}
+
+function hideHome() {
+  return new Promise((resolve) => {
+    $("home").classList.remove("visible");
+    setTimeout(resolve, 650);
+  });
+}
+
+// シーン遷移：フェードアウト→内容切替→フェードイン
+// ── opacityアニメーション（rAF使用） ──
+function animateOpacity(el, from, to, duration) {
+  return new Promise(resolve => {
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = 0.5 - 0.5 * Math.cos(Math.PI * t);
+      el.style.opacity = from + (to - from) * ease;
+      if (t < 1) { requestAnimationFrame(tick); }
+      else { el.style.opacity = to; resolve(); }
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+// ── エリア背景切替フェード（rAF・next()専用） ──
+async function bgChangeFade(callback, duration = 350) {
+  const layer = $("sceneLayer");
+  await animateOpacity(layer, 1, 0, duration);
+  callback();
+  await delay(20);
+  await animateOpacity(layer, 0, 1, duration);
+}
+
+// ── ナビゲーション遷移（CSS・高速） ──
+async function transitionScene(callback, duration = 600) {
+  const layer = $("sceneLayer");
+  layer.style.transition = `opacity ${duration}ms ease`;
+  layer.style.opacity = "0";
+  await delay(duration);
+  layer.style.transition = "none";
+  callback();
+  await delay(30);
+  layer.style.transition = `opacity ${duration}ms ease`;
+  layer.style.opacity = "1";
+}
+
+function showAreaSelect() {
+  document.getElementById('app').classList.add('panel-open');
+  currentScreen = 'area_select';
+  document.querySelector(".textbox").classList.add("hidden");
+  $("choices").classList.remove("show"); $("choices").style.display = "none";
+  $("areaSelect").classList.add("visible");
+  $("btnHomeFixed").classList.add("visible");
+}
+
+function hideAreaSelect() {
+  return new Promise((resolve) => {
+    $("areaSelect").classList.remove("visible");
+    setTimeout(resolve, 500);
+  });
+}
+
+function showFacilitySelect() {
+  document.getElementById('app').classList.add('panel-open');
+  currentScreen = 'facility_select';
+  document.querySelector(".textbox").classList.add("hidden");
+  $("choices").classList.remove("show"); $("choices").style.display = "none";
+  $("facilitySelect").classList.add("visible");
+  $("btnHomeFixed").classList.add("visible");
+}
+
+function hideFacilitySelect() {
+  return new Promise((resolve) => {
+    $("facilitySelect").classList.remove("visible");
+    setTimeout(resolve, 500);
+  });
+}
+
+function showCharSelect() {
+  document.getElementById('app').classList.add('panel-open');
+  currentScreen = 'char_select';
+  document.querySelector(".textbox").classList.add("hidden");
+  $("choices").classList.remove("show"); $("choices").style.display = "none";
+  $("charSelect").classList.add("visible");
+  $("btnHomeFixed").classList.add("visible");
+}
+
+$("btnCharList").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("centralFacilitySelect").classList.remove("visible");
+  showCharSelect();
+});
+
+function hideCharSelect() {
+  return new Promise((resolve) => {
+    $("charSelect").classList.remove("visible");
+    setTimeout(resolve, 500);
+  });
+}
+
+function renderScene() {
+  const s = currentSceneSet[sceneIndex];
+
+  // 通常シーンに入るときはパネル表示モードを解除
+  document.getElementById('app').classList.remove('panel-open');
+
+  // 案内板表示シーン
+  if (s.type === "showGuideBoard") {
+    hideAllSceneElements();
+    document.querySelector(".textbox").classList.add("hidden");
+    showGuideBoardOverlay();
+    return;
+  }
+
+  // タイトルカードシーン：自動再生して次へ
+  if (s.type === "titleCard") {
+    hideAllSceneElements();
+    document.querySelector(".textbox").classList.add("hidden");
+    // bgはフェードアウト開始直前に切り替え（フラッシュ防止）
+    const nextScene = currentSceneSet[sceneIndex + 1];
+    showAreaTitleCard(s.areaKey, () => {
+      if (nextScene?.bg) setBg(nextScene.bg);
+    }).then(() => {
+      sceneIndex++;
+      renderScene();
+    });
+    return;
+  }
+
+  setBg(s.bg);
+  $("titleImage").classList.remove("show");
+  $("titleTap").classList.remove("show");
+  $("areaSelect").classList.remove("visible");
+  document.querySelector(".textbox").classList.toggle("hidden", !!s.hideTextbox);
+  $("logo").classList.toggle("show", !!s.logo);
+  $("char").classList.toggle("hidden", !s.char);
+  // bust クラスはキャラが表示されるときだけ切り替える
+  // 非表示時は bust を維持して overflow:hidden によるクリップを保つ（全身チラ見え防止）
+  if (s.char) {
+    $("char").classList.toggle("bust", s.charMode === "bust");
+  }
+  $("monitor").classList.toggle("show", !!s.monitor);
+  setMonitor(s.monitorType);
+  $("name").textContent = s.name;
+  typeText(s.text);
+  const total = currentSceneSet.length;
+  $("progressBar").style.width = `${((sceneIndex + 1) / total) * 100}%`;
+  renderChoices(s.choices);
+  $("btnHomeFixed").classList.add("visible");
+  // 村長の家の最初のシーンのみ占いボタンを表示
+  $("btnFortune").classList.remove("visible"); // 選択肢に統合済みのため非表示
+  saveProgress(); // 現在のシーンをlocalStorageに保存
+}
+
+function renderChoices(choices) {
+  const box = $("choices");
+  box.innerHTML = "";
+
+  // hideChoices()で付けた display:none!important を解除
+  box.style.removeProperty("display");
+
+  // 表示クラスとグリッドをリセット
+  box.classList.remove("show", "grid-2col", "grid-2col-plus1", "grid-2col-3row");
+
+  if (!Array.isArray(choices) || choices.length === 0) {
+    hideChoices();
+    return;
+  }
+
+  // グリッドレイアウト設定
+  if (choices.length === 4) box.classList.add("grid-2col");
+  else if (choices.length === 5) box.classList.add("grid-2col-plus1");
+  else if (choices.length === 6) box.classList.add("grid-2col-3row");
+
+  // 強制表示
+  box.classList.add("show");
+  box.style.display = choices.length >= 4 ? "grid" : "flex";
+
+  choices.forEach((label) => {
+    const isDisabled = label.startsWith("disabled:");
+    const rawLabel = isDisabled ? label.slice(9) : label;
+    const div = document.createElement("div");
+    div.className = "choice" + (isDisabled ? " disabled" : "");
+    if (isDisabled) {
+      div.innerHTML = `${rawLabel}<br><span class="choice-disabled-tag">（準備中）</span>`;
+    } else {
+      div.textContent = rawLabel;
+    }
+    if (!isDisabled) {
+      div.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (label === "外へ出る") {
+          pushBack(() => { currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=introScenes.length-1; hideAllSceneElements(); renderScene(); });
+          await transitionScene(() => { box.style.display="none"; showAreaSelect(); });
+        } else if (label === "村役場へ行く") {
+          pushBack(() => { currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=introScenes.length-1; hideAllSceneElements(); renderScene(); });
+          await transitionScene(() => { box.style.display="none"; showCentralFacility(); });
+        } else if (label === "村の様子を見に行く") {
+          pushBack(() => { currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=introScenes.length-1; hideAllSceneElements(); renderScene(); });
+          await transitionScene(() => { box.style.display="none"; showAreaSelect(); });
+        } else if (label === "施設の様子を見に行く") {
+          pushBack(() => { currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=introScenes.length-1; hideAllSceneElements(); renderScene(); });
+          await transitionScene(() => { box.style.display="none"; showFacilitySelect(); });
+        } else if (label === "村のパラメータ") {
+          pushBack(() => { $("centralFacilitySelect").classList.add("visible"); $("paramPanel").classList.remove("visible"); });
+          await transitionScene(() => { box.style.display="none"; showParams(); });
+        } else if (label === "村の読み方を確認する") {
+          pushBack(() => { $("centralFacilitySelect").classList.add("visible"); });
+          await transitionScene(() => { box.style.display="none"; showGuide(); });
+        } else if (label === "中央会議室へ行く") {
+          pushBack(() => { $("centralFacilitySelect").classList.add("visible"); $("btnHomeFixed").classList.add("visible"); });
+          await transitionScene(() => { box.style.display="none"; currentScreen='area'; currentSceneSet=councilScenes; sceneIndex=0; renderScene(); });
+        } else if (label === "エリア代表に会いに行く") {
+          pushBack(() => { currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=introScenes.length-1; hideAllSceneElements(); renderScene(); });
+          await transitionScene(() => { box.style.display="none"; showCharSelect(); });
+        } else if (["村の強みを活かす","村の課題を解決する","他の村との交易","今年の村の計画","今後の村の展望","村について深く知る"].includes(label)) {
+          pushBack(() => { currentScreen='area'; currentSceneSet=councilScenes; sceneIndex=1; renderScene(); });
+          transitionScene(() => { box.style.display="none"; currentSceneSet=councilScenes; sceneIndex=1; renderScene(); });
+        } else if (label === "スフィアの記録を見る") {
+          box.style.display="none"; openCollection();
+        } else if (label === "ロアンに話しかける") {
+          box.style.display="none"; openChat();
+        } else if (label === "今日の占い") {
+          pushBack(() => { closeFortunePanel(); currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=introScenes.length-1; hideAllSceneElements(); renderScene(); });
+          box.style.display="none"; showFortunePanel();
+        } else if (label === "別のエリアへ") {
+          await transitionScene(() => { box.style.display="none"; showAreaSelect(); });
+        } else if (label === "村長の家に戻る") {
+          transitionScene(() => { box.style.display="none"; currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=1; renderScene(); });
+        } else if (label === "もう一度見る") {
+          transitionScene(() => { sceneIndex=0; renderScene(); });
+        }
+      });
+    }
+    box.appendChild(div);
+  });
+}
+
+// ── 羊皮紙フェードカバー ──
+function setParchmentCoverOn(duration = 350) {
+  const cover = $("parchmentCover");
+  cover.style.transition = `opacity ${duration}ms ease`;
+  cover.style.visibility = "visible";
+  cover.style.opacity = "1";
+  return delay(duration);
+}
+
+function setParchmentCoverOff(duration = 450) {
+  const cover = $("parchmentCover");
+  cover.style.transition = `opacity ${duration}ms ease`;
+  cover.style.opacity = "0";
+  return new Promise(resolve => setTimeout(() => {
+    cover.style.visibility = "hidden";
+    resolve();
+  }, duration));
+}
+
+// ── 黒カバー制御 ──
+let _coverHideTimer = null;
+
+function setBlackCoverOn(instant = false) {
+  const cover = $("videoBlackCover");
+  if (_coverHideTimer !== null) { clearTimeout(_coverHideTimer); _coverHideTimer = null; }
+  cover.style.transition = instant ? "none" : "opacity 200ms ease";
+  cover.style.visibility = "visible";
+  cover.style.opacity = "1";
+  if (instant) cover.getBoundingClientRect();
+}
+
+function setBlackCoverOff(duration = 300) {
+  const cover = $("videoBlackCover");
+  cover.style.transition = `opacity ${duration}ms ease`;
+  cover.style.opacity = "0";
+  _coverHideTimer = window.setTimeout(() => {
+    _coverHideTimer = null;
+    if (parseFloat(cover.style.opacity) === 0) cover.style.visibility = "hidden";
+  }, duration + 60);
+  return delay(duration);
+}
+
+// ── 動画再生 ──
+function unlockVideos() {
+  if (videosUnlocked) return;
+  videosUnlocked = true;
+  // iOS Safari fix: srcを設定してからplay()を呼ばないとアンロックされない
+  [getVideo(0), getVideo(1)].forEach(v => {
+    v.muted = true;
+    v.src = introVideos[0];
+    v.load();
+    v.play().then(() => { v.pause(); }).catch(() => {});
+  });
+}
+
+function waitForVideoReady(video) {
+  return new Promise((resolve) => {
+    if (video.readyState >= 2) { resolve(); return; }
+    video.addEventListener("loadeddata", resolve, { once: true });
+    video.addEventListener("canplay", resolve, { once: true });
+    setTimeout(resolve, 1800);
+  });
+}
+
+async function prepareVideo(video, src) {
+  video.pause();
+  video.classList.remove("show");
+  video.src = src;
+  video.currentTime = 0;
+  video.load();
+  await waitForVideoReady(video);
+}
+
+function waitUntilVideoAlmostEnds(video, cutoffSeconds = 0.28) {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      cleanup();
+      resolve();
+    };
+    const checkNearEnd = () => {
+      if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+      if (video.duration - video.currentTime <= cutoffSeconds) finish();
+    };
+    const cleanup = () => {
+      clearTimeout(safetyTimer);
+      video.removeEventListener("timeupdate", checkNearEnd);
+      video.removeEventListener("ended", finish);
+      video.removeEventListener("error", finish);
+      video.removeEventListener("abort", finish);
+    };
+    video.addEventListener("timeupdate", checkNearEnd);
+    video.addEventListener("ended", finish, { once: true });
+    video.addEventListener("error", finish, { once: true });
+    video.addEventListener("abort", finish, { once: true });
+    const safetyTimer = setTimeout(finish, 120000);
+  });
+}
+
+async function playOneIntroVideo(src, orderIndex) {
+  const nextSlot = activeVideoSlot === 0 ? 1 : 0;
+  const currentVideo = getVideo(activeVideoSlot);
+  const nextVideo = getVideo(nextSlot);
+
+  setBlackCoverOn(true);
+  await delay(60);
+
+  if (orderIndex === 0) {
+    hideAllSceneElements();
+    $("home").classList.remove("visible");
+    await delay(2000);
+  }
+
+  await prepareVideo(nextVideo, src);
+  let playFailed = false;
+  const playPromise = nextVideo.play();
+  if (playPromise?.catch) await playPromise.catch(() => { playFailed = true; });
+  if (playFailed) { nextVideo.classList.remove("show"); return; }
+  nextVideo.muted = false; // 再生成功後に音声を有効化
+
+  const stabilize = orderIndex === 2 ? 620 : 200;
+  await delay(stabilize);
+
+  nextVideo.classList.add("show");
+  currentVideo.pause();
+  currentVideo.classList.remove("show");
+
+  await delay(orderIndex === 2 ? 420 : 80);
+  await setBlackCoverOff(280);
+
+  activeVideoSlot = nextSlot;
+  const endCutoff = orderIndex === 1 ? 0.45 : 0.30;
+  await waitUntilVideoAlmostEnds(nextVideo, endCutoff);
+
+  setBlackCoverOn(true);
+  await delay(80);
+  nextVideo.pause();
+}
+
+async function playIntroVideos() {
+  videoPlaying = true;
+  activeVideoSlot = 0;
+
+  for (let i = 0; i < introVideos.length; i++) {
+    await playOneIntroVideo(introVideos[i], i);
+  }
+
+  getVideo(0).classList.remove("show");
+  getVideo(1).classList.remove("show");
+  videoPlaying = false;
+
+  showHome();
+  await delay(180);
+  await setBlackCoverOff(450);
+}
+
+// ── エリアタイトルカード ──
+const AREA_INFO = {
+  north:   { en: "NORTH",   ja: "北エリア",   sub: "知恵と記録の地" },
+  east:    { en: "EAST",    ja: "東エリア",   sub: "成長と出発の地" },
+  south:   { en: "SOUTH",   ja: "南エリア",   sub: "表現と熱の地"   },
+  west:    { en: "WEST",    ja: "西エリア",   sub: "洗練と収穫の地" },
+  central: { en: "CENTRAL", ja: "中央エリア", sub: "統合と安定の地" },
+};
+
+function showAreaTitleCard(areaKey, onBeforeFadeOut) {
+  return new Promise((resolve) => {
+    const info = AREA_INFO[areaKey] || { en: "", ja: "", sub: "" };
+    $("areaTitleCardEn").textContent  = info.en;
+    $("areaTitleCardJa").textContent  = info.ja;
+    $("areaTitleCardSub").textContent = info.sub;
+
+    // ── アニメーション定数 ──
+    const CARD_FADE_IN  = 1248;  // カード全体フェードイン
+    const CARD_STATIC   = 1196;  // 静止時間
+    const CARD_FADE_OUT = 1872;  // カード全体フェードアウト
+
+    // テキスト要素のスライド＋フェード設定（delay は card fade-in 開始から）
+    const textItems = [
+      { id: "areaTitleCardRule",       delay: 140, dur: 780 },
+      { id: "areaTitleCardEn",         delay: 260, dur: 860 },
+      { id: "areaTitleCardJa",         delay: 400, dur: 1020 },
+      { id: "areaTitleCardSub",        delay: 560, dur: 820 },
+      { id: "areaTitleCardRuleBottom", delay: 560, dur: 820 },
+    ];
+
+    // ① 全テキスト要素をリセット
+    textItems.forEach(({ id }) => {
+      const el = $(id);
+      if (!el) return;
+      el.style.transition = "none";
+      el.style.opacity    = "0";
+      el.style.transform  = "translateX(22px)";
+    });
+
+    // ② カードを表示してフェードイン
+    const card = $("areaTitleCard");
+    card.classList.add("show");
+    card.getBoundingClientRect(); // reflow
+    card.style.transition = `opacity ${CARD_FADE_IN}ms ease`;
+    card.style.opacity    = "1";
+
+    // ③ テキスト要素を時差でスライド＋フェードイン
+    textItems.forEach(({ id, delay, dur }) => {
+      setTimeout(() => {
+        const el = $(id);
+        if (!el) return;
+        el.style.transition = `opacity ${dur}ms ease, transform ${dur}ms ease`;
+        el.style.opacity    = "1";
+        el.style.transform  = "translateX(0)";
+      }, delay);
+    });
+
+    // ④ 静止後：bg切り替え → フェードアウト
+    setTimeout(() => {
+      if (onBeforeFadeOut) onBeforeFadeOut(); // ← フェードアウト開始直前にbg変更
+      card.style.transition = `opacity ${CARD_FADE_OUT}ms ease`;
+      card.style.opacity    = "0";
+      setTimeout(() => {
+        card.classList.remove("show");
+        card.style.transition = "";
+        card.style.opacity    = "";
+        resolve();
+      }, CARD_FADE_OUT);
+    }, CARD_FADE_IN + CARD_STATIC);
+  });
+}
+
+// ── エリア選択パネルから選択肢画面へ戻る
+function goBackToChoices() {
+  transitionScene(() => {
+    $("areaSelect").classList.remove("visible");
+    $("facilitySelect").classList.remove("visible");
+    $("charSelect").classList.remove("visible");
+    currentScreen = 'intro';
+    currentSceneSet = introScenes;
+    sceneIndex = introScenes.length - 1;
+    renderScene();
+  });
+}
+
+function showGuide() {
+  currentScreen = 'guide';
+  currentSceneSet = guideScenes;
+  sceneIndex = 0;
+  renderScene();
+}
+
+// ── 村の案内板オーバーレイ ──
+function showGuideBoardOverlay() {
+  const title = $("guidePersonalTitle");
+  const items = $("guidePersonalItems");
+  const personal = CLIENT.guidePersonal;
+
+  if (personal?.clientName) {
+    title.textContent = personal.clientName + "様専用ガイド";
+  } else {
+    title.textContent = "専用ガイド";
+  }
+
+  items.innerHTML = "";
+  const defaultItems = [
+    { label: "親を見るとき",                 area: "北エリア" },
+    { label: "配偶者・パートナーを見るとき", area: "西エリア" },
+    { label: "子どもを見るとき",             area: "南エリア" },
+    { label: "支えになる場所",               area: "中央エリア" }
+  ];
+  const guideItems = personal?.items || defaultItems;
+  guideItems.forEach(({ label, area }) => {
+    const div = document.createElement("div");
+    div.className = "guide-personal-item";
+    div.innerHTML = `<span class="guide-personal-label">${label}</span><span class="guide-personal-arrow">→</span><span class="guide-personal-area">${area}</span>`;
+    items.appendChild(div);
+  });
+
+  const overlay = $("guideBoardOverlay");
+  overlay.classList.add("show");
+  overlay.scrollTop = 0;
+}
+
+function hideGuideBoardOverlay() {
+  $("guideBoardOverlay").classList.remove("show");
+}
+
+$("guideBoardCloseBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  hideGuideBoardOverlay();
+  // 戻るスタックに従って前の画面に戻る
+  goBack();
+});
+
+// ── FVについて テキストページ ──
+const ABOUT_PAGES = {
+  intro: {
+    title: "はじめに",
+    paragraphs: [
+      "この度は、フォーチュン・ヴィレッジ鑑定をお受けいただき、誠にありがとうございます。",
+      "私は長年、複雑で奥深い干支占いの世界を、ただ言葉としてのみ伝えるのではなく、目で見て、感じて、歩いていける世界として表現したいと考えてきました。",
+      "干支や陰陽五行の世界は、とても美しく神秘的でありながら、その構造は大変複雑です。言葉だけで説明しようとすると、どうしても難しく感じられたり、自分の人生と結びつけて理解することが困難な場合が多々あります。",
+      "けれども時代の流れが変わり、表現の方法も大きく広がった今、ようやく私自身が思い描いていた占いの世界の入口に立つことができるようになりました。",
+      "こうして生まれたのが、あなたの宿命をひとつの村として描き出す、フォーチュン・ヴィレッジです。",
+      "これまでの占いでは難しかった自分の宿命の世界の中を歩き、眺め、探検すること。フォーチュン・ヴィレッジではそれが可能になったのです。",
+      "あなたの村には、生まれ持った性質、人生の中で大切にしていくテーマ、内側に眠る力、そしてこれから育てていける可能性が、地形や建物、住民たちの姿となって息づき、そこから物語が紡ぎ出されていきます。",
+      "宿命に宿る陰陽五行説をはじめとした干支の体系は、古代の東洋の人々が数千年の時をかけて見出してきた、運命を探求するための叡智です。",
+      "それは、未来を一方的に決めつけるものなのではなく、今を生きる私たちが、自分自身を知り、人生の流れを見つめ、よりよく歩んでいくために受け継がれてきた、宝の地図のようなものです。",
+      "この鑑定書は、その地図をもとに、あなたの運命の村を訪ねるための一つの羅針盤です。あなたの宿命から紡ぎ出された、あなただけの村の物語が、今始まります。"
+    ]
+  },
+  what: {
+    title: "フォーチュン・ヴィレッジとは",
+    paragraphs: [
+      "フォーチュン・ヴィレッジは、東洋思想（陰陽五行思想）を土台に、生年月日から導き出される宿命を「村」というかたちに翻訳し、その人だけの運命の構造を見つめていくための、新しい占いの体験です。",
+      "これまでの占いでは、言葉や記号として示されていた宿命のしくみを、フォーチュン・ヴィレッジでは、地形や風景、村人たちの営み、出来事や物語として表していきます。山や海、畑や森といった景色には意味があり、そこに暮らす住民たちにも、それぞれ宿命から生まれた役割があります。",
+      "そうした村の全体像を見つめていくことで、ひとつひとつの要素がどのように関わり合い、自分の人生にどのような流れを生んでいるのかが、より立体的に見えてくるのです。",
+      "その根底には、陰陽五行説に代表される東洋の思想があります。すべてを善悪で切り分けるのではなく、異なる性質が互いに影響し合いながら、全体のバランスを形づくっていくという見方です。",
+      "フォーチュン・ヴィレッジは、こうした複雑な関係性を、目に見える村の景色として描き出すことで、これまで言葉だけでは捉えにくかった宿命の機微を、より自然に理解できるかたちへと変えていきます。",
+      "フォーチュン・ヴィレッジが見せてくれるのは、単なる結果ではありません。あなたの宿命がどのような力を持ち、どのような力がそこに働き、どのような流れの中で人生が形づくられていくのかを、村という風景の中で静かに見つめていくための、新しい入口なのです。",
+      "では、実際にフォーチュン・ヴィレッジの村の物語の中へ入っていきましょう。そこに広がる景色と、そこに生きる村人たちの姿を通して、あなたの宿命が織りなす世界をたどっていきます。"
+    ]
+  },
+  industry: {
+    title: "村の産業",
+    paragraphs: [
+      "フォーチュン・ヴィレッジでは、村の地形や資源に応じて、それぞれの土地にふさわしい産業が育っています。海に開かれた村であれば、漁や交易、水の恵みを生かした産業が発展し、広がりのある営みが生まれます。山に囲まれた村であれば、採石や鉱業、山の地形を生かした仕事が村の暮らしを支えていきます。畑や農地が広がる村では、耕し、育て、蓄える営みが、村の中心的な力となるでしょう。",
+      "村の産業は、単に「どんな仕事があるか」を示しているだけではありません。その村の人々が、何に力を注ぎ、何を守り、何を大切にしながら日々を営んでいるのかを表しています。にぎわいと力が集まる場所、それが産業です。つまり産業とは、その村にとって自然と向き合い続けることになるテーマそのものでもあるのです。",
+      "だからこそ、このページで大切なのは、村で育てている産業を表面的に眺めるのではなく、その営みがあなたの人生においてどのような意味を持つのかを読み解いていくことです。そこには、自然と関心が向きやすいこと、力を注ぎやすいこと、そして見過ごさずに向き合うべきことが映し出されています。",
+      "たとえば海に囲まれた村があったとします。その村にとって海は、暮らしを支える大きな産業であり、村の人々が日々向き合う重要な存在です。漁や交易、水の恵みといった豊かさをもたらす面がある一方で、天候の変化や波の荒れ方には常に注意を払わなければなりません。このように、村の産業や資源は、恩恵だけでなく、その村が日々引き寄せる課題や緊張感までも映し出しています。",
+      "そしてフォーチュン・ヴィレッジでは、こうした村の要素が、人生における特定の人物やテーマを象徴することがあります。もしこの海が「配偶者」を表しているなら、その人には、人生に大きな恵みや広がりをもたらす存在であると同時に、深く注意を払いながら関わっていくべき重要な相手である、という読み方ができます。",
+      "大切なのは、海が良いか悪いかを決めることではありません。村人たちがその海とどう向き合い、どう暮らしを整えているかを見ることで、その人にとってより自然な関わり方のヒントが見えてくるのです。",
+      "フォーチュン・ヴィレッジの産業は、あなたの人生において何が土台となり、何が人や出来事を動かし、何が日々の空気を形づくっていくのかを教えてくれます。それは、ただ仕事の種類を並べたものではありません。あなたの人生の中で、どのような時に力を発揮しやすいのかを映し出す、大切な風景です。",
+      "このあとのページでは、村で育まれている産業を通して、あなたの人生において関心が集まりやすいもの、力を注ぎやすいもの、そして丁寧に向き合っていくことで活きてくるテーマを読み解いていきます。村の営みを眺めることは、あなた自身の人生の流れを、少し離れた場所から見つめ直すことでもあるのです。"
+    ]
+  },
+  chars: {
+    title: "キャラクター紹介",
+    paragraphs: [
+      "あなたの宿命から生まれた村は、どのような村でしたか。山に囲まれ風光明媚な景色が広がる村。海が広がるリゾート地のような村。あるいは、田園風景が広がるのどかな村だったかもしれません。いずれにしても、そこに村が存在しているということは、そこで暮らしを営む村人たちもいるということです。それは、フォーチュン・ヴィレッジでも同じです。",
+      "フォーチュン・ヴィレッジでは、あなたの宿命から生まれた村人たちが、それぞれの地域（エリア）で、与えられた役割や仕事を担いながら、日々の暮らしを営んでいます。彼らはただ村に住んでいるだけの存在ではありません。あなたの宿命に宿る星から生まれた住民として、この村の中で生きています。",
+      "星という言葉だけでは、少し遠く感じられることがあるかもしれません。けれどフォーチュン・ヴィレッジでは、その星たちが魅力的なキャラクターとして姿を持ち、それぞれ異なる個性や価値観、考え方の傾向をもった存在として現れます。何を大切にするのか、どのように物事を受け取り、どのように人と関わり、どのように力を発揮していくのか。そうした星の性質は、村人たちの姿として自然に表れてくるのです。",
+      "キャラクターたちは、星をどのように活かしていけるのかを示してくれる存在でもあります。知恵をどのように発揮するのか。名誉や責任をどう受け止めるのか。何を表現し、どのように魅力を育てていくのか。村人たちは、それぞれの営みを通して、星の力の使い方を静かに語ってくれます。その姿を見つめていくことは、あなた自身の中にある星の性質を知り、より自然なかたちで活かしていくための手がかりにもなるでしょう。",
+      "これからご紹介するキャラクターたちは、あなたの宿命から生まれた、この村の大切な住民たちです。彼らの個性や役割に触れていくことは、あなた自身の宿命の輪郭に触れていくことでもあるのです。フォーチュン・ヴィレッジの魅力的なキャラクターたちとともに、この村の姿をたどっていきましょう。"
+    ]
+  }
+};
+
+function showAboutTextPage(key) {
+  const page = ABOUT_PAGES[key];
+  if (!page) return;
+  $("aboutTextTitle").textContent = page.title;
+  const body = $("aboutTextBody");
+  body.innerHTML = page.paragraphs.map(p => `<p>${p}</p>`).join("");
+  const overlay = $("aboutTextOverlay");
+  overlay.classList.add("show");
+  overlay.scrollTop = 0;
+}
+
+function hideAboutTextPage() {
+  $("aboutTextOverlay").classList.remove("show");
+}
+
+$("aboutTextCloseBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  hideAboutTextPage();
+});
+$("aboutTextOverlay").addEventListener("click", (e) => e.stopPropagation());
+const FORM_ACTION = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSfHQdpIdKQriBg52ZESwP0Q8ZdazM-nOH8e--dIXwS-C6ofIQ/formResponse';
+const ENTRY_FEEDBACK = 'entry.1102648532';
+const ENTRY_CLIENT   = 'entry.327917966';
+
+function showDevBanner() {
+  $('devBanner').style.display = 'block';
+}
+function hideDevBanner() {
+  $('devBanner').style.display = 'none';
+}
+
+$('devBanner').addEventListener('click', (e) => {
+  e.stopPropagation();
+  $('feedbackText').value = '';
+  $('feedbackInner').innerHTML = `
+    <textarea id="feedbackText" class="feedback-textarea" placeholder="感想・気になった点・改善要望など、なんでもどうぞ"></textarea>
+    <div class="feedback-buttons">
+      <button class="feedback-btn feedback-btn-cancel" id="feedbackCancel">キャンセル</button>
+      <button class="feedback-btn feedback-btn-send" id="feedbackSend">送信する</button>
+    </div>`;
+  attachFeedbackEvents();
+  $('feedbackModal').classList.add('show');
+});
+
+function attachFeedbackEvents() {
+  $('feedbackCancel').addEventListener('click', (e) => {
+    e.stopPropagation();
+    $('feedbackModal').classList.remove('show');
+  });
+  $('feedbackSend').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const text = $('feedbackText').value.trim();
+    if (!text) return;
+    const data = new FormData();
+    data.append(ENTRY_FEEDBACK, text);
+    data.append(ENTRY_CLIENT, clientId);
+    fetch(FORM_ACTION, { method: 'POST', mode: 'no-cors', body: data });
+    $('feedbackInner').innerHTML = `
+      <div class="feedback-sent">
+        ありがとうございます。<br>
+        ご意見を受け取りました。<br><br>
+        <span style="font-size:11px;opacity:0.6">タップして閉じる</span>
+      </div>`;
+    setTimeout(() => $('feedbackModal').classList.remove('show'), 2500);
+  });
+  $('feedbackModal').addEventListener('click', (e) => {
+    if (e.target === $('feedbackModal')) $('feedbackModal').classList.remove('show');
+  });
+}
+
+// ── タップ・クリック ──
+let isTransitioning = false;
+
+function next() {
+  if (videoPlaying) return;
+  if (isTransitioning) return;
+  // ナビメニューが開いていたら閉じる
+  if ($("navMenu").classList.contains("visible")) {
+    $("navMenu").classList.remove("visible");
+    return;
+  }
+  if (currentScreen === 'area_select' || currentScreen === 'char_select' || currentScreen === 'facility_select') {
+    goBackToChoices();
+    return;
+  }
+  if (currentScreen === 'params') {
+    goBackToChoices();
+    return;
+  }
+
+  if (currentScreen === 'title') {
+    unlockVideos();
+    showHome();
+    return;
+  }
+
+  if (typing) {
+    clearInterval(typeTimer);
+    typing = false;
+    $("text").innerHTML = escapeHtml(fullText);
+    return;
+  }
+
+  const s = currentSceneSet[sceneIndex];
+  if (s.type === "titleCard") return; // カード表示中はタップ無効
+  if (s.choices) return;
+
+  if (sceneIndex < currentSceneSet.length - 1) {
+    const curBg    = currentSceneSet[sceneIndex].bg;
+    const nextBg   = currentSceneSet[sceneIndex + 1]?.bg;
+    const bgChanges = curBg !== nextBg;
+
+    if (currentScreen === 'area' && bgChanges) {
+      isTransitioning = true;
+      bgChangeFade(() => { sceneIndex++; renderScene(); })
+        .then(() => { isTransitioning = false; });
+    } else {
+      sceneIndex++;
+      renderScene();
+    }
+  } else {
+    // イントロ最終シーン → エリア選択へ
+    if (currentScreen === 'intro') {
+      showAreaSelect();
+    }
+  }
+}
+
+// ── ボタンイベント ──
+$("btnAbout").addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (videoPlaying) return;
+  unlockVideos(); // iOS Safari のため事前解除
+  // サブメニューパネルを表示
+  document.getElementById('app').classList.add('panel-open');
+  hideChoices();
+  $("aboutPanel").classList.add("visible");
+  $("btnHomeFixed").classList.add("visible");
+});
+
+$("aboutPanel").addEventListener("click", (e) => e.stopPropagation());
+
+$("btnAboutGuideBoard").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("aboutPanel").classList.remove("visible");
+  document.getElementById('app').classList.remove('panel-open');
+  showGuideBoardOverlay();
+});
+
+$("btnAboutVideo").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("aboutPanel").classList.remove("visible");
+  document.getElementById('app').classList.remove('panel-open');
+  hideHome().then(() => playIntroVideos());
+});
+
+["btnAboutIntro", "btnAboutWhat", "btnAboutIndustry", "btnAboutChars"].forEach((id, i) => {
+  const keys = ["intro", "what", "industry", "chars"];
+  $( id).addEventListener("click", (e) => {
+    e.stopPropagation();
+    $("aboutPanel").classList.remove("visible");
+    showAboutTextPage(keys[i]);
+  });
+});
+
+$("btnVillage").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  const layer = $("sceneLayer");
+  layer.style.transition = "none";
+  layer.style.opacity = "0";
+  await hideHome();
+  currentScreen = 'intro';
+  currentSceneSet = introScenes;
+  sceneIndex = 0;
+  renderScene();
+  await delay(30);
+  layer.style.transition = "opacity 600ms ease";
+  layer.style.opacity = "1";
+});
+
+// エリアサブ選択を表示
+let selectedAreaKey = null;
+const areaSceneMap = {
+  north: northAreaScenes
+  // east, south, west, central → 後日追加
+};
+
+function showAreaSub(areaKey, areaLabel) {
+  document.getElementById('app').classList.add('panel-open');
+  selectedAreaKey = areaKey;
+  $("areaSubTitle").textContent = areaLabel;
+  $("areaSelect").classList.remove("visible");
+  $("areaSubSelect").classList.add("visible");
+  // 北以外は準備中
+  const hasScene = !!areaSceneMap[areaKey];
+  $("btnAreaScene").classList.toggle("disabled", !hasScene);
+  if (!hasScene) {
+    $("btnAreaScene").innerHTML = "エリアの様子を見に行く<span class='char-tag'>準備中</span>";
+  } else {
+    $("btnAreaScene").textContent = "エリアの様子を見に行く";
+  }
+}
+
+function showCentralFacility() {
+  document.getElementById('app').classList.add('panel-open');
+  hideChoices();
+  $("centralFacilitySelect").classList.add("visible");
+  $("btnHomeFixed").classList.add("visible");
+}
+
+$("btnNorth").addEventListener("click", (e) => {
+  e.stopPropagation();
+  pushBack(() => { $("areaSubSelect").classList.remove("visible"); $("areaSelect").classList.add("visible"); });
+  showAreaSub("north", "北エリア");
+});
+
+$("btnAreaSubBack").addEventListener("click", (e) => {
+  e.stopPropagation();
+  // 戻るスタックから1つ取り出す（areaSelectへ）
+  if (navStack.length > 0) { goBack(); }
+  else { $("areaSubSelect").classList.remove("visible"); $("areaSelect").classList.add("visible"); }
+});
+
+$("btnAreaScene").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  if (!selectedAreaKey || !areaSceneMap[selectedAreaKey]) return;
+  const _key = selectedAreaKey;
+  const _label = $("areaSubTitle").textContent;
+  pushBack(() => { showAreaSub(_key, _label); });
+  transitionScene(() => {
+    $("areaSubSelect").classList.remove("visible");
+    currentScreen = 'area';
+    currentSceneSet = areaSceneMap[_key];
+    sceneIndex = 0;
+    renderScene();
+  });
+});
+
+$("areaSubSelect").addEventListener("click", (e) => e.stopPropagation());
+$("centralFacilitySelect").addEventListener("click", (e) => e.stopPropagation());
+
+$("btnCentralCouncil").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  pushBack(() => { hideChoices(); document.getElementById('app').classList.add('panel-open'); $("centralFacilitySelect").classList.add("visible"); $("btnHomeFixed").classList.add("visible"); });
+  transitionScene(() => {
+    $("centralFacilitySelect").classList.remove("visible");
+    currentScreen = 'area';
+    currentSceneSet = councilScenes;
+    sceneIndex = 0;
+    renderScene();
+  });
+});
+
+$("btnCentralGuide").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  pushBack(() => { hideChoices(); document.getElementById('app').classList.add('panel-open'); $("centralFacilitySelect").classList.add("visible"); $("btnHomeFixed").classList.add("visible"); });
+  transitionScene(() => {
+    $("centralFacilitySelect").classList.remove("visible");
+    showGuide();
+  });
+});
+
+$("btnCentralParams").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  pushBack(() => { hideChoices(); document.getElementById('app').classList.add('panel-open'); $("centralFacilitySelect").classList.add("visible"); $("paramPanel").classList.remove("visible"); $("btnHomeFixed").classList.add("visible"); });
+  transitionScene(() => {
+    $("centralFacilitySelect").classList.remove("visible");
+    showParams();
+  });
+});
+
+$("btnFortune").addEventListener("click", (e) => {
+  e.stopPropagation();
+  showFortunePanel();
+});
+$("fortunePanel").addEventListener("click", (e) => e.stopPropagation());
+$("fortuneClose").addEventListener("click", (e) => {
+  e.stopPropagation();
+  closeFortunePanel();
+});
+
+// ── ナビゲーションスタック（戻る機能） ──
+const navStack = [];
+
+function pushBack(restoreFn) {
+  navStack.push(restoreFn);
+  updateNavBtn();
+}
+
+function goBack() {
+  if (navStack.length === 0) return;
+  const restore = navStack.pop();
+  $("navMenu").classList.remove("visible");
+  document.getElementById('app').classList.remove('panel-open');
+  transitionScene(() => restore());
+  updateNavBtn();
+}
+
+function clearNavStack() {
+  navStack.length = 0;
+  updateNavBtn();
+}
+
+function updateNavBtn() {
+  const btn = $("btnHomeFixed");
+  if (navStack.length > 0) {
+    btn.textContent = "← 戻る";
+    btn.style.letterSpacing = "0.04em";
+  } else {
+    btn.textContent = "⌂ ホーム";
+    btn.style.letterSpacing = "0.08em";
+  }
+}
+
+// ホームに戻るときはスタックをリセット
+$("btnHomeFixed").addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (navStack.length > 0) {
+    goBack();
+  } else {
+    $("navMenu").classList.toggle("visible");
+  }
+});
+
+$("btnGoHome").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  $("navMenu").classList.remove("visible");
+  clearNavStack();
+  transitionScene(() => showHome());
+});
+
+$("btnGoHouse").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  $("navMenu").classList.remove("visible");
+  clearNavStack();
+  transitionScene(() => {
+    currentScreen = 'intro';
+    currentSceneSet = introScenes;
+    sceneIndex = 0;
+    hideAllSceneElements();
+    renderScene();
+  });
+});
+
+// パネル内タップは外に伝播させない
+["areaSelect", "facilitySelect", "charSelect", "paramPanel", "aboutPanel"].forEach(id => {
+  $(id).addEventListener("click", (e) => e.stopPropagation());
+});
+
+$("app").addEventListener("click", next);
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); next(); }
+});
+
+// ── 初期表示 ──
+renderTitle();
+
+// ── チャット機能 ──
+const ROAN_SYSTEM = `あなたはフォーチュン・ヴィレッジ（Fortune Village）の専任案内人、ロアンです。
+
+名前：ロアン。役割：Fortune Villageの唯一の案内人。訪問者を村の入り口でもてなし、FVの世界へ誘う。
+日干：甲（きのえ）。大樹のような静けさと包容力を持つ。
+口調：穏やかで落ち着いた上品な語り口。「〜ですね」「〜でしょう」「〜かもしれません」を自然に使う。余分な言葉は省く。
+性格：知的で包容力があり、訪問者を温かく迎える。謎めいた静けさも持つ。決して急がない。
+
+【Fortune Villageについて】
+依頼人の命式（生年月日から導かれる六文字の干支）から生成された唯一の村。地形・建材・住民の性格・物語、すべてがその人の命式から生まれる。
+五方位のエリア：北（山・石造り・知恵・記録）、東（森・木造り・成長・出発）、南（光・表現・熱）、西（金属・洗練・収穫）、中央（土・安定・統合）。
+
+【応答ルール】
+日本語のみ。2〜4文程度で簡潔に。FVの世界観を大切に詩的・物語的な表現を心がける。
+命式の技術的計算・解釈はしない（「鑑定で詳しくわかります」と誘導）。落ち着いた品格を保つ。`;
+
+let chatMessages = [];
+let chatTyping = false;
+let chatTypeTimer = null;
+
+function openChat() {
+  $("choices").classList.remove("show"); $("choices").style.display = "none";
+  $("chatOverlay").classList.add("visible");
+}
+
+function closeChat() {
+  $("chatOverlay").classList.remove("visible");
+}
+
+function chatTypeText(text) {
+  chatTyping = true;
+  const display = $("chatDisplay");
+  display.textContent = "";
+  let i = 0;
+  clearInterval(chatTypeTimer);
+  chatTypeTimer = setInterval(() => {
+    i++;
+    display.textContent = text.slice(0, i);
+    if (i >= text.length) { clearInterval(chatTypeTimer); chatTyping = false; }
+  }, 28);
+}
+
+function appendChatBubble(role, text) {
+  const history = $("chatHistory");
+  const wrap = document.createElement("div");
+  wrap.className = role === "user" ? "chat-bubble-user" : "chat-bubble-roan";
+  const label = document.createElement("span");
+  label.className = "chat-bubble-label";
+  label.textContent = role === "user" ? "あなた" : "ロアン";
+  const body = document.createElement("div");
+  body.className = "chat-bubble-text";
+  body.textContent = text;
+  wrap.appendChild(label);
+  wrap.appendChild(body);
+  history.appendChild(wrap);
+}
+
+async function chatSend() {
+  const input = $("chatInput");
+  const trimmed = input.value.trim();
+  if (!trimmed || chatTyping) return;
+  input.value = "";
+  $("chatSendBtn").disabled = true;
+
+  const display = $("chatDisplay");
+  const loadings = ["・", "・・", "・・・"];
+  if (chatMessages.length > 0) {
+    const last = chatMessages[chatMessages.length - 1];
+    if (last.role === "assistant" && !loadings.includes(display.textContent.trim())) {
+      appendChatBubble("assistant", last.content);
+    }
+  }
+  chatMessages.push({ role: "user", content: trimmed });
+  appendChatBubble("user", trimmed);
+
+  // チャット機能は準備中
+  chatTypeText("ロアンとの会話機能は、現在準備中です。\n正式公開をお待ちください。");
+  $("chatSendBtn").disabled = false;
+}
+
+$("chatCloseBtn").addEventListener("click", (e) => { e.stopPropagation(); closeChat(); });
+$("chatSendBtn").addEventListener("click", (e) => { e.stopPropagation(); chatSend(); });
+$("chatInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); chatSend(); }
+  e.stopPropagation();
+});
+$("chatInput").addEventListener("click", (e) => e.stopPropagation());
+$("chatOverlay").addEventListener("click", (e) => e.stopPropagation());
+// ── 続きからボタン ──
+$("btnContinue").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  const data = loadProgress();
+  if (!data) return;
+  const set = sceneSetMap[data.sceneSetName];
+  if (!set) return;
+  await hideHome();
+  currentScreen = data.screen;
+  currentSceneSet = set;
+  sceneIndex = data.sceneIndex;
+  hideAllSceneElements();
+  renderScene();
+});
+
+// ── スフィアの記録（統合コレクション） ──
+$("collectionCloseBtn").addEventListener("click", (e) => { e.stopPropagation(); closeCollection(); });
+$("collectionOverlay").addEventListener("click", (e) => e.stopPropagation());
+$("tabSpheres").addEventListener("click", (e) => { e.stopPropagation(); switchCollectionTab("spheres"); });
+$("tabShizuku").addEventListener("click",  (e) => { e.stopPropagation(); switchCollectionTab("shizuku"); });
+$("sphereAcquireFlash").addEventListener("click", (e) => e.stopPropagation());
+$("shizukuAcquireFlash").addEventListener("click", (e) => e.stopPropagation());
+
+showDevBanner();
+</script>
+</body>
+</html>
