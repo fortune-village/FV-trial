@@ -1252,6 +1252,43 @@ body {
   padding: 0 2px;
 }
 
+/* ─────────────────────────────
+   ロアン紹介：画面いっぱい巨大表示版
+───────────────────────────── */
+.char-card-hero {
+  height: min(76svh, 700px);
+  min-height: 620px;
+  margin: -8px -34px 34px;
+  overflow: hidden;
+}
+.char-card-image-wrap {
+  position: absolute;
+  left: 50%;
+  top: -42px;
+  z-index: 2;
+  width: min(210vw, 860px);
+  height: calc(100% + 120px);
+  transform: translateX(-50%);
+  overflow: visible;
+}
+.char-card-image {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  display: block;
+  transform: scale(1.18);
+  transform-origin: top center;
+  filter:
+    drop-shadow(0 26px 28px rgba(55, 30, 24, 0.30))
+    drop-shadow(0 7px 6px rgba(55, 30, 24, 0.18));
+}
+.char-card-quote {
+  left: 18px;
+  right: 18px;
+  bottom: 12px;
+  z-index: 8;
+}
+
 @media (max-height: 720px) {
   .char-card-inner { padding-top: 18px; }
   .char-card-header { padding-top: 10px; padding-bottom: 8px; }
@@ -1929,7 +1966,7 @@ body {
       <button class="home-btn" id="btnVillage">村長の家へ</button>
       <button class="home-btn disabled">準備中</button>
     </div>
-    <div class="home-version">α ver. 0.2.15</div>
+    <div class="home-version">α ver. 0.2.16</div>
   </div>
 
   <!-- FVについて テキストページオーバーレイ -->
