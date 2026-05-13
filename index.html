@@ -1640,7 +1640,7 @@ body {
             </div>
           </div>
           <div class="char-card-image-wrap">
-            <img src="common/roan_high.png" alt="ロアン" class="char-card-image" />
+            <img id="charCardImage" src="" alt="ロアン" class="char-card-image" />
           </div>
         </div>
         <div class="char-card-quote">
@@ -2888,6 +2888,7 @@ function hideCharSelect() {
 // ── キャラクターカード ──
 function showCharCard() {
   $("charSelect").classList.remove("visible");
+  $("charCardImage").src = clientBase + "char_central.png";
   $("charCard").classList.add("show");
   $("btnHomeFixed").classList.add("visible");
 }
