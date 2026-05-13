@@ -1187,6 +1187,71 @@ body {
   text-align: justify;
   font-family: "Hiragino Mincho ProN","Yu Mincho","YuMincho",Georgia,serif;
 }
+/* ─────────────────────────────
+   キャラカード：ロアン主役・大画面版
+───────────────────────────── */
+.char-card-inner {
+  padding: 18px 12px 76px;
+}
+.char-card-header {
+  padding: 10px 42px 2px;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 10;
+}
+.char-card-compass { margin-bottom: 4px; }
+.char-card-name { font-size: 30px; line-height: 1.2; }
+.char-card-role { margin-top: 8px; }
+.char-card-hero {
+  position: relative;
+  z-index: 2;
+  height: min(70svh, 640px);
+  min-height: 540px;
+  margin: -2px -22px 30px;
+  overflow: hidden;
+  display: block;
+}
+.char-card-inner::after,
+.char-card-halo { display: none !important; }
+.char-card-image-wrap {
+  position: absolute;
+  left: 50%;
+  top: -18px;
+  z-index: 2;
+  width: min(150vw, 620px);
+  height: calc(100% + 40px);
+  margin: 0;
+  transform: translateX(-50%);
+  overflow: visible;
+}
+.char-card-image {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  display: block;
+  transform: translateY(0) scale(1.02);
+  transform-origin: top center;
+  filter:
+    drop-shadow(0 24px 26px rgba(55, 30, 24, 0.30))
+    drop-shadow(0 6px 5px rgba(55, 30, 24, 0.18));
+}
+.char-card-quote {
+  left: 22px;
+  right: 22px;
+  bottom: 18px;
+  z-index: 6;
+  padding: 14px 16px;
+  border-radius: 17px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.88), rgba(240, 220, 184, 0.82));
+}
+.char-card-text {
+  position: relative;
+  z-index: 4;
+  margin-top: 0;
+  padding: 0 2px;
+}
+
 @media (max-height: 720px) {
   .char-card-inner { padding-top: 18px; }
   .char-card-header { padding-top: 10px; padding-bottom: 8px; }
@@ -1864,7 +1929,7 @@ body {
       <button class="home-btn" id="btnVillage">村長の家へ</button>
       <button class="home-btn disabled">準備中</button>
     </div>
-    <div class="home-version">α ver. 0.2.14</div>
+    <div class="home-version">α ver. 0.2.15</div>
   </div>
 
   <!-- FVについて テキストページオーバーレイ -->
