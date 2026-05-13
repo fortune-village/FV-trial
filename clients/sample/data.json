@@ -3,6 +3,7 @@
   "char": {
     "name": "ロアン",
     "central": "char_central.png",
+    "card": "char_central_card.png",
     "bustX": 8,
     "bustY": 30
   },
