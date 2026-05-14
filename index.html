@@ -1784,12 +1784,12 @@ body {
   <!-- 中央施設パネル -->
   <div id="centralFacilitySelect" class="area-select-panel">
     <div class="panel-header">
-      <span class="panel-title">中央の施設</span>
+      <span class="panel-title">中央村役場</span>
     </div>
     <div class="char-list">
       <button class="char-btn" id="btnCentralCouncil">中央会議室へ行く</button>
       <button class="char-btn" id="btnCentralGuide">村の読み方を確認する</button>
-      <button class="char-btn" id="btnCentralParams">村のパラメータ</button>
+      <button class="char-btn" id="btnCentralParams">村のスフィアエネルギー</button>
       <button class="char-btn" id="btnCharList">エリア代表一覧</button>
     </div>
   </div>
@@ -1989,10 +1989,10 @@ body {
       <button class="home-btn" id="btnVillage">村長の家へ</button>
       <div id="homeUpdateInfo" class="home-update-info">
         <div class="home-update-label">更新情報</div>
-        <div class="home-update-text">中央エリア代表・ロアンのキャラクター紹介ページが追加されました。「エリア代表一覧」からご確認いただけます。</div>
+        <div class="home-update-text">中央の施設を「中央村役場」に、村のパラメータを「村のスフィアエネルギー」に改称しました</div>
       </div>
     </div>
-    <div class="home-version">α ver. 0.2.46</div>
+    <div class="home-version">α ver. 0.2.47</div>
   </div>
 
   <!-- FVについて テキストページオーバーレイ -->
@@ -3513,7 +3513,7 @@ function renderChoices(choices) {
         } else if (label === "施設の様子を見に行く") {
           pushBack(() => { currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=introScenes.length-1; hideAllSceneElements(); renderScene(); });
           await transitionScene(() => { box.style.display="none"; showFacilitySelect(); });
-        } else if (label === "村のパラメータ") {
+        } else if (label === "村のスフィアエネルギー") {
           pushBack(() => { $("centralFacilitySelect").classList.add("visible"); $("paramPanel").classList.remove("visible"); });
           await transitionScene(() => { box.style.display="none"; showParams(); });
         } else if (label === "村の読み方を確認する") {
