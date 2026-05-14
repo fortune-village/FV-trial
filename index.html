@@ -237,6 +237,20 @@
   gap: 10px;
   padding-top: 16px;
 }
+.param-date-display {
+  min-height: 36px;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  color: rgba(151,109,54,0.88);
+  font-family: "Palatino Linotype", Palatino, "Hiragino Mincho ProN", "Yu Mincho", serif;
+  opacity: 0;
+  transition: opacity 500ms ease;
+  pointer-events: none;
+}
+.param-date-display.show {
+  opacity: 1;
+}
 /* 今月・今日モード時、宿命線を控えめに */
 #paramPanel[data-param-mode="month"] #radarData,
 #paramPanel[data-param-mode="day"] #radarData {
@@ -1712,6 +1726,8 @@ body {
       <span class="panel-title">村のスフィアエネルギー</span>
     </div>
     <div class="param-body">
+      <!-- 日付表示（今月・今日モード時） -->
+      <div class="param-date-display" id="paramDateDisplay"></div>
       <!-- モード切替ボタン -->
       <div class="param-mode-btns">
         <button class="param-mode-btn active" data-mode="base" onclick="setParamMode('base')">宿命</button>
@@ -1966,10 +1982,10 @@ body {
       <button class="home-btn" id="btnVillage">村長の家へ</button>
       <div id="homeUpdateInfo" class="home-update-info">
         <div class="home-update-label">更新情報</div>
-        <div class="home-update-text">α ver.0.2.39｜村のスフィアエネルギーに、今月と今日の巡りが重なるようになりました</div>
+        <div class="home-update-text">村のスフィアエネルギーに、今月と今日の巡りが重なるようになりました</div>
       </div>
     </div>
-    <div class="home-version">α ver. 0.2.40</div>
+    <div class="home-version">α ver. 0.2.43</div>
   </div>
 
   <!-- FVについて テキストページオーバーレイ -->
@@ -2415,13 +2431,23 @@ function setParamMode(mode) {
   document.querySelectorAll('.param-mode-btn').forEach(btn =>
     btn.classList.toggle('active', btn.dataset.mode === mode)
   );
+  const dateEl = document.getElementById('paramDateDisplay');
+  const today = new Date();
   if (mode === 'base') {
+    dateEl.textContent = '';
+    dateEl.classList.remove('show');
     setParamCaption('村のエネルギー', '村に流れる固有のスフィアエネルギーを表示します。');
     animateRadarOverlay(null);
     animateMeterValues(paramData.map(p => p.value));
     return;
   }
-  const today = new Date();
+  if (mode === 'month') {
+    dateEl.textContent = `${today.getFullYear()}年${today.getMonth()+1}月`;
+    dateEl.classList.add('show');
+  } else {
+    dateEl.textContent = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+    dateEl.classList.add('show');
+  }
   const { kan, shi } = mode === 'day' ? getDayKanshi(today) : getMonthKanshi(today);
   const meishiki = CLIENT.meishiki;
   if (!meishiki) {
