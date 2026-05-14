@@ -173,7 +173,9 @@
 .radar-svg {
   width: 180px;
   height: 180px;
+  overflow: visible;
 }
+.radar-grid-100 { fill: none; stroke: rgba(128,76,84,0.55); stroke-width: 1.2; stroke-dasharray: 3,2; }
 .radar-grid { fill: none; stroke: rgba(128,76,84,0.18); stroke-width: 1; }
 .radar-axis { stroke: rgba(128,76,84,0.22); stroke-width: 1; }
 .radar-data {
@@ -1615,11 +1617,12 @@ body {
     </div>
     <div class="param-body">
       <!-- レーダーチャート -->
-      <svg class="radar-svg" viewBox="0 0 160 160">
+      <svg class="radar-svg" viewBox="0 0 160 160" overflow="visible">
         <!-- グリッド -->
         <polygon class="radar-grid" id="rg75" points=""/>
         <polygon class="radar-grid" id="rg50" points=""/>
         <polygon class="radar-grid" id="rg25" points=""/>
+        <polygon class="radar-grid-100" id="rg100" points=""/>
         <!-- 軸 -->
         <line class="radar-axis" id="ax0" x1="80" y1="80" x2="0" y2="0"/>
         <line class="radar-axis" id="ax1" x1="80" y1="80" x2="0" y2="0"/>
@@ -1855,7 +1858,7 @@ body {
       <button class="home-btn" id="btnVillage">村長の家へ</button>
       <button class="home-btn disabled">準備中</button>
     </div>
-    <div class="home-version">α ver. 0.2.23</div>
+    <div class="home-version">α ver. 0.2.25</div>
   </div>
 
   <!-- FVについて テキストページオーバーレイ -->
@@ -2170,11 +2173,11 @@ function closeFortunePanel() {
 
 // ── 村のパラメータ ──
 const paramData = [
-  { key: 'north',   label: '知識・記録力', area: '北', value: 75, color: 'rgba(80,120,180,0.85)' },
-  { key: 'east',    label: '活動・実行力', area: '東', value: 60, color: 'rgba(80,160,100,0.85)' },
-  { key: 'south',   label: '表現・創造力', area: '南', value: 85, color: 'rgba(190,80,80,0.85)'  },
-  { key: 'west',    label: '調和・関係力', area: '西', value: 50, color: 'rgba(184,142,68,0.85)' },
-  { key: 'central', label: '統合・判断力', area: '中央', value: 70, color: 'rgba(130,80,160,0.85)'}
+  { key: 'north',   label: '知識・記録力', area: '北', value: 26,  color: 'rgba(80,120,180,0.85)' },
+  { key: 'east',    label: '活動・実行力', area: '東', value: 76,  color: 'rgba(80,160,100,0.85)' },
+  { key: 'south',   label: '表現・創造力', area: '南', value: 27,  color: 'rgba(190,80,80,0.85)'  },
+  { key: 'west',    label: '調和・関係力', area: '西', value: 0,   color: 'rgba(184,142,68,0.85)' },
+  { key: 'central', label: '統合・判断力', area: '中央', value: 155, color: 'rgba(130,80,160,0.85)'}
 ];
 const radarAngles = [-90, -18, 54, 126, 198]; // 北東南西中央
 const radarCX = 80, radarCY = 80, radarMaxR = 62;
@@ -2185,17 +2188,20 @@ function radarPoint(i, ratio) {
 }
 
 function buildRadarChart() {
-  // グリッド
+  // グリッド（25・50・75%）
   [0.75, 0.5, 0.25].forEach((r, ri) => {
     const pts = radarAngles.map((_, i) => radarPoint(i, r).join(',')).join(' ');
     document.getElementById(['rg75','rg50','rg25'][ri]).setAttribute('points', pts);
   });
-  // 軸 & ラベル
+  // 100%境界ライン（破線）
+  const pts100 = radarAngles.map((_, i) => radarPoint(i, 1).join(',')).join(' ');
+  document.getElementById('rg100').setAttribute('points', pts100);
+  // 軸（1.5倍まで伸ばして突き出しに対応）& ラベル
   radarAngles.forEach((_, i) => {
-    const [x2, y2] = radarPoint(i, 1);
+    const [x2, y2] = radarPoint(i, 1.5);
     const ax = document.getElementById(`ax${i}`);
     ax.setAttribute('x2', x2); ax.setAttribute('y2', y2);
-    const [lx, ly] = radarPoint(i, 1.22);
+    const [lx, ly] = radarPoint(i, 1.62);
     const rl = document.getElementById(`rl${i}`);
     rl.setAttribute('x', lx); rl.setAttribute('y', ly);
     rl.textContent = paramData[i].area;
@@ -2221,7 +2227,7 @@ function animateRadarData() {
   // 初期：全頂点を中心へ
   el.setAttribute('points', `${radarCX},${radarCY} `.repeat(5).trim());
 
-  const duration = 900; // ms
+  const duration = 1400; // ms
   const startTime = performance.now();
 
   function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
@@ -2244,17 +2250,24 @@ function buildMeters() {
   const list = document.getElementById('meterList');
   list.innerHTML = '';
   paramData.forEach(p => {
+    const over100 = p.value > 100;
+    const barStyle = over100
+      ? `width:100%;background:linear-gradient(90deg,${p.color},rgba(216,185,120,0.8));box-shadow:2px 0 6px rgba(216,185,120,0.6);`
+      : `width:0%;background:linear-gradient(90deg,${p.color},rgba(216,185,120,0.8));`;
+    const valDisplay = over100
+      ? `<span style="color:rgba(184,142,68,1);font-weight:600">${p.value}↑</span>`
+      : `${p.value}`;
     list.innerHTML += `
       <div class="meter-item">
         <div class="meter-label">${p.label}<br><span style="font-size:9px;opacity:0.6">${p.area}エリア</span></div>
-        <div class="meter-bar"><div class="meter-fill" style="width:0%;background:linear-gradient(90deg,${p.color},rgba(216,185,120,0.8))"></div></div>
-        <div class="meter-value">${p.value}</div>
+        <div class="meter-bar"><div class="meter-fill" style="${barStyle}"></div></div>
+        <div class="meter-value">${valDisplay}</div>
       </div>`;
   });
-  // アニメーション
+  // アニメーション（100以下のみ）
   setTimeout(() => {
     list.querySelectorAll('.meter-fill').forEach((el, i) => {
-      el.style.width = paramData[i].value + '%';
+      if (paramData[i].value <= 100) el.style.width = paramData[i].value + '%';
     });
   }, 100);
 }
