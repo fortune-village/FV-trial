@@ -534,6 +534,38 @@
   letter-spacing: 0.08em;
 }
 
+/* 専用ガイド：準備中ぼかし */
+.guide-personal-body {
+  position: relative;
+}
+.guide-personal-body.blurred .guide-personal-item {
+  filter: blur(4px);
+  user-select: none;
+  pointer-events: none;
+}
+.guide-personal-coming-soon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  z-index: 2;
+}
+.guide-personal-coming-soon-label {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: rgba(128,76,84,0.62);
+  font-family: "Palatino Linotype", Palatino, "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+.guide-personal-coming-soon-text {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: rgba(60,30,30,0.78);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+}
+
 /* 注釈 */
 .guide-board-note {
   font-size: 11px;
@@ -2055,7 +2087,13 @@ body {
       <!-- 専用ガイド -->
       <div class="guide-personal-section">
         <div class="guide-personal-title" id="guidePersonalTitle">○○様専用ガイド</div>
-        <div id="guidePersonalItems"></div>
+        <div class="guide-personal-body" id="guidePersonalBody">
+          <div id="guidePersonalItems"></div>
+          <div class="guide-personal-coming-soon" id="guideComingSoon" style="display:none;">
+            <div class="guide-personal-coming-soon-label">COMING SOON</div>
+            <div class="guide-personal-coming-soon-text">準備中です</div>
+          </div>
+        </div>
       </div>
 
       <!-- 注釈 -->
@@ -3802,6 +3840,8 @@ function showGuide() {
 function showGuideBoardOverlay() {
   const title = $("guidePersonalTitle");
   const items = $("guidePersonalItems");
+  const body  = $("guidePersonalBody");
+  const soon  = $("guideComingSoon");
   const personal = CLIENT.guidePersonal;
 
   if (personal?.clientName) {
@@ -3824,6 +3864,15 @@ function showGuideBoardOverlay() {
     div.innerHTML = `<span class="guide-personal-label">${label}</span><span class="guide-personal-arrow">→</span><span class="guide-personal-area">${area}</span>`;
     items.appendChild(div);
   });
+
+  // guidePersonal がない場合はぼかし＋準備中表示
+  if (!personal) {
+    body.classList.add("blurred");
+    soon.style.display = "flex";
+  } else {
+    body.classList.remove("blurred");
+    soon.style.display = "none";
+  }
 
   const overlay = $("guideBoardOverlay");
   overlay.classList.add("show");
