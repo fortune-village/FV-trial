@@ -165,41 +165,62 @@
 }
 .param-mode-btns {
   display: flex;
-  gap: 7px;
   justify-content: center;
-  margin-bottom: 4px;
+  gap: 6px;
+  margin: 4px 0 8px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: rgba(255,248,236,0.34);
+  border: 1px solid rgba(151,109,54,0.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.32);
 }
 .param-mode-btn {
-  padding: 5px 13px;
+  min-width: 60px;
+  padding: 6px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(128,76,84,0.45);
-  background: transparent;
-  color: rgba(45,30,30,0.65);
+  border: 1px solid rgba(128,76,84,0.28);
+  background: rgba(255,248,236,0.42);
+  color: rgba(70,42,38,0.62);
   font-size: 11px;
   font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
 }
 .param-mode-btn.active {
-  background: rgba(128,76,84,0.14);
-  color: rgba(45,30,30,0.9);
-  border-color: rgba(128,76,84,0.65);
+  background: linear-gradient(180deg, rgba(126,73,80,0.92), rgba(78,42,62,0.94));
+  color: rgba(255,238,210,0.96);
+  border-color: rgba(216,185,120,0.62);
+  box-shadow: 0 3px 10px rgba(80,42,38,0.18), inset 0 1px 0 rgba(255,255,255,0.18);
 }
-.param-mode-label {
-  font-size: 10px;
-  color: rgba(151,109,54,0.8);
-  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
-  letter-spacing: 0.08em;
+.param-mode-caption {
   text-align: center;
-  min-height: 14px;
-  margin-bottom: 2px;
+  margin: 0 0 6px;
+  min-height: 32px;
+}
+.param-mode-kicker {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: rgba(128,76,84,0.82);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
+  margin-bottom: 3px;
+}
+.param-mode-desc {
+  font-size: 9.5px;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  color: rgba(80,42,38,0.52);
+  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
 }
 /* レーダーチャート */
 .radar-svg {
   width: 180px;
   height: 180px;
   overflow: visible;
+}
+.radar-overlay {
+  filter: drop-shadow(0 0 4px rgba(184,142,68,0.38));
 }
 .radar-grid { fill: none; stroke: rgba(128,76,84,0.22); stroke-width: 1; }
 .radar-grid-100 {
@@ -215,11 +236,11 @@
   gap: 10px;
   padding-top: 16px;
 }
-  font-size: 7px;
-  fill: rgba(45,30,30,0.52);
-  font-family: "Hiragino Mincho ProN","Yu Mincho",serif;
-  text-anchor: middle;
-  dominant-baseline: middle;
+/* 今月・本日モード時、宿命線を控えめに */
+#paramPanel[data-param-mode="month"] #radarData,
+#paramPanel[data-param-mode="day"] #radarData {
+  fill-opacity: 0.06;
+  stroke-opacity: 0.38;
 }
 .radar-axis { stroke: rgba(128,76,84,0.26); stroke-width: 1; }
 .radar-data {
@@ -1665,10 +1686,13 @@ body {
       <!-- モード切替ボタン -->
       <div class="param-mode-btns">
         <button class="param-mode-btn active" data-mode="base" onclick="setParamMode('base')">宿命</button>
-        <button class="param-mode-btn" data-mode="month" onclick="setParamMode('month')">今月の気</button>
-        <button class="param-mode-btn" data-mode="day" onclick="setParamMode('day')">今日の気</button>
+        <button class="param-mode-btn" data-mode="month" onclick="setParamMode('month')">今月</button>
+        <button class="param-mode-btn" data-mode="day" onclick="setParamMode('day')">本日</button>
       </div>
-      <div class="param-mode-label" id="paramModeLabel"></div>
+      <div class="param-mode-caption" id="paramModeCaption">
+        <div class="param-mode-kicker" id="paramModeKicker">宿命の地図</div>
+        <div class="param-mode-desc" id="paramModeDesc">この村に刻まれた、基礎となる力のかたちです。</div>
+      </div>
       <!-- レーダーチャート -->
       <svg class="radar-svg" viewBox="0 0 160 160" overflow="visible">
         <!-- グリッド -->
@@ -1684,8 +1708,8 @@ body {
         <line class="radar-axis" id="ax4" x1="80" y1="80" x2="0" y2="0"/>
         <!-- データ（宿命ベース） -->
         <polygon class="radar-data" id="radarData" fill="rgb(128,76,84)" fill-opacity="0.12" stroke="rgb(151,109,54)" stroke-opacity="0.75" stroke-width="1.8" points=""/>
-        <!-- データ（今月・今日のオーバーレイ） -->
-        <polygon id="radarDataOverlay" fill="rgb(184,142,68)" fill-opacity="0" stroke="rgb(184,142,68)" stroke-opacity="0" stroke-width="1.4" stroke-dasharray="4 3" points=""/>
+        <!-- データ（今月・本日のオーバーレイ） -->
+        <polygon id="radarDataOverlay" class="radar-overlay" fill="rgb(184,142,68)" fill-opacity="0" stroke="rgb(184,142,68)" stroke-opacity="0" stroke-width="1.6" stroke-dasharray="5 4" points=""/>
         <!-- ラベル（方位） -->
         <text class="radar-label" id="rl0"></text>
         <text class="radar-label" id="rl1"></text>
@@ -1913,7 +1937,7 @@ body {
       <button class="home-btn" id="btnVillage">村長の家へ</button>
       <button class="home-btn disabled">準備中</button>
     </div>
-    <div class="home-version">α ver. 0.2.34</div>
+    <div class="home-version">α ver. 0.2.35</div>
   </div>
 
   <!-- FVについて テキストページオーバーレイ -->
@@ -2318,27 +2342,35 @@ function calcGogyouWithExtra(meishiki, extraKan, extraShi) {
 let currentParamMode = 'base';
 let _overlayRafId = null;
 
+function setParamCaption(kicker, desc) {
+  document.getElementById('paramModeKicker').textContent = kicker;
+  document.getElementById('paramModeDesc').textContent = desc;
+}
+
 function setParamMode(mode) {
   currentParamMode = mode;
+  document.getElementById('paramPanel').dataset.paramMode = mode;
   document.querySelectorAll('.param-mode-btn').forEach(btn =>
     btn.classList.toggle('active', btn.dataset.mode === mode)
   );
-  const lbl = document.getElementById('paramModeLabel');
   if (mode === 'base') {
-    lbl.textContent = '';
+    setParamCaption('宿命の地図', 'この村に刻まれた、基礎となる力のかたちです。');
     animateRadarOverlay(null);
     return;
   }
   const today = new Date();
   const { kan, shi } = mode === 'day' ? getDayKanshi(today) : getMonthKanshi(today);
   const meishiki = CLIENT.meishiki;
-  if (!meishiki) { lbl.textContent = '（命式データなし）'; return; }
+  if (!meishiki) {
+    setParamCaption('命式データなし', 'data.json に meishiki を設定してください。');
+    return;
+  }
   const scores = calcGogyouWithExtra(meishiki, kan, shi);
-  const label = mode === 'day'
-    ? `今日（${kan}${shi}）の気を加算`
-    : `今月（${kan}${shi}）の気を加算`;
-  lbl.textContent = label;
-  // paramData の順序でオーバーレイ値を作成
+  if (mode === 'day') {
+    setParamCaption(`本日の巡り：${kan}${shi}`, '今日だけ村に流れ込む、短い気配です。');
+  } else {
+    setParamCaption(`今月の巡り：${kan}${shi}`, '宿命の地図に、今月の気配が重なっています。');
+  }
   const overlay = paramData.map(p => scores[p.key] ?? 0);
   animateRadarOverlay(overlay);
 }
@@ -2352,9 +2384,11 @@ function animateRadarOverlay(targetValues) {
     return;
   }
   el.setAttribute('fill','rgb(184,142,68)');
-  el.setAttribute('fill-opacity','0.18');
+  el.setAttribute('fill-opacity','0.08');
   el.setAttribute('stroke','rgb(184,142,68)');
-  el.setAttribute('stroke-opacity','0.72');
+  el.setAttribute('stroke-opacity','0.78');
+  el.setAttribute('stroke-width','1.6');
+  el.setAttribute('stroke-dasharray','5 4');
   el.setAttribute('points', `${radarCX},${radarCY} `.repeat(5).trim());
   const duration = 1400;
   const start = performance.now();
