@@ -2139,22 +2139,22 @@ body {
   <!-- しずく取得演出 -->
   <div id="shizukuAcquireFlash" class="shard-acquire-flash">
     <div id="shizukuAcquireGem" class="shard-acquire-gem"></div>
-    <div class="shard-acquire-label">SHIZUKU OBTAINED</div>
+    <div class="shard-acquire-label">TIAR OBTAINED</div>
     <div id="shizukuAcquireName" class="shard-acquire-name"></div>
     <div id="shizukuAcquireArea" class="shard-acquire-area"></div>
     <div class="shard-acquire-tap">タップして続ける</div>
   </div>
 
-  <!-- スフィアの記録（統合コレクション） -->
+  <!-- 村の記録帳（統合コレクション） -->
   <div id="collectionOverlay" class="collection-overlay">
     <div class="collection-top-bar">
-      <span class="collection-top-title">◈ スフィアの記録</span>
+      <span class="collection-top-title">◈ 村の記録帳</span>
       <button id="collectionCloseBtn" class="collection-close-btn">✕ 閉じる</button>
     </div>
     <div class="collection-main-tabs">
-      <button class="collection-main-tab active" id="tabSpheres">スフィア</button>
-      <button class="collection-main-tab" id="tabShizuku">しずく</button>
-      <button class="collection-main-tab" id="tabVisits">訪問録</button>
+      <button class="collection-main-tab active" id="tabVisits">訪問録</button>
+      <button class="collection-main-tab" id="tabSpheres">スフィア</button>
+      <button class="collection-main-tab" id="tabShizuku">ティア</button>
     </div>
     <!-- スフィアセクション -->
     <div id="sectionSpheres" class="collection-section active">
@@ -2272,7 +2272,7 @@ const introScenes = [
     name: "ロアン",
     text: "今日のご予定をお伺いします。",
     charMode: "bust",
-    choices: ["外へ出る", "村役場へ行く", "スフィアの記録を見る", "今日の占い", "ロアンに話しかける"]
+    choices: ["外へ出る", "村役場へ行く", "村の記録帳を見る", "今日の占い", "ロアンに話しかける"]
   }
 ];
 
@@ -2982,8 +2982,8 @@ function updateSpherePanel() {
   }
 }
 
-// ── スフィアの記録（統合コレクション） ──
-let currentCollectionTab = "spheres"; // "spheres" | "shizuku"
+// ── 村の記録帳（統合コレクション） ──
+let currentCollectionTab = "visits"; // "visits" | "spheres" | "shizuku"
 let currentShizukuTab = "north";
 
 // ── 訪問録（実績）システム ──
@@ -3208,7 +3208,7 @@ function showShizukuAcquireFlash(areaKey, starName, onClose) {
   gem.style.setProperty("--shard-color", sphere.color);
   gem.style.setProperty("--shard-dark",  sphere.dark);
   gem.style.setProperty("--shard-glow",  sphere.glow);
-  $("shizukuAcquireName").textContent = sphere.name.replace("・スフィア","") + "のしずく";
+  $("shizukuAcquireName").textContent = sphere.name.replace("・スフィア","") + "のティア";
   $("shizukuAcquireArea").textContent = AREA_NAMES[areaKey] + "エリア";
   flash.classList.add("show");
   const close = () => {
@@ -3297,7 +3297,7 @@ function renderShizukuSection(areaKey) {
       <div class="shard-gem ${got ? "" : "locked"}"
            style="--shard-color:${sphere.color};--shard-dark:${sphere.dark};--shard-glow:${sphere.glow}"></div>
       <div class="shard-item-info">
-        <div class="shard-item-star">${shortName}のしずく</div>
+        <div class="shard-item-star">${shortName}のティア</div>
         <div class="shard-item-status ${got ? "got" : "not"}">${got ? "✦ 入手済み" : "◌ 未入手"}</div>
       </div>
     `;
@@ -3309,7 +3309,7 @@ function renderShizukuSection(areaKey) {
   if (SHOW_TEST_TOOLS) {
     const debug = document.createElement("div");
     debug.className = "shard-debug";
-    debug.innerHTML = `<div class="shard-debug-title">🔧 テスト用 — しずく取得</div><div class="shard-debug-btns" id="shizukuDebugBtns_${areaKey}"></div>`;
+    debug.innerHTML = `<div class="shard-debug-title">🔧 テスト用 — ティア取得</div><div class="shard-debug-btns" id="shizukuDebugBtns_${areaKey}"></div>`;
     content.appendChild(debug);
     const btnsEl = debug.querySelector(`#shizukuDebugBtns_${areaKey}`);
     ALL_STARS.forEach(star => {
@@ -3317,7 +3317,7 @@ function renderShizukuSection(areaKey) {
       const btn = document.createElement("button");
       btn.className = "shard-debug-btn";
       const sp = STAR_TO_SPHERE[star];
-      btn.textContent = sp ? sp.name.replace("・スフィア","") : "しずく";
+      btn.textContent = sp ? sp.name.replace("・スフィア","") : "ティア";
       btn.addEventListener("click", (e) => { e.stopPropagation(); collectShizuku(areaKey, star); });
       btnsEl.appendChild(btn);
     });
@@ -3728,7 +3728,7 @@ function renderChoices(choices) {
         } else if (["村の強みを活かす","村の課題を解決する","他の村との交易","今年の村の計画","今後の村の展望","村について深く知る"].includes(label)) {
           pushBack(() => { currentScreen='area'; currentSceneSet=councilScenes; sceneIndex=1; renderScene(); });
           transitionScene(() => { box.style.display="none"; currentSceneSet=councilScenes; sceneIndex=1; renderScene(); });
-        } else if (label === "スフィアの記録を見る") {
+        } else if (label === "村の記録帳を見る") {
           box.style.display="none"; openCollection();
         } else if (label === "ロアンに話しかける") {
           box.style.display="none"; openChat();
@@ -4604,7 +4604,7 @@ $("btnContinue").addEventListener("click", async (e) => {
   renderScene();
 });
 
-// ── スフィアの記録（統合コレクション） ──
+// ── 村の記録帳（統合コレクション） ──
 $("collectionCloseBtn").addEventListener("click", (e) => { e.stopPropagation(); closeCollection(); });
 $("collectionOverlay").addEventListener("click", (e) => e.stopPropagation());
 $("tabSpheres").addEventListener("click", (e) => { e.stopPropagation(); switchCollectionTab("spheres"); });
