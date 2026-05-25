@@ -893,16 +893,22 @@
 
 /* iOS黒帯・スクロール対策 */
 html {
+  margin: 0;
+  padding: 0;
   height: 100%;
   overflow: hidden;
   background: #c99d6e;
 }
 body {
+  margin: 0;
+  padding: 0;
   height: 100%;
   overflow: hidden;
   background: #c99d6e;
 }
 #app {
+  position: fixed;
+  inset: 0;
   height: 100dvh;
   min-height: 100dvh;
   overflow: hidden;
