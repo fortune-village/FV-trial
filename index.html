@@ -1915,10 +1915,10 @@ body {
     </div>
     <div class="area-grid">
       <button class="area-btn area-north" id="btnNorth">北エリア</button>
-      <button class="area-btn disabled area-west">西エリア<span class="area-tag">準備中</span></button>
-      <button class="area-btn disabled area-center-btn">中央エリア<span class="area-tag">準備中</span></button>
-      <button class="area-btn disabled area-east">東エリア<span class="area-tag">準備中</span></button>
-      <button class="area-btn disabled area-south">南エリア<span class="area-tag">準備中</span></button>
+      <button class="area-btn disabled area-west" id="btnWest">西エリア<span class="area-tag">準備中</span></button>
+      <button class="area-btn disabled area-center-btn" id="btnCentral">中央エリア<span class="area-tag">準備中</span></button>
+      <button class="area-btn disabled area-east" id="btnEast">東エリア<span class="area-tag">準備中</span></button>
+      <button class="area-btn disabled area-south" id="btnSouth">南エリア<span class="area-tag">準備中</span></button>
     </div>
   </div>
 
@@ -2340,6 +2340,89 @@ fetch(`${clientBase}data.json`)
       `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}") ${pos} / cover no-repeat !important; }`
     ).join('\n');
     document.head.appendChild(st);
+
+    // ── エリアリリース管理 ─────────────────────────────────────
+    const release = data.fvData?.release || {};
+    const scenesData = data.fvData?.scenes || {};
+    const charName = CLIENT.char.name || 'ロアン';
+
+    const DIR_CONFIG = {
+      S: { btnId:'btnSouth',   label:'南エリア',   key:'south',   dirJp:'南',   cls:'south' },
+      E: { btnId:'btnEast',    label:'東エリア',   key:'east',    dirJp:'東',   cls:'east' },
+      W: { btnId:'btnWest',    label:'西エリア',   key:'west',    dirJp:'西',   cls:'west' },
+      C: { btnId:'btnCentral', label:'中央エリア', key:'central', dirJp:'中央', cls:'center' },
+    };
+
+    const STEP_TO_SUFFIX = { s2:'', s3:'-lmk', s3b:'-star', s5:'-street', s6:'-lmkcu', s7:'-starcu' };
+    const STEP_TO_LABEL  = { s3:'エリアLMK', s3b:'星施設', s5:'街並み', s6:'施設CU', s7:'星施設CU' };
+
+    function buildAreaScenes(dir, cfg, dirScenes) {
+      if (!dirScenes || dirScenes.length === 0) {
+        // フォールバック：シーンなし
+        return [
+          { bg:`bg-${cfg.cls}`, char:true, monitor:false, name:charName,
+            text:`${cfg.dirJp}エリアは現在準備中です。\nもうしばらくお待ちください。`, charMode:'bust' }
+        ];
+      }
+      const scenes = [];
+      scenes.push({ bg:'bg-room', char:true, monitor:false, name:charName,
+        text:`では、${cfg.dirJp}エリアへご案内します。`, charMode:'bust' });
+      scenes.push({ type:'titleCard', areaKey:cfg.key });
+      scenes.push({ bg:`bg-${cfg.cls}`, achievementScene:`${cfg.key}_area`, char:true, monitor:false,
+        name:charName, text:`こちらが、${cfg.dirJp}エリアです。\nどうぞ、ゆっくりとご覧ください。`, charMode:'bust' });
+      dirScenes.forEach(s => {
+        const suffix = s.imgStep ? (STEP_TO_SUFFIX[s.imgStep] ?? '') : '';
+        const bg = `bg-${cfg.cls}${suffix}`;
+        scenes.push({ bg, char:false, monitor:false, name:charName, text:s.text || '' });
+      });
+      return scenes;
+    }
+
+    // 背景CSS + ボタン有効化
+    const bgStyles = [];
+    Object.entries(DIR_CONFIG).forEach(([dir, cfg]) => {
+      if (!release[dir]) return;
+
+      // 背景CSS生成（画像なしでも暗転フォールバック）
+      const dirJp = cfg.dirJp;
+      const stepFiles = [
+        { suffix:'',       file:`${dirJp}エリア.png`,        pos:'center 30%' },
+        { suffix:'-street',file:`${dirJp}_街並み.png`,       pos:'center 30%' },
+        { suffix:'-lmk',   file:`${dirJp}_エリアLMK.png`,   pos:'center 35%' },
+        { suffix:'-star',  file:`${dirJp}_星施設.png`,       pos:'center 35%' },
+        { suffix:'-lmkcu', file:`${dirJp}_施設CU.png`,       pos:'center 35%' },
+        { suffix:'-starcu',file:`${dirJp}_星施設CU.png`,     pos:'center 35%' },
+      ];
+      stepFiles.forEach(({ suffix, file, pos }) => {
+        bgStyles.push(
+          `.bg.bg-${cfg.cls}${suffix} { mix-blend-mode:normal !important; background:#1e1c28 url("${clientBase}${file}") ${pos} / cover no-repeat !important; }`
+        );
+      });
+
+      // シーン配列を構築してマップに登録
+      areaSceneMap[cfg.key] = buildAreaScenes(dir, cfg, scenesData[dir] || []);
+
+      // キャラ名を更新
+      areaSceneMap[cfg.key].forEach(s => { if (s.name) s.name = charName; });
+
+      // ボタン有効化
+      const btn = document.getElementById(cfg.btnId);
+      if (btn) {
+        btn.classList.remove('disabled');
+        btn.innerHTML = cfg.label; // 「準備中」タグを除去
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          pushBack(() => { $(cfg.btnId).closest('.area-select-panel')?.classList.add('visible'); });
+          showAreaSub(cfg.key, cfg.label);
+        });
+      }
+    });
+
+    if (bgStyles.length) {
+      const stArea = document.createElement('style');
+      stArea.textContent = bgStyles.join('\n');
+      document.head.appendChild(stArea);
+    }
   })
   .catch(() => console.warn('クライアントデータ読み込み失敗'));
 
