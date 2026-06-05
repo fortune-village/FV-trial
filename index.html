@@ -947,6 +947,16 @@ body {
   font-family: "Palatino Linotype", Palatino, serif;
   text-shadow: 0 1px 8px rgba(0,0,0,0.8);
 }
+.home-client-name {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: rgba(235, 210, 155, 0.92);
+  font-family: "Palatino Linotype", Palatino, "游明朝", serif;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.7), 0 0 24px rgba(201,168,76,0.3);
+  text-align: center;
+  min-height: 20px;
+}
 .home-logo { text-align: center; }
 .home-logo-img {
   width: 90%;
@@ -2097,6 +2107,7 @@ body {
     <div class="home-logo">
       <img src="common/fv_logo.png" alt="Fortune Village" class="home-logo-img" />
     </div>
+    <div id="home-client-name" class="home-client-name"></div>
     <div class="home-buttons">
       <button class="home-btn" id="btnContinue" style="display:none; border-color: rgba(216,185,120,0.9); background: linear-gradient(180deg, rgba(62,38,14,0.96), rgba(38,22,6,0.98));">続きから ▶</button>
       <button class="home-btn" id="btnAbout">フォーチュン・ヴィレッジについて</button>
@@ -2303,6 +2314,12 @@ fetch(`${clientBase}data.json`)
     if (data.stars) CLIENT.stars = data.stars;
     if (data.guidePersonal) CLIENT.guidePersonal = data.guidePersonal;
     if (data.achievements) CLIENT.achievements = data.achievements;
+
+    // クライアント名をホーム画面に表示
+    if (data.name) {
+      const el = document.getElementById('home-client-name');
+      if (el) el.textContent = `${data.name} 様の Fortune Village`;
+    }
 
     // キャラ画像・名前
     const img = document.getElementById('charImg');
