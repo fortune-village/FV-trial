@@ -2116,7 +2116,7 @@ body {
       <button class="home-btn" id="btnVillage">村長の家へ</button>
       <div id="homeUpdateInfo" class="home-update-info">
         <div class="home-update-label">更新情報</div>
-        <div class="home-update-text">中央の施設を「中央村役場」に、村のパラメータを「村のスフィアエネルギー」に改称しました</div>
+        <div class="home-update-text" id="home-update-text">中央の施設を「中央村役場」に、村のパラメータを「村のスフィアエネルギー」に改称しました</div>
       </div>
     </div>
     <div class="home-version" id="app-version">α ver. 0.2.47</div>
@@ -2374,6 +2374,18 @@ fetch(`${clientBase}FV_data.json`)
     if (fvData.dataVersion) {
       const el = document.getElementById('home-data-version');
       if (el) el.textContent = `data v${fvData.dataVersion}`;
+    }
+    // 更新メッセージ
+    const note = fvData.updateNote;
+    const infoEl = document.getElementById('homeUpdateInfo');
+    const textEl = document.getElementById('home-update-text');
+    if (infoEl && textEl) {
+      if (note) {
+        textEl.textContent = note;
+        infoEl.style.display = '';
+      } else {
+        infoEl.style.display = 'none';
+      }
     }
 
     // キャラクター画像（data.jsonがない場合のフォールバック）
