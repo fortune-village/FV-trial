@@ -1,0 +1,25 @@
+{
+  "name": "安藤朋恵",
+  "birthday": "19760325",
+  "savedInp": {
+    "initial": "",
+    "gender": "女",
+    "birthday": "19760325",
+    "yk": "丙",
+    "ys": "辰",
+    "mk": "辛",
+    "ms": "卯",
+    "dk": "丙",
+    "ds": "子"
+  },
+  "fvData": {
+    "release": {
+      "N": false,
+      "S": false,
+      "E": false,
+      "W": false,
+      "C": false
+    }
+  },
+  "exportedAt": "2026-06-05T13:59:52.498Z"
+}
