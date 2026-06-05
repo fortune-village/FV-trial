@@ -876,7 +876,14 @@
   background: url("common/bg_room.png") center top / cover no-repeat !important;
 }
 
-/* sceneLayerはhomeScreenと同じ方式でフェード */
+/* ── textbox最小化 ── */
+#mainTextbox { position: relative; }
+#mainTextbox.minimized .text-body,
+#mainTextbox.minimized .tap-hint { display: none; }
+#mainTextbox.minimized { min-height: 0 !important; padding-bottom: 8px !important; }
+#mainTextbox.minimized #textbox-toggle::before { content: '▲'; }
+#mainTextbox:not(.minimized) #textbox-toggle::before { content: '▼'; }
+#textbox-toggle::before { font-size: 11px; }
 #sceneLayer {
   position: absolute;
   inset: 0;
@@ -2016,7 +2023,9 @@ body {
   <div id="choices" class="choice-box"></div>
   <div class="progress"><span id="progressBar"></span></div>
 
-  <div class="textbox">
+  <div class="textbox" id="mainTextbox">
+    <button id="textbox-toggle" onclick="toggleTextbox(event)"
+      style="position:absolute;top:-28px;right:12px;padding:3px 12px;border-radius:10px 10px 0 0;border:none;background:rgba(88,44,44,0.75);color:rgba(255,240,210,0.9);font-size:11px;cursor:pointer;font-family:inherit;backdrop-filter:blur(4px)">▼</button>
     <div id="name" class="name-bar">SYSTEM</div>
     <div id="text" class="text-body"></div>
     <div class="tap-hint">TAP / CLICK</div>
@@ -2492,6 +2501,13 @@ fetch(`${clientBase}FV_data.json`)
     }
   })
   .catch(() => {});
+
+// ── テキストボックス最小化 ────────────────────────────────────
+function toggleTextbox(e) {
+  e.stopPropagation();
+  const tb = document.getElementById('mainTextbox');
+  tb.classList.toggle('minimized');
+}
 
 // ── アプリバージョンを version.json から取得 ──────────────────
 fetch(`${appBase}version.json`)
