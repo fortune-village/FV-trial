@@ -882,6 +882,26 @@
 #mainTextbox.minimized { min-height: 0 !important; }
 #mainTextbox.minimized #textbox-toggle { content: '▲'; }
 #mainTextbox #textbox-toggle { transition: opacity .15s; }
+/* ── textbox半透過 ── */
+.textbox {
+  background: linear-gradient(175deg, rgba(248,232,196,0.72), rgba(210,180,136,0.72)) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+/* ── name-bar整列 ── */
+.name-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+}
+#name-text { flex: 1; }
+#textbox-toggle {
+  align-self: center !important;
+  line-height: 1 !important;
+  padding: 3px 10px !important;
+  margin: 0 !important;
+}
 #sceneLayer {
   position: absolute;
   inset: 0;
