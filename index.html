@@ -951,9 +951,9 @@ body {
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.18em;
-  color: rgba(235, 210, 155, 0.92);
+  color: rgba(58, 28, 8, 0.85);
   font-family: "Palatino Linotype", Palatino, "游明朝", serif;
-  text-shadow: 0 1px 10px rgba(0,0,0,0.7), 0 0 24px rgba(201,168,76,0.3);
+  text-shadow: 0 1px 3px rgba(255,255,255,0.4);
   text-align: center;
   min-height: 20px;
 }
@@ -2108,6 +2108,7 @@ body {
       <img src="common/fv_logo.png" alt="Fortune Village" class="home-logo-img" />
     </div>
     <div id="home-client-name" class="home-client-name"></div>
+    <div id="home-data-version" style="font-size:11px;color:rgba(58,28,8,0.65);letter-spacing:.12em;text-align:center;min-height:16px;margin-top:-4px"></div>
     <div class="home-buttons">
       <button class="home-btn" id="btnContinue" style="display:none; border-color: rgba(216,185,120,0.9); background: linear-gradient(180deg, rgba(62,38,14,0.96), rgba(38,22,6,0.98));">続きから ▶</button>
       <button class="home-btn" id="btnAbout">フォーチュン・ヴィレッジについて</button>
@@ -2368,6 +2369,10 @@ fetch(`${clientBase}FV_data.json`)
     if (fvData.name) {
       const el = document.getElementById('home-client-name');
       if (el) el.textContent = `${fvData.name} 様の Fortune Village`;
+    }
+    if (fvData.dataVersion) {
+      const el = document.getElementById('home-data-version');
+      if (el) el.textContent = `data v${fvData.dataVersion}`;
     }
 
     // キャラクター画像（data.jsonがない場合のフォールバック）
