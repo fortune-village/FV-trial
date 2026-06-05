@@ -877,13 +877,11 @@
 }
 
 /* ── textbox最小化 ── */
-#mainTextbox { position: relative; }
 #mainTextbox.minimized .text-body,
-#mainTextbox.minimized .tap-hint { display: none; }
-#mainTextbox.minimized { min-height: 0 !important; padding-bottom: 8px !important; }
-#mainTextbox.minimized #textbox-toggle::before { content: '▲'; }
-#mainTextbox:not(.minimized) #textbox-toggle::before { content: '▼'; }
-#textbox-toggle::before { font-size: 11px; }
+#mainTextbox.minimized .tap-hint { display: none !important; }
+#mainTextbox.minimized { min-height: 0 !important; }
+#mainTextbox.minimized #textbox-toggle { content: '▲'; }
+#mainTextbox #textbox-toggle { transition: opacity .15s; }
 #sceneLayer {
   position: absolute;
   inset: 0;
@@ -2024,9 +2022,11 @@ body {
   <div class="progress"><span id="progressBar"></span></div>
 
   <div class="textbox" id="mainTextbox">
-    <button id="textbox-toggle" onclick="toggleTextbox(event)"
-      style="position:absolute;top:-28px;right:12px;padding:3px 12px;border-radius:10px 10px 0 0;border:none;background:rgba(88,44,44,0.75);color:rgba(255,240,210,0.9);font-size:11px;cursor:pointer;font-family:inherit;backdrop-filter:blur(4px)">▼</button>
-    <div id="name" class="name-bar">SYSTEM</div>
+    <div id="name" class="name-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <span id="name-text">SYSTEM</span>
+      <button id="textbox-toggle" onclick="toggleTextbox(event)"
+        style="padding:2px 10px;border-radius:8px;border:none;background:rgba(88,44,44,0.55);color:rgba(255,240,210,0.9);font-size:10px;cursor:pointer;font-family:inherit;flex-shrink:0;line-height:1.4">▼</button>
+    </div>
     <div id="text" class="text-body"></div>
     <div class="tap-hint">TAP / CLICK</div>
   </div>
@@ -2505,8 +2505,10 @@ fetch(`${clientBase}FV_data.json`)
 // ── テキストボックス最小化 ────────────────────────────────────
 function toggleTextbox(e) {
   e.stopPropagation();
-  const tb = document.getElementById('mainTextbox');
-  tb.classList.toggle('minimized');
+  const tb  = document.getElementById('mainTextbox');
+  const btn = document.getElementById('textbox-toggle');
+  const minimized = tb.classList.toggle('minimized');
+  if (btn) btn.textContent = minimized ? '▲' : '▼';
 }
 
 // ── アプリバージョンを version.json から取得 ──────────────────
@@ -3915,7 +3917,8 @@ function renderScene() {
   }
   $("monitor").classList.toggle("show", !!s.monitor);
   setMonitor(s.monitorType);
-  $("name").textContent = s.name;
+  const nameEl = document.getElementById('name-text') || document.getElementById('name');
+  if (nameEl) nameEl.textContent = s.name;
   typeText(s.text);
   if (s.achievementScene) unlockByScene(s.achievementScene);
   const total = currentSceneSet.length;
