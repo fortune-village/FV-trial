@@ -2370,6 +2370,13 @@ fetch(`${clientBase}FV_data.json`)
       if (el) el.textContent = `${fvData.name} 様の Fortune Village`;
     }
 
+    // キャラクター画像（data.jsonがない場合のフォールバック）
+    const charImg = document.getElementById('charImg');
+    if (charImg && !charImg.src.includes('char_')) {
+      charImg.src = clientBase + 'char_central.png';
+      charImg.alt = fvData.name || 'キャラクター';
+    }
+
     // ── エリアリリース管理 ─────────────────────────────────────
     const release = fvData.fvData?.release || {};
     const scenesData = fvData.fvData?.scenes || {};
