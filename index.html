@@ -2377,17 +2377,35 @@ fetch(`${clientBase}FV_data.json`)
       charImg.alt = fvData.name || 'キャラクター';
     }
 
+    // キャラクター名を設定（charName定数より先に処理）
+    const charNameFromData = fvData.fvData?.char?.name;
+    if (charNameFromData) {
+      CLIENT.char.name = charNameFromData;
+      // 名前タグをすべて更新
+      document.querySelectorAll('.char-name').forEach(el => {
+        el.textContent = charNameFromData;
+      });
+    }
+
     // ── エリアリリース管理 ─────────────────────────────────────
     const release = fvData.fvData?.release || {};
     const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
 
     const DIR_CONFIG = {
-      S: { btnId:'btnSouth',   label:'南エリア',   key:'south',   dirJp:'南',   cls:'south' },
-      E: { btnId:'btnEast',    label:'東エリア',   key:'east',    dirJp:'東',   cls:'east' },
-      W: { btnId:'btnWest',    label:'西エリア',   key:'west',    dirJp:'西',   cls:'west' },
-      C: { btnId:'btnCentral', label:'中央エリア', key:'central', dirJp:'中央', cls:'center' },
+      N: { btnId:'btnNorth',   label:'北エリア',   key:'north',   dirJp:'北',   cls:'north'   },
+      S: { btnId:'btnSouth',   label:'南エリア',   key:'south',   dirJp:'南',   cls:'south'   },
+      E: { btnId:'btnEast',    label:'東エリア',   key:'east',    dirJp:'東',   cls:'east'    },
+      W: { btnId:'btnWest',    label:'西エリア',   key:'west',    dirJp:'西',   cls:'west'    },
+      C: { btnId:'btnCentral', label:'中央エリア', key:'central', dirJp:'中央', cls:'center'  },
     };
+
+    // 北エリアはデフォルト無効に（リリース管理で制御）
+    const btnNorthEl = document.getElementById('btnNorth');
+    if (btnNorthEl) {
+      btnNorthEl.classList.add('disabled');
+      btnNorthEl.innerHTML = '北エリア<span class="area-tag">準備中</span>';
+    }
 
     const STEP_TO_SUFFIX = { s2:'', s3:'-lmk', s3b:'-star', s5:'-street', s6:'-lmkcu', s7:'-starcu' };
 
@@ -2438,9 +2456,12 @@ fetch(`${clientBase}FV_data.json`)
       if (btn) {
         btn.classList.remove('disabled');
         btn.innerHTML = cfg.label;
-        btn.addEventListener('click', (e) => {
+        // 既存のlistenerを避けるためcloneで置き換え
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          pushBack(() => { $(cfg.btnId).closest('.area-select-panel')?.classList.add('visible'); });
+          pushBack(() => { document.getElementById(cfg.btnId)?.closest('.area-select-panel')?.classList.add('visible'); });
           showAreaSub(cfg.key, cfg.label);
         });
       }
