@@ -1,6 +1,7 @@
 {
   "name": "安藤朋恵",
   "birthday": "19760325",
+  "dataVersion": 1,
   "savedInp": {
     "initial": "",
     "gender": "女",
@@ -34,5 +35,5 @@
       "name": "ソリン"
     }
   },
-  "exportedAt": "2026-06-05T20:40:48.815Z"
+  "exportedAt": "2026-06-05T20:49:11.287Z"
 }
