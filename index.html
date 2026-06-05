@@ -2443,6 +2443,18 @@ fetch(`${clientBase}data.json`)
   })
   .catch(() => console.warn('クライアントデータ読み込み失敗'));
 
+// ── FV_data.json から name / release / scenes を取得 ──────────
+fetch(`${clientBase}FV_data.json`)
+  .then(r => r.json())
+  .then(fvData => {
+    // クライアント名
+    if (fvData.name) {
+      const el = document.getElementById('home-client-name');
+      if (el) el.textContent = `${fvData.name} 様の Fortune Village`;
+    }
+  })
+  .catch(() => {});
+
 // ── イントロシーン（村長の家） ──
 const introScenes = [
   {
