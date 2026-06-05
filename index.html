@@ -2357,10 +2357,22 @@ fetch(`${clientBase}data.json`)
       `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}") ${pos} / cover no-repeat !important; }`
     ).join('\n');
     document.head.appendChild(st);
+  })
+  .catch(() => console.warn('クライアントデータ読み込み失敗'));
+
+// ── FV_data.json から name / release / scenes を取得 ──────────
+fetch(`${clientBase}FV_data.json`)
+  .then(r => r.json())
+  .then(fvData => {
+    // クライアント名
+    if (fvData.name) {
+      const el = document.getElementById('home-client-name');
+      if (el) el.textContent = `${fvData.name} 様の Fortune Village`;
+    }
 
     // ── エリアリリース管理 ─────────────────────────────────────
-    const release = data.fvData?.release || {};
-    const scenesData = data.fvData?.scenes || {};
+    const release = fvData.fvData?.release || {};
+    const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
 
     const DIR_CONFIG = {
@@ -2371,11 +2383,9 @@ fetch(`${clientBase}data.json`)
     };
 
     const STEP_TO_SUFFIX = { s2:'', s3:'-lmk', s3b:'-star', s5:'-street', s6:'-lmkcu', s7:'-starcu' };
-    const STEP_TO_LABEL  = { s3:'エリアLMK', s3b:'星施設', s5:'街並み', s6:'施設CU', s7:'星施設CU' };
 
     function buildAreaScenes(dir, cfg, dirScenes) {
       if (!dirScenes || dirScenes.length === 0) {
-        // フォールバック：シーンなし
         return [
           { bg:`bg-${cfg.cls}`, char:true, monitor:false, name:charName,
             text:`${cfg.dirJp}エリアは現在準備中です。\nもうしばらくお待ちください。`, charMode:'bust' }
@@ -2395,12 +2405,10 @@ fetch(`${clientBase}data.json`)
       return scenes;
     }
 
-    // 背景CSS + ボタン有効化
     const bgStyles = [];
     Object.entries(DIR_CONFIG).forEach(([dir, cfg]) => {
       if (!release[dir]) return;
 
-      // 背景CSS生成（画像なしでも暗転フォールバック）
       const dirJp = cfg.dirJp;
       const stepFiles = [
         { suffix:'',       file:`${dirJp}エリア.png`,        pos:'center 30%' },
@@ -2416,17 +2424,13 @@ fetch(`${clientBase}data.json`)
         );
       });
 
-      // シーン配列を構築してマップに登録
       areaSceneMap[cfg.key] = buildAreaScenes(dir, cfg, scenesData[dir] || []);
-
-      // キャラ名を更新
       areaSceneMap[cfg.key].forEach(s => { if (s.name) s.name = charName; });
 
-      // ボタン有効化
       const btn = document.getElementById(cfg.btnId);
       if (btn) {
         btn.classList.remove('disabled');
-        btn.innerHTML = cfg.label; // 「準備中」タグを除去
+        btn.innerHTML = cfg.label;
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           pushBack(() => { $(cfg.btnId).closest('.area-select-panel')?.classList.add('visible'); });
@@ -2439,18 +2443,6 @@ fetch(`${clientBase}data.json`)
       const stArea = document.createElement('style');
       stArea.textContent = bgStyles.join('\n');
       document.head.appendChild(stArea);
-    }
-  })
-  .catch(() => console.warn('クライアントデータ読み込み失敗'));
-
-// ── FV_data.json から name / release / scenes を取得 ──────────
-fetch(`${clientBase}FV_data.json`)
-  .then(r => r.json())
-  .then(fvData => {
-    // クライアント名
-    if (fvData.name) {
-      const el = document.getElementById('home-client-name');
-      if (el) el.textContent = `${fvData.name} 様の Fortune Village`;
     }
   })
   .catch(() => {});
