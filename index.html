@@ -897,6 +897,10 @@
   will-change: opacity;          /* GPU合成レイヤーを常時確保 */
   transform: translateZ(0);      /* iOS Safari でも確実に最前面 */
 }
+/* ── ページ背景を黒に固定（overlay半透明時のグレー混入防止） ── */
+html, body {
+  background: #000 !important;
+}
 /* 背景画像の未ロード時にグレーが見えないよう黒フォールバック */
 #bg {
   background-color: #000 !important;
