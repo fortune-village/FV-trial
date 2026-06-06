@@ -4546,6 +4546,28 @@ function attachFeedbackEvents() {
 function showRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.add('visible'); }
 function hideRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.remove('visible'); }
 
+// シームレス overlay 遷移：sin(π·t) で 0→1→0 を1本のrAFで描く
+// t=0.5（不透明ピーク）でシーンを切り替えるため、暗転が途切れなくつながる
+function sceneOverlayTransition(changeSceneFn, duration = 800) {
+  const ol = document.getElementById('transitionOverlay');
+  ol.style.pointerEvents = 'all';
+  return new Promise(resolve => {
+    const start = performance.now();
+    let changed = false;
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      ol.style.opacity = Math.sin(Math.PI * t); // 0→1→0 seamless
+      if (!changed && t >= 0.5) {
+        changeSceneFn(); // ピーク（最も暗い瞬間）でシーン切り替え
+        changed = true;
+      }
+      if (t < 1) { requestAnimationFrame(tick); }
+      else { ol.style.opacity = 0; ol.style.pointerEvents = 'none'; resolve(); }
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
 // textbox/char を即時非表示にして callback を呼ぶ（フェードなし）
 function fadeHideTextboxChar(callback) {
   const tb = document.querySelector('.textbox');
@@ -4607,27 +4629,20 @@ function next() {
     hideRevealHint();
   }
 
-  // textbox非表示後・bgChange前の待機 → overlay フェードで次シーンへ
-  // ※ 'area'画面以外では残留フラグをリセットして通常処理に委ねる
+  // textbox非表示後・bgChange前の待機 → overlay シームレス遷移
   if (textboxWaitingForTransition) {
     if (currentScreen === 'area') {
       textboxWaitingForTransition = false;
       isTransitioning = true;
-      const ol = document.getElementById('transitionOverlay');
-      ol.style.pointerEvents = 'all';
-      animateOpacity(ol, 0, 1, 600).then(() => {
+      sceneOverlayTransition(() => {
         sceneIndex++;
         _bgChangeInProgress = true;
         renderScene();
         _bgChangeInProgress = false;
-        return animateOpacity(ol, 1, 0, 600);
-      }).then(() => {
-        ol.style.pointerEvents = 'none';
-        isTransitioning = false;
-      });
+      }).then(() => { isTransitioning = false; });
       return;
     }
-    textboxWaitingForTransition = false; // area以外では即リセット・後続処理へ
+    textboxWaitingForTransition = false;
   }
 
   if (typing) {
@@ -4646,19 +4661,23 @@ function next() {
     const nextBg   = currentSceneSet[sceneIndex + 1]?.bg;
     const bgChanges = curBg !== nextBg;
 
-    if (currentScreen === 'area' && bgChanges) {
-      const nextScene = currentSceneSet[sceneIndex + 1];
-      if (nextScene?.type === 'titleCard') {
-        // タイトルカードへの遷移：textbox/char即非表示 → 進む
-        fadeHideTextboxChar(() => {
+    const isStory = ['area','intro','council','guide'].includes(currentScreen);
+    if (bgChanges && isStory) {
+      if (currentScreen === 'area') {
+        // エリア画面：textbox/char即非表示 → タップ待ち（titleCardへは即進む）
+        const nextScene = currentSceneSet[sceneIndex + 1];
+        if (nextScene?.type === 'titleCard') {
+          fadeHideTextboxChar(() => { sceneIndex++; renderScene(); });
+        } else {
+          fadeHideTextboxChar(() => { textboxWaitingForTransition = true; });
+        }
+      } else {
+        // その他ストーリー画面：タップ待ちなし・overlay遷移を即実行
+        isTransitioning = true;
+        sceneOverlayTransition(() => {
           sceneIndex++;
           renderScene();
-        });
-      } else {
-        // エリア内の実背景間切り替え：textbox/char即非表示 → 次タップでoverlay遷移
-        fadeHideTextboxChar(() => {
-          textboxWaitingForTransition = true;
-        });
+        }).then(() => { isTransitioning = false; });
       }
     } else {
       sceneIndex++;
