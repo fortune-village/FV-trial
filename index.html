@@ -4486,6 +4486,8 @@ function attachFeedbackEvents() {
 let isTransitioning = false;
 // bgChange後のテキストボックス出現待ちフラグ（タップ1回でtextbox出現、シーンは進めない）
 let textboxWaitingForReveal = false;
+// textbox非表示後・bgChange実行前の待機フラグ（タップ1回でbgChange開始）
+let textboxWaitingForTransition = false;
 // renderScene呼び出しがbgChange起因かを示す一時フラグ
 let _bgChangeInProgress = false;
 
@@ -4522,6 +4524,19 @@ function next() {
     return;
   }
 
+  // textbox非表示後・bgChange前の待機 → bgChangeFadeを起動
+  if (textboxWaitingForTransition) {
+    textboxWaitingForTransition = false;
+    isTransitioning = true;
+    bgChangeFade(() => {
+      sceneIndex++;
+      _bgChangeInProgress = true;
+      renderScene();
+      _bgChangeInProgress = false;
+    }).then(() => { isTransitioning = false; });
+    return;
+  }
+
   if (typing) {
     clearInterval(typeTimer);
     typing = false;
@@ -4539,15 +4554,9 @@ function next() {
     const bgChanges = curBg !== nextBg;
 
     if (currentScreen === 'area' && bgChanges) {
-      isTransitioning = true;
-      // シーン切り替え前にtextboxを即時非表示
+      // textbox非表示 → 静止 → 次タップでbgChangeFade（textboxWaitingForTransitionで制御）
       document.querySelector(".textbox").classList.add("hidden");
-      bgChangeFade(() => {
-        sceneIndex++;
-        _bgChangeInProgress = true;
-        renderScene();
-        _bgChangeInProgress = false;
-      }).then(() => { isTransitioning = false; });
+      textboxWaitingForTransition = true;
     } else {
       sceneIndex++;
       renderScene();
