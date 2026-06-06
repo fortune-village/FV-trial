@@ -876,8 +876,15 @@
   background: url("common/bg_room.png") center top / cover no-repeat !important;
 }
 
-/* ── textbox折りたたみ（廃止：bgChangeで自動制御に変更） ── */
-/* #mainTextbox.minimized ... は不使用 */
+/* ── 進行バーを画面最下部に固定 ── */
+.progress {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  top: auto !important;
+  width: 100% !important;
+  z-index: 100 !important;
+}
 /* ── textbox半透過 ── */
 .textbox {
   background: linear-gradient(175deg, rgba(248,232,196,0.72), rgba(210,180,136,0.72)) !important;
