@@ -2002,9 +2002,9 @@ body {
       <button class="area-btn disabled area-east" id="btnEast">東エリア<span class="area-tag">準備中</span></button>
       <button class="area-btn disabled area-south" id="btnSouth">南エリア<span class="area-tag">準備中</span></button>
     </div>
-    <div style="padding:0 12px 4px;">
+    <div style="padding:10px 12px 4px;">
       <button id="btnBackToHouse" style="width:100%;background:rgba(60,40,20,0.45);border:1px solid rgba(200,170,110,0.35);border-radius:10px;color:rgba(230,210,170,0.9);font-size:14px;letter-spacing:0.08em;cursor:pointer;padding:11px 16px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;">
-        🏠 村長の家に戻る
+        ⌂ 村長の家に戻る
       </button>
     </div>
   </div>
@@ -3872,7 +3872,7 @@ async function transitionScene(callback, duration = 600) {
   layer.style.opacity = "1";
 }
 
-function showAreaSelect() {
+function showAreaSelect(fromArea = false) {
   textboxWaitingForReveal = false;
   textboxWaitingForTransition = false;
   hideRevealHint();
@@ -3882,6 +3882,8 @@ function showAreaSelect() {
   $("choices").classList.remove("show"); $("choices").style.display = "none";
   $("areaSelect").classList.add("visible");
   $("btnHomeFixed").classList.add("visible");
+  // エリアから戻る時のみ「村長の家に戻る」を表示
+  $("btnBackToHouse").style.display = fromArea ? 'block' : 'none';
 }
 
 function hideAreaSelect() {
@@ -4105,7 +4107,7 @@ function renderChoices(choices) {
           pushBack(() => { closeFortunePanel(); currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=introScenes.length-1; hideAllSceneElements(); renderScene(); });
           box.style.display="none"; showFortunePanel();
         } else if (label === "別のエリアへ") {
-          await transitionScene(() => { box.style.display="none"; showAreaSelect(); });
+          await transitionScene(() => { box.style.display="none"; showAreaSelect(true); });
         } else if (label === "村長の家に戻る") {
           transitionScene(() => { box.style.display="none"; currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=1; renderScene(); });
         } else if (label === "もう一度見る") {
@@ -4744,8 +4746,10 @@ function next() {
     }
   } else {
     // 最終シーン → エリア選択へ戻る
-    if (currentScreen === 'intro' || currentScreen === 'area') {
-      showAreaSelect();
+    if (currentScreen === 'intro') {
+      showAreaSelect(false);
+    } else if (currentScreen === 'area') {
+      showAreaSelect(true);
     }
   }
 }
