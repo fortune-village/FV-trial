@@ -879,32 +879,37 @@
 /* ── textbox最小化 ── */
 #mainTextbox.minimized .text-body,
 #mainTextbox.minimized .tap-hint { display: none !important; }
-#mainTextbox.minimized { min-height: 0 !important; }
-/* area-mode + minimized：高さ・余白を名前バーだけに */
-#mainTextbox.area-mode.minimized {
+#mainTextbox.minimized {
+  min-height: 0 !important;
   height: auto !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
+}
+#mainTextbox.minimized .name-bar {
   padding-top: 6px !important;
   padding-bottom: 6px !important;
 }
 #mainTextbox #textbox-toggle { transition: opacity .15s; }
-/* ── エリアシーンのみ：半透過・固定高さ ── */
-#mainTextbox.area-mode {
-  background: linear-gradient(175deg, rgba(248,232,196,0.75), rgba(210,180,136,0.75)) !important;
-  backdrop-filter: blur(4px) !important;
-  -webkit-backdrop-filter: blur(4px) !important;
-  height: 28vh !important;
-  min-height: unset !important;
-  max-height: unset !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
+/* ── textbox半透過 ── */
+.textbox {
+  background: linear-gradient(175deg, rgba(248,232,196,0.72), rgba(210,180,136,0.72)) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
 }
-#mainTextbox.area-mode .text-body {
-  flex: 1 !important;
-  overflow: hidden !important;
-  display: -webkit-box !important;
-  -webkit-box-orient: vertical !important;
-  -webkit-line-clamp: 4 !important;
+/* ── name-bar整列 ── */
+.name-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+}
+#name-text { flex: 1; }
+#textbox-toggle {
+  align-self: center !important;
+  line-height: 1 !important;
+  padding: 3px 10px !important;
+  margin: 0 !important;
 }
 #sceneLayer {
   position: absolute;
@@ -2046,12 +2051,10 @@ body {
   <div class="progress"><span id="progressBar"></span></div>
 
   <div class="textbox" id="mainTextbox">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <div id="name" class="name-bar">
-        <span id="name-text">SYSTEM</span>
-      </div>
+    <div id="name" class="name-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <span id="name-text">SYSTEM</span>
       <button id="textbox-toggle" onclick="toggleTextbox(event)"
-        style="padding:2px 8px;border:none;background:transparent;color:rgba(255,240,210,0.8);font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0;line-height:1;margin-bottom:4px;margin-right:10px">▼</button>
+        style="padding:2px 10px;border-radius:8px;border:none;background:rgba(88,44,44,0.55);color:rgba(255,240,210,0.9);font-size:10px;cursor:pointer;font-family:inherit;flex-shrink:0;line-height:1.4">▼</button>
     </div>
     <div id="text" class="text-body"></div>
     <div class="tap-hint">TAP / CLICK</div>
@@ -3930,9 +3933,6 @@ function renderScene() {
   }
 
   setBg(s.bg);
-  // エリアシーン（bg-room以外）のときだけarea-modeを付与
-  const tb = document.getElementById('mainTextbox');
-  if (tb) tb.classList.toggle('area-mode', !!s.bg && s.bg !== 'bg-room');
   $("titleImage").classList.remove("show");
   $("titleTap").classList.remove("show");
   $("areaSelect").classList.remove("visible");
