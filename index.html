@@ -2002,6 +2002,9 @@ body {
       <button class="area-btn disabled area-east" id="btnEast">東エリア<span class="area-tag">準備中</span></button>
       <button class="area-btn disabled area-south" id="btnSouth">南エリア<span class="area-tag">準備中</span></button>
     </div>
+    <div style="text-align:center;margin-top:14px;">
+      <button id="btnBackToHouse" style="background:none;border:none;color:rgba(200,180,140,0.75);font-size:13px;letter-spacing:0.08em;cursor:pointer;padding:6px 16px;font-family:inherit;">← 村長の家に戻る</button>
+    </div>
   </div>
 
   <!-- 施設選択パネル -->
@@ -4977,6 +4980,17 @@ $("btnGoHouse").addEventListener("click", async (e) => {
     currentSceneSet = introScenes;
     sceneIndex = 0;
     hideAllSceneElements();
+    renderScene();
+  });
+});
+
+$("btnBackToHouse").addEventListener("click", (e) => {
+  e.stopPropagation();
+  document.getElementById('app').classList.remove('panel-open');
+  transitionScene(() => {
+    currentScreen = 'intro';
+    currentSceneSet = introScenes;
+    sceneIndex = 1;
     renderScene();
   });
 });
