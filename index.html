@@ -876,21 +876,8 @@
   background: url("common/bg_room.png") center top / cover no-repeat !important;
 }
 
-/* ── textbox最小化 ── */
-#mainTextbox.minimized .text-body,
-#mainTextbox.minimized .tap-hint { display: none !important; }
-#mainTextbox.minimized {
-  min-height: 0 !important;
-  height: auto !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  overflow: hidden !important;
-}
-#mainTextbox.minimized .name-bar {
-  padding-top: 6px !important;
-  padding-bottom: 6px !important;
-}
-#mainTextbox #textbox-toggle { transition: opacity .15s; }
+/* ── textbox折りたたみ（廃止：bgChangeで自動制御に変更） ── */
+/* #mainTextbox.minimized ... は不使用 */
 /* ── textbox半透過 ── */
 .textbox {
   background: linear-gradient(175deg, rgba(248,232,196,0.72), rgba(210,180,136,0.72)) !important;
@@ -906,10 +893,7 @@
 }
 #name-text { flex: 1; }
 #textbox-toggle {
-  align-self: center !important;
-  line-height: 1 !important;
-  padding: 3px 10px !important;
-  margin: 0 !important;
+  display: none !important;
 }
 #sceneLayer {
   position: absolute;
@@ -3927,7 +3911,9 @@ function renderScene() {
       if (nextScene?.bg) setBg(nextScene.bg);
     }).then(() => {
       sceneIndex++;
+      _bgChangeInProgress = true;
       renderScene();
+      _bgChangeInProgress = false;
     });
     return;
   }
@@ -3936,7 +3922,14 @@ function renderScene() {
   $("titleImage").classList.remove("show");
   $("titleTap").classList.remove("show");
   $("areaSelect").classList.remove("visible");
-  document.querySelector(".textbox").classList.toggle("hidden", !!s.hideTextbox);
+  // bgChange起因のrenderScene → textboxは隠したまま、タップ待ち状態にセット
+  if (_bgChangeInProgress && !s.hideTextbox) {
+    document.querySelector(".textbox").classList.add("hidden");
+    textboxWaitingForReveal = true;
+  } else {
+    document.querySelector(".textbox").classList.toggle("hidden", !!s.hideTextbox);
+    textboxWaitingForReveal = false;
+  }
   $("logo").classList.toggle("show", !!s.logo);
   $("char").classList.toggle("hidden", !s.char);
   // bust クラスはキャラが表示されるときだけ切り替える
@@ -4491,6 +4484,10 @@ function attachFeedbackEvents() {
 
 // ── タップ・クリック ──
 let isTransitioning = false;
+// bgChange後のテキストボックス出現待ちフラグ（タップ1回でtextbox出現、シーンは進めない）
+let textboxWaitingForReveal = false;
+// renderScene呼び出しがbgChange起因かを示す一時フラグ
+let _bgChangeInProgress = false;
 
 function next() {
   if (videoPlaying) return;
@@ -4515,6 +4512,16 @@ function next() {
     return;
   }
 
+  // bgChange後タップ待ち → textboxを出現させるだけでシーンは進めない
+  if (textboxWaitingForReveal) {
+    textboxWaitingForReveal = false;
+    const s = currentSceneSet[sceneIndex];
+    if (!s?.hideTextbox) {
+      document.querySelector(".textbox").classList.remove("hidden");
+    }
+    return;
+  }
+
   if (typing) {
     clearInterval(typeTimer);
     typing = false;
@@ -4533,8 +4540,14 @@ function next() {
 
     if (currentScreen === 'area' && bgChanges) {
       isTransitioning = true;
-      bgChangeFade(() => { sceneIndex++; renderScene(); })
-        .then(() => { isTransitioning = false; });
+      // シーン切り替え前にtextboxを即時非表示
+      document.querySelector(".textbox").classList.add("hidden");
+      bgChangeFade(() => {
+        sceneIndex++;
+        _bgChangeInProgress = true;
+        renderScene();
+        _bgChangeInProgress = false;
+      }).then(() => { isTransitioning = false; });
     } else {
       sceneIndex++;
       renderScene();
