@@ -894,6 +894,15 @@ html, body {
 #bg {
   background-color: #000 !important;
 }
+/* ── シーン遷移 overlay ── */
+#sceneTransitionOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
 
 /* ── textbox / char フェードアウト（animateOpacity で制御するためCSS不要） ── */
 
@@ -2078,6 +2087,7 @@ body {
   <div id="choices" class="choice-box"></div>
   <div class="progress"><span id="progressBar"></span></div>
   <div id="revealHint">TAP</div>
+  <div id="sceneTransitionOverlay"></div>
 
   <div class="textbox" id="mainTextbox">
     <div id="name" class="name-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
@@ -4545,23 +4555,35 @@ function attachFeedbackEvents() {
 function showRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.add('visible'); }
 function hideRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.remove('visible'); }
 
-// シーン遷移：sceneLayer を直接フェード（CSS transition を事前クリアして確実に動作）
-// body { background: #000 } があるので opacity=0 時は純黒になりグレーは出ない
+// シーン遷移：CSS transition で overlay をフェードイン→シーン変更→フェードアウト
 function sceneOverlayTransition(changeSceneFn, duration = 800) {
-  const layer = $("sceneLayer");
-  const half  = duration / 2;
-  // transitionScene が残した CSS transition を消してから rAF アニメーション
-  layer.style.transition = 'none';
-  return animateOpacity(layer, 1, 0, half)
-    .then(() => {
-      layer.style.opacity = 0;   // 確実に 0 に固定
-      changeSceneFn();           // シーン変更（背景はまだ opacity=0 で隠れている）
-      return delay(50);          // 新背景の描画を1フレーム待つ
-    })
-    .then(() => {
-      layer.style.transition = 'none';
-      return animateOpacity(layer, 0, 1, half);
-    });
+  const ol = document.getElementById('sceneTransitionOverlay');
+  const half = duration / 2;
+  // 初期状態にリセット
+  ol.style.transition = 'none';
+  ol.style.opacity    = '0';
+  ol.style.pointerEvents = 'all';
+  return new Promise(resolve => {
+    // 2フレーム待ってから CSS transition 開始（opacity=0 の状態を確定させる）
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      // フェードイン (0→1)
+      ol.style.transition = `opacity ${half}ms linear`;
+      ol.style.opacity    = '1';
+      setTimeout(() => {
+        // opacity=1 のタイミングでシーン変更
+        changeSceneFn();
+        requestAnimationFrame(() => {
+          // フェードアウト (1→0)
+          ol.style.transition = `opacity ${half}ms linear`;
+          ol.style.opacity    = '0';
+          setTimeout(() => {
+            ol.style.pointerEvents = 'none';
+            resolve();
+          }, half);
+        });
+      }, half);
+    }));
+  });
 }
 
 // textbox/char を即時非表示にして callback を呼ぶ（フェードなし）
