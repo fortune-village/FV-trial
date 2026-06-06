@@ -895,10 +895,12 @@
 .name-bar {
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
+  justify-content: flex-start !important;
   gap: 8px !important;
 }
-#name-text { flex: 1; }
+#name-text {
+  flex: 0 0 auto !important;
+}
 #textbox-toggle {
   display: none !important;
 }
@@ -3757,6 +3759,8 @@ function renderTitle() {
 }
 
 function showHome() {
+  textboxWaitingForReveal = false;
+  textboxWaitingForTransition = false;
   clearNavStack();
   currentScreen = 'home';
   hideAllSceneElements();
@@ -3817,6 +3821,8 @@ async function transitionScene(callback, duration = 600) {
 }
 
 function showAreaSelect() {
+  textboxWaitingForReveal = false;
+  textboxWaitingForTransition = false;
   document.getElementById('app').classList.add('panel-open');
   currentScreen = 'area_select';
   document.querySelector(".textbox").classList.add("hidden");
@@ -4527,30 +4533,38 @@ function next() {
   }
 
   // bgChange後タップ待ち → textboxとcharを出現させるだけでシーンは進めない
+  // ※ 'area'画面以外では残留フラグをリセットして通常処理に委ねる
   if (textboxWaitingForReveal) {
-    textboxWaitingForReveal = false;
-    const s = currentSceneSet[sceneIndex];
-    if (!s?.hideTextbox) {
-      document.querySelector(".textbox").classList.remove("hidden");
+    if (currentScreen === 'area') {
+      textboxWaitingForReveal = false;
+      const s = currentSceneSet[sceneIndex];
+      if (!s?.hideTextbox) {
+        document.querySelector(".textbox").classList.remove("hidden");
+      }
+      // キャラもtextboxと連動して復元
+      if (s?.char) {
+        $("char").classList.remove("hidden");
+      }
+      return;
     }
-    // キャラもtextboxと連動して復元
-    if (s?.char) {
-      $("char").classList.remove("hidden");
-    }
-    return;
+    textboxWaitingForReveal = false; // area以外では即リセット・後続処理へ
   }
 
   // textbox非表示後・bgChange前の待機 → bgChangeFadeを起動
+  // ※ 'area'画面以外では残留フラグをリセットして通常処理に委ねる
   if (textboxWaitingForTransition) {
-    textboxWaitingForTransition = false;
-    isTransitioning = true;
-    bgChangeFade(() => {
-      sceneIndex++;
-      _bgChangeInProgress = true;
-      renderScene();
-      _bgChangeInProgress = false;
-    }).then(() => { isTransitioning = false; });
-    return;
+    if (currentScreen === 'area') {
+      textboxWaitingForTransition = false;
+      isTransitioning = true;
+      bgChangeFade(() => {
+        sceneIndex++;
+        _bgChangeInProgress = true;
+        renderScene();
+        _bgChangeInProgress = false;
+      }).then(() => { isTransitioning = false; });
+      return;
+    }
+    textboxWaitingForTransition = false; // area以外では即リセット・後続処理へ
   }
 
   if (typing) {
