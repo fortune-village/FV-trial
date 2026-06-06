@@ -4010,7 +4010,14 @@ function renderScene() {
   setMonitor(s.monitorType);
   const nameEl = document.getElementById('name-text') || document.getElementById('name');
   if (nameEl) nameEl.textContent = s.name;
-  typeText(s.text);
+  // bgChange遷移中はテキストを保留し、フェードアウト完了後に開始
+  if (_bgChangeInProgress) {
+    _pendingTypeText = s.text ?? '';
+    typeText(''); // 現テキストをクリアのみ
+  } else {
+    _pendingTypeText = null;
+    typeText(s.text);
+  }
   if (s.achievementScene) unlockByScene(s.achievementScene);
   const total = currentSceneSet.length;
   $("progressBar").style.width = `${((sceneIndex + 1) / total) * 100}%`;
@@ -4616,6 +4623,8 @@ let textboxWaitingForReveal = false;
 let textboxWaitingForTransition = false;
 // renderScene呼び出しがbgChange起因かを示す一時フラグ
 let _bgChangeInProgress = false;
+// bgChange中に保留されたテキスト（フェードアウト完了後にtypeTextで開始）
+let _pendingTypeText = null;
 
 function next() {
   if (videoPlaying) return;
@@ -4650,13 +4659,15 @@ function next() {
       if (!s?.hideTextbox) {
         document.querySelector(".textbox").classList.remove("hidden");
       }
-      // キャラもtextboxと連動して復元
-      if (s?.char) {
-        $("char").classList.remove("hidden");
+      if (s?.char) { $("char").classList.remove("hidden"); }
+      // フェードアウト完了後に保留していたテキストを開始
+      if (_pendingTypeText !== null) {
+        typeText(_pendingTypeText);
+        _pendingTypeText = null;
       }
       return;
     }
-    textboxWaitingForReveal = false; // area以外では即リセット・後続処理へ
+    textboxWaitingForReveal = false;
     hideRevealHint();
   }
 
@@ -4710,8 +4721,17 @@ function next() {
         isTransitioning = true;
         sceneOverlayTransition(() => {
           sceneIndex++;
+          _bgChangeInProgress = true;
           renderScene();
-        }).then(() => { isTransitioning = false; });
+          _bgChangeInProgress = false;
+        }).then(() => {
+          isTransitioning = false;
+          // フェードアウト完了後に保留テキストを開始（textboxがすでに表示されている場合）
+          if (_pendingTypeText !== null && !textboxWaitingForReveal) {
+            typeText(_pendingTypeText);
+            _pendingTypeText = null;
+          }
+        });
       }
     } else {
       sceneIndex++;
