@@ -4615,12 +4615,12 @@ function next() {
       isTransitioning = true;
       const ol = document.getElementById('transitionOverlay');
       ol.style.pointerEvents = 'all';
-      animateOpacity(ol, 0, 1, 300).then(() => {
+      animateOpacity(ol, 0, 1, 600).then(() => {
         sceneIndex++;
         _bgChangeInProgress = true;
         renderScene();
         _bgChangeInProgress = false;
-        return animateOpacity(ol, 1, 0, 300);
+        return animateOpacity(ol, 1, 0, 600);
       }).then(() => {
         ol.style.pointerEvents = 'none';
         isTransitioning = false;
