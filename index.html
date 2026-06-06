@@ -4556,31 +4556,44 @@ function showRevealHint() { const h = document.getElementById('revealHint'); if(
 function hideRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.remove('visible'); }
 
 // シーン遷移：CSS transition で overlay をフェードイン→シーン変更→フェードアウト
+// 次シーンのbg画像を事前ロードする（クラス名からURL取得 → Image()でキャッシュ）
+function preloadBgClass(bgClass) {
+  if (!bgClass) return;
+  try {
+    const tmp = document.createElement('div');
+    tmp.className = `bg ${bgClass}`;
+    tmp.style.cssText = 'position:absolute;visibility:hidden;opacity:0;pointer-events:none;width:1px;height:1px;';
+    document.body.appendChild(tmp);
+    const url = getComputedStyle(tmp).backgroundImage;
+    document.body.removeChild(tmp);
+    const m = url.match(/url\(["']?(.+?)["']?\)/);
+    if (m && m[1]) { const img = new Image(); img.src = m[1]; }
+  } catch(e) {}
+}
+
 function sceneOverlayTransition(changeSceneFn, duration = 800) {
   const ol = document.getElementById('sceneTransitionOverlay');
   const half = duration / 2;
-  // 初期状態にリセット
   ol.style.transition = 'none';
   ol.style.opacity    = '0';
   ol.style.pointerEvents = 'all';
   return new Promise(resolve => {
-    // 2フレーム待ってから CSS transition 開始（opacity=0 の状態を確定させる）
     requestAnimationFrame(() => requestAnimationFrame(() => {
       // フェードイン (0→1)
       ol.style.transition = `opacity ${half}ms linear`;
       ol.style.opacity    = '1';
       setTimeout(() => {
-        // opacity=1 のタイミングでシーン変更
+        // opacity=1 でシーン変更
         changeSceneFn();
-        requestAnimationFrame(() => {
-          // フェードアウト (1→0)
+        // 200ms 待機：bg画像のロード・描画を待ってからフェードアウト開始
+        setTimeout(() => {
           ol.style.transition = `opacity ${half}ms linear`;
           ol.style.opacity    = '0';
           setTimeout(() => {
             ol.style.pointerEvents = 'none';
             resolve();
           }, half);
-        });
+        }, 200);
       }, half);
     }));
   });
@@ -4687,6 +4700,9 @@ function next() {
         if (nextScene?.type === 'titleCard') {
           fadeHideTextboxChar(() => { sceneIndex++; renderScene(); });
         } else {
+          // 次シーンのbg画像を先読み（overlay中に確実にロードしておく）
+          const nextAfter = currentSceneSet[sceneIndex + 1];
+          preloadBgClass(nextAfter?.bg);
           fadeHideTextboxChar(() => { textboxWaitingForTransition = true; });
         }
       } else {
