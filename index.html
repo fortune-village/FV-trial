@@ -889,7 +889,7 @@
 /* ── シーン遷移 overlay（全画面を覆って確実にフェード） ── */
 #transitionOverlay {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: #000;
   opacity: 0;
   pointer-events: none;
@@ -4546,23 +4546,42 @@ function attachFeedbackEvents() {
 function showRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.add('visible'); }
 function hideRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.remove('visible'); }
 
-// シームレス overlay 遷移：sin(π·t) で 0→1→0 を1本のrAFで描く
-// t=0.5（不透明ピーク）でシーンを切り替えるため、暗転が途切れなくつながる
+// シームレス overlay 遷移（3フェーズ版）
+// phase 'in'  : 0→1 フェードイン（linear）
+// phase 'hold': opacity=1 確定フレームでシーン変更（グレー混入防止）
+// phase 'out' : 1→0 フェードアウト（linear）
 function sceneOverlayTransition(changeSceneFn, duration = 800) {
   const ol = document.getElementById('transitionOverlay');
   ol.style.pointerEvents = 'all';
+  const half = duration / 2;
   return new Promise(resolve => {
-    const start = performance.now();
-    let changed = false;
+    let phase = 'in';
+    let phaseStart = performance.now();
     function tick(now) {
-      const t = Math.min((now - start) / duration, 1);
-      ol.style.opacity = Math.sin(Math.PI * t); // 0→1→0 seamless
-      if (!changed && t >= 0.5) {
-        changeSceneFn(); // ピーク（最も暗い瞬間）でシーン切り替え
-        changed = true;
+      if (phase === 'in') {
+        const t = Math.min((now - phaseStart) / half, 1);
+        ol.style.opacity = t;
+        if (t >= 1) {
+          ol.style.opacity = 1;
+          phase = 'hold';           // 次フレームで確実に opacity=1 を描画させる
+          requestAnimationFrame(tick);
+          return;
+        }
+      } else if (phase === 'hold') {
+        changeSceneFn();            // overlay が完全不透明な1フレームでシーン変更
+        phase = 'out';
+        phaseStart = now;
+      } else {                      // 'out'
+        const t = Math.min((now - phaseStart) / half, 1);
+        ol.style.opacity = 1 - t;
+        if (t >= 1) {
+          ol.style.opacity = 0;
+          ol.style.pointerEvents = 'none';
+          resolve();
+          return;
+        }
       }
-      if (t < 1) { requestAnimationFrame(tick); }
-      else { ol.style.opacity = 0; ol.style.pointerEvents = 'none'; resolve(); }
+      requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
   });
