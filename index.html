@@ -3925,10 +3925,11 @@ function hideCharSelect() {
 // ── キャラクターカード ──
 function showCharCard() {
   $("charSelect").classList.remove("visible");
-  const cardImage = CLIENT.char.card || CLIENT.char.central || "char_central.png";
-  const src = clientBase + cardImage + "?v=" + Date.now();
-  console.log("charCardImage src:", src);
-  console.log("CLIENT.char:", CLIENT.char);
+  // カード画像：char.card が明示設定されていれば使用、なければ central から _card.png を導出
+  const centralFile = CLIENT.char.central || "char_central.png";
+  const derivedCard  = centralFile.replace(/\.png$/i, "_card.png");
+  const cardImage    = CLIENT.char.card || derivedCard;
+  const src = clientBase + cardImage;
   $("charCardImage").src = src;
   $("charCard").classList.add("show");
   $("btnHomeFixed").classList.add("visible");
