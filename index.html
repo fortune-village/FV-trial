@@ -897,9 +897,14 @@
   align-items: center !important;
   justify-content: flex-start !important;
   gap: 8px !important;
+  background: transparent !important;  /* 全幅バー背景を除去 */
+  padding: 0 !important;
 }
 #name-text {
   flex: 0 0 auto !important;
+  display: inline-block !important;
+  padding: 3px 14px !important;        /* コンパクトなピル */
+  border-radius: 999px !important;
 }
 #textbox-toggle {
   display: none !important;
