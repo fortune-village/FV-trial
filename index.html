@@ -881,8 +881,8 @@
 #mainTextbox.minimized .tap-hint { display: none !important; }
 #mainTextbox.minimized { min-height: 0 !important; }
 #mainTextbox #textbox-toggle { transition: opacity .15s; }
-/* ── textbox固定サイズ・半透過 ── */
-.textbox {
+/* ── エリアシーンのみ：半透過・固定高さ ── */
+#mainTextbox.area-mode {
   background: linear-gradient(175deg, rgba(248,232,196,0.75), rgba(210,180,136,0.75)) !important;
   backdrop-filter: blur(4px) !important;
   -webkit-backdrop-filter: blur(4px) !important;
@@ -893,15 +893,13 @@
   flex-direction: column !important;
   overflow: hidden !important;
 }
-.text-body {
+#mainTextbox.area-mode .text-body {
   flex: 1 !important;
   overflow: hidden !important;
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
   -webkit-line-clamp: 8 !important;
 }
-/* ── 最小化時の▼ボタン ── */
-#textbox-toggle { transition: opacity .15s; }
 #sceneLayer {
   position: absolute;
   inset: 0;
@@ -3926,6 +3924,9 @@ function renderScene() {
   }
 
   setBg(s.bg);
+  // エリアシーン（bg-room以外）のときだけarea-modeを付与
+  const tb = document.getElementById('mainTextbox');
+  if (tb) tb.classList.toggle('area-mode', !!s.bg && s.bg !== 'bg-room');
   $("titleImage").classList.remove("show");
   $("titleTap").classList.remove("show");
   $("areaSelect").classList.remove("visible");
