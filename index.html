@@ -3922,21 +3922,26 @@ function renderScene() {
   $("titleImage").classList.remove("show");
   $("titleTap").classList.remove("show");
   $("areaSelect").classList.remove("visible");
-  // bgChange起因のrenderScene → textboxは隠したまま、タップ待ち状態にセット
+  // bgChange起因のrenderScene → textboxとcharを隠したまま、タップ待ち状態にセット
   if (_bgChangeInProgress && !s.hideTextbox) {
     document.querySelector(".textbox").classList.add("hidden");
     textboxWaitingForReveal = true;
+    // キャラもtextboxと連動して非表示（bustクラスだけ先に設定してクリップを維持）
+    $("char").classList.add("hidden");
+    if (s.char) {
+      $("char").classList.toggle("bust", s.charMode === "bust");
+    }
   } else {
     document.querySelector(".textbox").classList.toggle("hidden", !!s.hideTextbox);
     textboxWaitingForReveal = false;
+    $("char").classList.toggle("hidden", !s.char);
+    // bust クラスはキャラが表示されるときだけ切り替える
+    // 非表示時は bust を維持して overflow:hidden によるクリップを保つ（全身チラ見え防止）
+    if (s.char) {
+      $("char").classList.toggle("bust", s.charMode === "bust");
+    }
   }
   $("logo").classList.toggle("show", !!s.logo);
-  $("char").classList.toggle("hidden", !s.char);
-  // bust クラスはキャラが表示されるときだけ切り替える
-  // 非表示時は bust を維持して overflow:hidden によるクリップを保つ（全身チラ見え防止）
-  if (s.char) {
-    $("char").classList.toggle("bust", s.charMode === "bust");
-  }
   $("monitor").classList.toggle("show", !!s.monitor);
   setMonitor(s.monitorType);
   const nameEl = document.getElementById('name-text') || document.getElementById('name');
@@ -4514,12 +4519,16 @@ function next() {
     return;
   }
 
-  // bgChange後タップ待ち → textboxを出現させるだけでシーンは進めない
+  // bgChange後タップ待ち → textboxとcharを出現させるだけでシーンは進めない
   if (textboxWaitingForReveal) {
     textboxWaitingForReveal = false;
     const s = currentSceneSet[sceneIndex];
     if (!s?.hideTextbox) {
       document.querySelector(".textbox").classList.remove("hidden");
+    }
+    // キャラもtextboxと連動して復元
+    if (s?.char) {
+      $("char").classList.remove("hidden");
     }
     return;
   }
