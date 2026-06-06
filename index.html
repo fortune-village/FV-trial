@@ -880,13 +880,25 @@
 #mainTextbox.minimized .text-body,
 #mainTextbox.minimized .tap-hint { display: none !important; }
 #mainTextbox.minimized { min-height: 0 !important; }
-#mainTextbox.minimized #textbox-toggle { content: '▲'; }
 #mainTextbox #textbox-toggle { transition: opacity .15s; }
-/* ── textbox半透過 ── */
+/* ── textbox固定サイズ・半透過 ── */
 .textbox {
   background: linear-gradient(175deg, rgba(248,232,196,0.75), rgba(210,180,136,0.75)) !important;
   backdrop-filter: blur(4px) !important;
   -webkit-backdrop-filter: blur(4px) !important;
+  height: 36vh !important;
+  min-height: unset !important;
+  max-height: unset !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+.text-body {
+  flex: 1 !important;
+  overflow: hidden !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 8 !important;
 }
 /* ── 最小化時の▼ボタン ── */
 #textbox-toggle { transition: opacity .15s; }
@@ -2030,12 +2042,12 @@ body {
   <div class="progress"><span id="progressBar"></span></div>
 
   <div class="textbox" id="mainTextbox">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
       <div id="name" class="name-bar">
         <span id="name-text">SYSTEM</span>
       </div>
       <button id="textbox-toggle" onclick="toggleTextbox(event)"
-        style="padding:2px 8px;border:none;background:transparent;color:rgba(255,240,210,0.8);font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0;line-height:1">▼</button>
+        style="padding:2px 8px;border:none;background:transparent;color:rgba(255,240,210,0.8);font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0;line-height:1;margin-bottom:4px">▼</button>
     </div>
     <div id="text" class="text-body"></div>
     <div class="tap-hint">TAP / CLICK</div>
