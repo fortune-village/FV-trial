@@ -4109,7 +4109,7 @@ function renderChoices(choices) {
         } else if (label === "別のエリアへ") {
           await transitionScene(() => { box.style.display="none"; showAreaSelect(true); });
         } else if (label === "村長の家に戻る") {
-          transitionScene(() => { box.style.display="none"; currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=1; renderScene(); });
+          transitionScene(() => { box.style.display="none"; currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=0; renderScene(); });
         } else if (label === "もう一度見る") {
           transitionScene(() => { sceneIndex=0; renderScene(); });
         }
@@ -4996,7 +4996,7 @@ $("btnBackToHouse").addEventListener("click", (e) => {
   transitionScene(() => {
     currentScreen = 'intro';
     currentSceneSet = introScenes;
-    sceneIndex = 1;
+    sceneIndex = 0;
     renderScene();
   });
 });
