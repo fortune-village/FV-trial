@@ -4554,9 +4554,18 @@ function next() {
     const bgChanges = curBg !== nextBg;
 
     if (currentScreen === 'area' && bgChanges) {
-      // textbox非表示 → 静止 → 次タップでbgChangeFade（textboxWaitingForTransitionで制御）
-      document.querySelector(".textbox").classList.add("hidden");
-      textboxWaitingForTransition = true;
+      const nextScene = currentSceneSet[sceneIndex + 1];
+      if (nextScene?.type === 'titleCard') {
+        // タイトルカードへの遷移（エリア入場前のbg-room→titleCard等）
+        // textboxを隠してそのまま進む（待機フラグなし）
+        document.querySelector(".textbox").classList.add("hidden");
+        sceneIndex++;
+        renderScene();
+      } else {
+        // エリア内の実背景間切り替え：textbox非表示 → 静止 → 次タップでbgChangeFade
+        document.querySelector(".textbox").classList.add("hidden");
+        textboxWaitingForTransition = true;
+      }
     } else {
       sceneIndex++;
       renderScene();
