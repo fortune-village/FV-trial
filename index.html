@@ -886,18 +886,7 @@
   z-index: 100 !important;
 }
 
-/* ── シーン遷移 overlay（全画面を覆って確実にフェード） ── */
-#transitionOverlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: #000;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 9999;
-  will-change: opacity;          /* GPU合成レイヤーを常時確保 */
-  transform: translateZ(0);      /* iOS Safari でも確実に最前面 */
-}
-/* ── ページ背景を黒に固定（overlay半透明時のグレー混入防止） ── */
+/* ── ページ背景を黒に固定（フェード時のグレー混入防止） ── */
 html, body {
   background: #000 !important;
 }
@@ -2089,7 +2078,6 @@ body {
   <div id="choices" class="choice-box"></div>
   <div class="progress"><span id="progressBar"></span></div>
   <div id="revealHint">TAP</div>
-  <div id="transitionOverlay"></div>
 
   <div class="textbox" id="mainTextbox">
     <div id="name" class="name-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
@@ -4557,47 +4545,23 @@ function attachFeedbackEvents() {
 function showRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.add('visible'); }
 function hideRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.remove('visible'); }
 
-// シームレス overlay 遷移（3フェーズ版）
-// phase 'in'  : 0→1 フェードイン（linear）
-// phase 'hold': opacity=1 確定フレームでシーン変更（グレー混入防止）
-// phase 'out' : 1→0 フェードアウト（linear）
+// シーン遷移：sceneLayer を直接フェード（CSS transition を事前クリアして確実に動作）
+// body { background: #000 } があるので opacity=0 時は純黒になりグレーは出ない
 function sceneOverlayTransition(changeSceneFn, duration = 800) {
-  const ol = document.getElementById('transitionOverlay');
-  ol.style.pointerEvents = 'all';
-  const half = duration / 2;
-  return new Promise(resolve => {
-    let phase = 'in';
-    let phaseStart = performance.now();
-    function tick(now) {
-      if (phase === 'in') {
-        const t = Math.min((now - phaseStart) / half, 1);
-        ol.style.opacity = t;
-        if (t >= 1) {
-          ol.style.opacity = 1;
-          phase = 'hold';           // 次フレームで確実に opacity=1 を描画させる
-          requestAnimationFrame(tick);
-          return;
-        }
-      } else if (phase === 'hold') {
-        ol.style.opacity = 1;       // このフレームでも明示的に1をセット（キャッシュ誤用防止）
-        changeSceneFn();            // overlay が完全不透明な1フレームでシーン変更
-        phase = 'out';
-        phaseStart = -1;            // out の第1tickで確定（changeSceneFnの処理時間を除外）
-      } else {                      // 'out'
-        if (phaseStart < 0) phaseStart = now; // 第1tickで基点をセット → 必ずopacity=1から始まる
-        const t = Math.min((now - phaseStart) / half, 1);
-        ol.style.opacity = 1 - t;
-        if (t >= 1) {
-          ol.style.opacity = 0;
-          ol.style.pointerEvents = 'none';
-          resolve();
-          return;
-        }
-      }
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  });
+  const layer = $("sceneLayer");
+  const half  = duration / 2;
+  // transitionScene が残した CSS transition を消してから rAF アニメーション
+  layer.style.transition = 'none';
+  return animateOpacity(layer, 1, 0, half)
+    .then(() => {
+      layer.style.opacity = 0;   // 確実に 0 に固定
+      changeSceneFn();           // シーン変更（背景はまだ opacity=0 で隠れている）
+      return delay(50);          // 新背景の描画を1フレーム待つ
+    })
+    .then(() => {
+      layer.style.transition = 'none';
+      return animateOpacity(layer, 0, 1, half);
+    });
 }
 
 // textbox/char を即時非表示にして callback を呼ぶ（フェードなし）
