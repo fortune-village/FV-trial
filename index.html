@@ -894,6 +894,12 @@
   opacity: 0;
   pointer-events: none;
   z-index: 9999;
+  will-change: opacity;          /* GPU合成レイヤーを常時確保 */
+  transform: translateZ(0);      /* iOS Safari でも確実に最前面 */
+}
+/* 背景画像の未ロード時にグレーが見えないよう黒フォールバック */
+#bg {
+  background-color: #000 !important;
 }
 
 /* ── textbox / char フェードアウト（animateOpacity で制御するためCSS不要） ── */
@@ -4568,6 +4574,7 @@ function sceneOverlayTransition(changeSceneFn, duration = 800) {
           return;
         }
       } else if (phase === 'hold') {
+        ol.style.opacity = 1;       // このフレームでも明示的に1をセット（キャッシュ誤用防止）
         changeSceneFn();            // overlay が完全不透明な1フレームでシーン変更
         phase = 'out';
         phaseStart = now;
