@@ -880,13 +880,15 @@
 #mainTextbox.minimized .text-body,
 #mainTextbox.minimized .tap-hint { display: none !important; }
 #mainTextbox.minimized { min-height: 0 !important; }
+/* area-mode + minimized の場合は高さをautoに */
+#mainTextbox.area-mode.minimized { height: auto !important; }
 #mainTextbox #textbox-toggle { transition: opacity .15s; }
 /* ── エリアシーンのみ：半透過・固定高さ ── */
 #mainTextbox.area-mode {
   background: linear-gradient(175deg, rgba(248,232,196,0.75), rgba(210,180,136,0.75)) !important;
   backdrop-filter: blur(4px) !important;
   -webkit-backdrop-filter: blur(4px) !important;
-  height: 36vh !important;
+  height: 28vh !important;
   min-height: unset !important;
   max-height: unset !important;
   display: flex !important;
@@ -898,7 +900,7 @@
   overflow: hidden !important;
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
-  -webkit-line-clamp: 8 !important;
+  -webkit-line-clamp: 6 !important;
 }
 #sceneLayer {
   position: absolute;
