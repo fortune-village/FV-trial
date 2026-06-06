@@ -886,6 +886,16 @@
   z-index: 100 !important;
 }
 
+/* ── シーン遷移 overlay（全画面を覆って確実にフェード） ── */
+#transitionOverlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
 /* ── textbox / char フェードアウト（animateOpacity で制御するためCSS不要） ── */
 
 /* ── TAPヒント（textboxWaitingForReveal中に表示） ── */
@@ -2069,6 +2079,7 @@ body {
   <div id="choices" class="choice-box"></div>
   <div class="progress"><span id="progressBar"></span></div>
   <div id="revealHint">TAP</div>
+  <div id="transitionOverlay"></div>
 
   <div class="textbox" id="mainTextbox">
     <div id="name" class="name-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
@@ -4535,19 +4546,21 @@ function attachFeedbackEvents() {
 function showRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.add('visible'); }
 function hideRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.remove('visible'); }
 
-// textbox と char を 250ms フェードアウトしてから callback を呼ぶ（animateOpacity使用）
+// overlay を使って textbox/char をフェードアウトし callback を呼ぶ
+// 黒overlay が全画面を覆うので style.css の !important に関係なく確実に動作する
+// ① overlay フェードイン(0→1, 250ms) → 要素hidden → callback → overlay フェードアウト(1→0, 250ms)
 async function fadeHideTextboxChar(callback) {
+  const ol = document.getElementById('transitionOverlay');
+  ol.style.pointerEvents = 'all';
+  await animateOpacity(ol, 0, 1, 250);     // 暗転
+  // 要素を非表示
   const tb = document.querySelector('.textbox');
   const ch = document.getElementById('char');
-  // 両要素を並行してフェードアウト
-  const targets = [tb, ch].filter(Boolean);
-  await Promise.all(targets.map(el => animateOpacity(el, 1, 0, 250)));
-  // 非表示にしてopacityをリセット（hidden クラス任せにする）
-  targets.forEach(el => {
-    el.classList.add('hidden');
-    el.style.opacity = '';
-  });
-  callback();
+  if (tb) tb.classList.add('hidden');
+  if (ch) ch.classList.add('hidden');
+  callback();                               // フラグセット等
+  await animateOpacity(ol, 1, 0, 250);     // 明転（背景だけが見える状態に）
+  ol.style.pointerEvents = 'none';
 }
 
 // ── タップ・クリック ──
@@ -4602,18 +4615,24 @@ function next() {
     hideRevealHint();
   }
 
-  // textbox非表示後・bgChange前の待機 → bgChangeFadeを起動
+  // textbox非表示後・bgChange前の待機 → overlay フェードで次シーンへ
   // ※ 'area'画面以外では残留フラグをリセットして通常処理に委ねる
   if (textboxWaitingForTransition) {
     if (currentScreen === 'area') {
       textboxWaitingForTransition = false;
       isTransitioning = true;
-      bgChangeFade(() => {
+      const ol = document.getElementById('transitionOverlay');
+      ol.style.pointerEvents = 'all';
+      animateOpacity(ol, 0, 1, 300).then(() => {
         sceneIndex++;
         _bgChangeInProgress = true;
         renderScene();
         _bgChangeInProgress = false;
-      }).then(() => { isTransitioning = false; });
+        return animateOpacity(ol, 1, 0, 300);
+      }).then(() => {
+        ol.style.pointerEvents = 'none';
+        isTransitioning = false;
+      });
       return;
     }
     textboxWaitingForTransition = false; // area以外では即リセット・後続処理へ
