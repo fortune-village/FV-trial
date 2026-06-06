@@ -884,29 +884,12 @@
 #mainTextbox #textbox-toggle { transition: opacity .15s; }
 /* ── textbox半透過 ── */
 .textbox {
-  background: linear-gradient(175deg, rgba(248,232,196,0.50), rgba(210,180,136,0.50)) !important;
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
+  background: linear-gradient(175deg, rgba(248,232,196,0.75), rgba(210,180,136,0.75)) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
 }
-/* ── name-bar整列 ── */
-.name-bar {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 8px !important;
-}
-#name-text { flex: 1; }
-#textbox-toggle {
-  align-self: center !important;
-  line-height: 1 !important;
-  padding: 2px 8px !important;
-  margin: 0 !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  font-size: 10px !important;
-  opacity: 0.7;
-}
+/* ── 最小化時の▼ボタン ── */
+#textbox-toggle { transition: opacity .15s; }
 #sceneLayer {
   position: absolute;
   inset: 0;
@@ -2047,10 +2030,12 @@ body {
   <div class="progress"><span id="progressBar"></span></div>
 
   <div class="textbox" id="mainTextbox">
-    <div id="name" class="name-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-      <span id="name-text">SYSTEM</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div id="name" class="name-bar">
+        <span id="name-text">SYSTEM</span>
+      </div>
       <button id="textbox-toggle" onclick="toggleTextbox(event)"
-        style="padding:2px 8px;border-radius:6px;border:none;background:transparent;color:rgba(255,240,210,0.85);font-size:11px;cursor:pointer;font-family:inherit;flex-shrink:0;line-height:1.4">▼</button>
+        style="padding:2px 8px;border:none;background:transparent;color:rgba(255,240,210,0.8);font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0;line-height:1">▼</button>
     </div>
     <div id="text" class="text-body"></div>
     <div class="tap-hint">TAP / CLICK</div>
