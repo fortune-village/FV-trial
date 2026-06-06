@@ -4658,8 +4658,8 @@ function next() {
       renderScene();
     }
   } else {
-    // イントロ最終シーン → エリア選択へ
-    if (currentScreen === 'intro') {
+    // 最終シーン → エリア選択へ戻る
+    if (currentScreen === 'intro' || currentScreen === 'area') {
       showAreaSelect();
     }
   }
