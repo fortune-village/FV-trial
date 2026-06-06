@@ -885,6 +885,39 @@
   width: 100% !important;
   z-index: 100 !important;
 }
+
+/* ── textbox / char フェードアウト ── */
+.textbox, #char {
+  transition: opacity 250ms ease !important;
+}
+.textbox.tb-fading, #char.tb-fading {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ── TAPヒント（textboxWaitingForReveal中に表示） ── */
+#revealHint {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 248, 230, 0.75);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', Georgia, serif;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+#revealHint.visible {
+  opacity: 1;
+  animation: revealPulse 1.8s ease-in-out infinite;
+}
+@keyframes revealPulse {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.95; }
+}
 /* ── textbox半透過 ── */
 .textbox {
   background: linear-gradient(175deg, rgba(248,232,196,0.72), rgba(210,180,136,0.72)) !important;
@@ -2042,6 +2075,7 @@ body {
 
   <div id="choices" class="choice-box"></div>
   <div class="progress"><span id="progressBar"></span></div>
+  <div id="revealHint">TAP</div>
 
   <div class="textbox" id="mainTextbox">
     <div id="name" class="name-bar" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
@@ -3761,6 +3795,7 @@ function renderTitle() {
 function showHome() {
   textboxWaitingForReveal = false;
   textboxWaitingForTransition = false;
+  hideRevealHint();
   clearNavStack();
   currentScreen = 'home';
   hideAllSceneElements();
@@ -3823,6 +3858,7 @@ async function transitionScene(callback, duration = 600) {
 function showAreaSelect() {
   textboxWaitingForReveal = false;
   textboxWaitingForTransition = false;
+  hideRevealHint();
   document.getElementById('app').classList.add('panel-open');
   currentScreen = 'area_select';
   document.querySelector(".textbox").classList.add("hidden");
@@ -3944,6 +3980,7 @@ function renderScene() {
     if (s.char) {
       $("char").classList.toggle("bust", s.charMode === "bust");
     }
+    showRevealHint(); // TAPヒント表示
   } else {
     document.querySelector(".textbox").classList.toggle("hidden", !!s.hideTextbox);
     textboxWaitingForReveal = false;
@@ -3953,6 +3990,7 @@ function renderScene() {
     if (s.char) {
       $("char").classList.toggle("bust", s.charMode === "bust");
     }
+    hideRevealHint(); // TAPヒント非表示
   }
   $("logo").classList.toggle("show", !!s.logo);
   $("monitor").classList.toggle("show", !!s.monitor);
@@ -4500,6 +4538,23 @@ function attachFeedbackEvents() {
   });
 }
 
+// TAPヒント制御
+function showRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.add('visible'); }
+function hideRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.remove('visible'); }
+
+// textbox と char を 250ms フェードアウトしてから callback を呼ぶ
+function fadeHideTextboxChar(callback) {
+  const tb = document.querySelector('.textbox');
+  const ch = document.getElementById('char');
+  if (tb) tb.classList.add('tb-fading');
+  if (ch) ch.classList.add('tb-fading');
+  setTimeout(() => {
+    if (tb) { tb.classList.add('hidden'); tb.classList.remove('tb-fading'); }
+    if (ch) { ch.classList.add('hidden'); ch.classList.remove('tb-fading'); }
+    callback();
+  }, 250);
+}
+
 // ── タップ・クリック ──
 let isTransitioning = false;
 // bgChange後のテキストボックス出現待ちフラグ（タップ1回でtextbox出現、シーンは進めない）
@@ -4537,6 +4592,7 @@ function next() {
   if (textboxWaitingForReveal) {
     if (currentScreen === 'area') {
       textboxWaitingForReveal = false;
+      hideRevealHint();
       const s = currentSceneSet[sceneIndex];
       if (!s?.hideTextbox) {
         document.querySelector(".textbox").classList.remove("hidden");
@@ -4548,6 +4604,7 @@ function next() {
       return;
     }
     textboxWaitingForReveal = false; // area以外では即リセット・後続処理へ
+    hideRevealHint();
   }
 
   // textbox非表示後・bgChange前の待機 → bgChangeFadeを起動
@@ -4586,15 +4643,20 @@ function next() {
     if (currentScreen === 'area' && bgChanges) {
       const nextScene = currentSceneSet[sceneIndex + 1];
       if (nextScene?.type === 'titleCard') {
-        // タイトルカードへの遷移（エリア入場前のbg-room→titleCard等）
-        // textboxを隠してそのまま進む（待機フラグなし）
-        document.querySelector(".textbox").classList.add("hidden");
-        sceneIndex++;
-        renderScene();
+        // タイトルカードへの遷移：フェードアウト → 即進む（待機フラグなし）
+        isTransitioning = true;
+        fadeHideTextboxChar(() => {
+          isTransitioning = false;
+          sceneIndex++;
+          renderScene();
+        });
       } else {
-        // エリア内の実背景間切り替え：textbox非表示 → 静止 → 次タップでbgChangeFade
-        document.querySelector(".textbox").classList.add("hidden");
-        textboxWaitingForTransition = true;
+        // エリア内の実背景間切り替え：フェードアウト → 静止 → 次タップでbgChangeFade
+        isTransitioning = true;
+        fadeHideTextboxChar(() => {
+          isTransitioning = false;
+          textboxWaitingForTransition = true;
+        });
       }
     } else {
       sceneIndex++;
