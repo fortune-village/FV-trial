@@ -886,14 +886,7 @@
   z-index: 100 !important;
 }
 
-/* ── textbox / char フェードアウト ── */
-.textbox, #char {
-  transition: opacity 250ms ease !important;
-}
-.textbox.tb-fading, #char.tb-fading {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
+/* ── textbox / char フェードアウト（animateOpacity で制御するためCSS不要） ── */
 
 /* ── TAPヒント（textboxWaitingForReveal中に表示） ── */
 #revealHint {
@@ -4542,17 +4535,19 @@ function attachFeedbackEvents() {
 function showRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.add('visible'); }
 function hideRevealHint() { const h = document.getElementById('revealHint'); if(h) h.classList.remove('visible'); }
 
-// textbox と char を 250ms フェードアウトしてから callback を呼ぶ
-function fadeHideTextboxChar(callback) {
+// textbox と char を 250ms フェードアウトしてから callback を呼ぶ（animateOpacity使用）
+async function fadeHideTextboxChar(callback) {
   const tb = document.querySelector('.textbox');
   const ch = document.getElementById('char');
-  if (tb) tb.classList.add('tb-fading');
-  if (ch) ch.classList.add('tb-fading');
-  setTimeout(() => {
-    if (tb) { tb.classList.add('hidden'); tb.classList.remove('tb-fading'); }
-    if (ch) { ch.classList.add('hidden'); ch.classList.remove('tb-fading'); }
-    callback();
-  }, 250);
+  // 両要素を並行してフェードアウト
+  const targets = [tb, ch].filter(Boolean);
+  await Promise.all(targets.map(el => animateOpacity(el, 1, 0, 250)));
+  // 非表示にしてopacityをリセット（hidden クラス任せにする）
+  targets.forEach(el => {
+    el.classList.add('hidden');
+    el.style.opacity = '';
+  });
+  callback();
 }
 
 // ── タップ・クリック ──
