@@ -4577,8 +4577,9 @@ function sceneOverlayTransition(changeSceneFn, duration = 800) {
         ol.style.opacity = 1;       // このフレームでも明示的に1をセット（キャッシュ誤用防止）
         changeSceneFn();            // overlay が完全不透明な1フレームでシーン変更
         phase = 'out';
-        phaseStart = now;
+        phaseStart = -1;            // out の第1tickで確定（changeSceneFnの処理時間を除外）
       } else {                      // 'out'
+        if (phaseStart < 0) phaseStart = now; // 第1tickで基点をセット → 必ずopacity=1から始まる
         const t = Math.min((now - phaseStart) / half, 1);
         ol.style.opacity = 1 - t;
         if (t >= 1) {
