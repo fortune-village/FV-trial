@@ -2603,8 +2603,9 @@ fetch(`${clientBase}FV_data.json`)
     const release = fvData.fvData?.release || {};
     const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
-    // 中央キャラ未設定時はホームボタンを「スタート」に変更
-    if (!charNameFromData) {
+    // 初期設定未完了時はホームボタンを「スタート」に変更
+    const setupDone = fvData.fvData?.setup?.done || false;
+    if (!setupDone) {
       const vBtn = document.getElementById('btnVillage');
       if (vBtn) { vBtn.textContent = 'スタート ✦ 村づくりをはじめる'; vBtn.style.borderColor='rgba(216,185,120,0.9)'; vBtn.style.background='linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98))'; }
     }
@@ -5100,8 +5101,8 @@ $("btnAboutVideo").addEventListener("click", (e) => {
 });
 
 $("btnVillage").addEventListener("click", async (e) => {
-  // 中央キャラ未設定ならスタートフローへ
-  if (!fvData.fvData?.char?.name) {
+  // 初期設定未完了ならスタートフローへ
+  if (!(fvData.fvData?.setup?.done)) {
     e.stopPropagation();
     document.getElementById("startFlowOverlay").style.display = "flex";
     return;
