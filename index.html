@@ -2053,6 +2053,8 @@ body {
     <!-- 背景 -->
     <div class="bg bg-room"></div>
     <div class="parchment-glow"></div>
+    <!-- ホームボタン -->
+    <button onclick="event.stopPropagation();sfClose()" style="position:absolute;top:14px;left:14px;z-index:20;background:rgba(20,12,30,0.72);border:1px solid rgba(216,185,120,0.42);border-radius:999px;color:rgba(255,241,218,0.88);font-size:12px;padding:6px 14px;cursor:pointer;font-family:inherit;letter-spacing:.06em">‹ ホーム</button>
     <!-- キャラ -->
     <div class="char-sprite bust" id="sf-char-sprite">
       <img id="sf-roan-img" src="common/roan_high.png" alt="">
@@ -4687,6 +4689,18 @@ async function sfFadeTransition(callback) {
 
 
 
+async function sfClose() {
+  const sfEl = document.getElementById('startFlowOverlay');
+  sfEl.style.transition = 'opacity 600ms ease';
+  sfEl.style.opacity = '0';
+  await new Promise(r => setTimeout(r, 600));
+  sfEl.style.display = 'none';
+  sfEl.style.opacity = '1';
+  // ホーム画面を再表示
+  const home = document.getElementById('home');
+  if (home) home.classList.add('visible');
+}
+
 async function sfOpen() {
   _sfStep = 0;
   _sfDone = false;
@@ -4704,7 +4718,7 @@ async function sfOpen() {
   sfShowStep(0);
   await hideHome();
   requestAnimationFrame(() => {
-    sfEl.style.transition = 'opacity 600ms ease';
+    sfEl.style.transition = 'opacity 1200ms ease';
     sfEl.style.opacity = '1';
   });
   setTimeout(() => { _sfReady = true; }, 700);
