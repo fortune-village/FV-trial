@@ -3849,7 +3849,7 @@ function hideAllSceneElements() {
   typing = false;
   $("titleImage").classList.remove("show");
   $("titleTap").classList.remove("show");
-  document.querySelector(".textbox").classList.add("hidden");
+  document.getElementById("mainTextbox").classList.add("hidden");
   $("logo").classList.remove("show");
   $("char").classList.add("hidden");
   $("monitor").classList.remove("show");
@@ -3869,7 +3869,7 @@ function renderTitle() {
   currentScreen = 'title';
   setBg('bg-dark');
   $("home").classList.remove("visible");
-  document.querySelector(".textbox").classList.add("hidden");
+  document.getElementById("mainTextbox").classList.add("hidden");
   $("titleImage").classList.add("show");
   $("titleTap").classList.add("show");
 }
@@ -3943,7 +3943,7 @@ function showAreaSelect(fromArea = false) {
   hideRevealHint();
   document.getElementById('app').classList.add('panel-open');
   currentScreen = 'area_select';
-  document.querySelector(".textbox").classList.add("hidden");
+  document.getElementById("mainTextbox").classList.add("hidden");
   $("choices").classList.remove("show"); $("choices").style.display = "none";
   $("areaSelect").classList.add("visible");
   $("btnHomeFixed").classList.add("visible");
@@ -3961,7 +3961,7 @@ function hideAreaSelect() {
 function showFacilitySelect() {
   document.getElementById('app').classList.add('panel-open');
   currentScreen = 'facility_select';
-  document.querySelector(".textbox").classList.add("hidden");
+  document.getElementById("mainTextbox").classList.add("hidden");
   $("choices").classList.remove("show"); $("choices").style.display = "none";
   $("facilitySelect").classList.add("visible");
   $("btnHomeFixed").classList.add("visible");
@@ -3977,7 +3977,7 @@ function hideFacilitySelect() {
 function showCharSelect() {
   document.getElementById('app').classList.add('panel-open');
   currentScreen = 'char_select';
-  document.querySelector(".textbox").classList.add("hidden");
+  document.getElementById("mainTextbox").classList.add("hidden");
   $("choices").classList.remove("show"); $("choices").style.display = "none";
   $("charSelect").classList.add("visible");
   $("btnHomeFixed").classList.add("visible");
@@ -4030,7 +4030,7 @@ function renderScene() {
   // 案内板表示シーン
   if (s.type === "showGuideBoard") {
     hideAllSceneElements();
-    document.querySelector(".textbox").classList.add("hidden");
+    document.getElementById("mainTextbox").classList.add("hidden");
     showGuideBoardOverlay();
     return;
   }
@@ -4038,7 +4038,7 @@ function renderScene() {
   // タイトルカードシーン：自動再生して次へ
   if (s.type === "titleCard") {
     hideAllSceneElements();
-    document.querySelector(".textbox").classList.add("hidden");
+    document.getElementById("mainTextbox").classList.add("hidden");
     // bgはフェードアウト開始直前に切り替え（フラッシュ防止）
     const nextScene = currentSceneSet[sceneIndex + 1];
     showAreaTitleCard(s.areaKey, () => {
@@ -4058,7 +4058,7 @@ function renderScene() {
   $("areaSelect").classList.remove("visible");
   // bgChange起因のrenderScene → textboxとcharを隠したまま、タップ待ち状態にセット
   if (_bgChangeInProgress && !s.hideTextbox) {
-    document.querySelector(".textbox").classList.add("hidden");
+    document.getElementById("mainTextbox").classList.add("hidden");
     textboxWaitingForReveal = true;
     // キャラもtextboxと連動して非表示（bustクラスだけ先に設定してクリップを維持）
     $("char").classList.add("hidden");
@@ -4067,7 +4067,7 @@ function renderScene() {
     }
     showRevealHint(); // TAPヒント表示
   } else {
-    document.querySelector(".textbox").classList.toggle("hidden", !!s.hideTextbox);
+    document.getElementById("mainTextbox").classList.toggle("hidden", !!s.hideTextbox);
     textboxWaitingForReveal = false;
     $("char").classList.toggle("hidden", !s.char);
     // bust クラスはキャラが表示されるときだけ切り替える
@@ -4699,6 +4699,8 @@ async function sfOpen() {
   sfEl.style.opacity = '0';
   sfEl.style.transition = 'none';
   sfEl.style.display = 'block';
+  // sf-textboxのhiddenクラスを確実に除去
+  document.getElementById('sf-textbox').classList.remove('hidden');
   sfShowStep(0);
   await hideHome();
   requestAnimationFrame(() => {
@@ -5008,7 +5010,7 @@ function next() {
       hideRevealHint();
       const s = currentSceneSet[sceneIndex];
       if (!s?.hideTextbox) {
-        document.querySelector(".textbox").classList.remove("hidden");
+        document.getElementById("mainTextbox").classList.remove("hidden");
       }
       if (s?.char) { $("char").classList.remove("hidden"); }
       // フェードアウト完了後に保留していたテキストを開始
