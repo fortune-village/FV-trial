@@ -4090,7 +4090,11 @@ function renderChoices(choices) {
     if (isDisabled) {
       div.innerHTML = `${rawLabel}<br><span class="choice-disabled-tag">（準備中）</span>`;
     } else {
-      div.textContent = rawLabel;
+      if (rawLabel === 'FV通信' && window._fvTsushinBadge) {
+        div.innerHTML = 'FV通信 <span style="display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;background:#e05050;color:#fff;font-size:9px;font-weight:700;border-radius:999px;margin-left:4px;vertical-align:middle">NEW</span>';
+      } else {
+        div.textContent = rawLabel;
+      }
     }
     if (!isDisabled) {
       div.addEventListener("click", async (e) => {
@@ -4537,6 +4541,9 @@ function openFvTsushin() {
   const overlay = $("fvChatOverlay");
   overlay.style.display = 'flex';
   fvChatLoad();
+  // 既読処理
+  window._fvTsushinBadge = false;
+  localStorage.setItem('fv_tsushin_read_ts', Date.now().toString());
 }
 
 function closeFvTsushin() {
@@ -4601,6 +4608,17 @@ function fvChatSendMsg() {
       area.appendChild(div);
       area.scrollTop = area.scrollHeight;
     });
+}
+
+async function fvTsushinCheckNew() {
+  try {
+    const res  = await fetch(GAS_REPLY_URL + '?token=' + GAS_REPLY_TOKEN + '&action=chat&cid=' + encodeURIComponent(clientId));
+    const json = await res.json();
+    if (json.status !== 'ok' || !json.chat) return;
+    const lastReadTs = parseInt(localStorage.getItem('fv_tsushin_read_ts') || '0', 10);
+    const hasNew = json.chat.some(m => m.from === 'studio' && m.ts > lastReadTs);
+    window._fvTsushinBadge = hasNew;
+  } catch(e) { /* 無視 */ }
 }
 
 async function loadStudioMessages() {
@@ -5247,6 +5265,8 @@ $("sphereAcquireFlash").addEventListener("click", (e) => e.stopPropagation());
 $("shizukuAcquireFlash").addEventListener("click", (e) => e.stopPropagation());
 
 showDevBanner();
+window._fvTsushinBadge = false;
+fvTsushinCheckNew();
 $("fvChatClose").addEventListener("click", (e) => { e.stopPropagation(); closeFvTsushin(); });
 $("fvChatSend").addEventListener("click", (e) => { e.stopPropagation(); fvChatSendMsg(); });
 $("fvChatInput").addEventListener("keydown", (e) => {
