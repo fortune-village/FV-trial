@@ -4724,15 +4724,31 @@ async function sfOpen() {
   setTimeout(() => { _sfReady = true; }, 700);
 }
 
+let _sfTextShown = false;
+
 function sfShowStep(idx) {
   const step = SF_STEPS[idx];
   if (!step) return;
   const choiceBox = document.getElementById('sf-choice-box');
   const dateArea  = document.getElementById('sf-date-area');
   const tapHint   = document.getElementById('sf-tap-hint');
+  const textBody  = document.getElementById('sf-text-body');
   choiceBox.style.display = 'none';
   choiceBox.innerHTML = '';
   dateArea.style.display = 'none';
+  if (textBody) textBody.textContent = '';
+  _sfTextShown = false;
+  _sfTyping = false;
+  tapHint.style.visibility = 'visible';
+}
+
+function sfRevealText() {
+  const step = SF_STEPS[_sfStep];
+  if (!step) return;
+  const tapHint   = document.getElementById('sf-tap-hint');
+  const choiceBox = document.getElementById('sf-choice-box');
+  const dateArea  = document.getElementById('sf-date-area');
+  _sfTextShown = true;
   tapHint.style.visibility = 'hidden';
   sfTypeText(step.text, () => {
     if (step.type === 'text') {
@@ -4744,7 +4760,7 @@ function sfShowStep(idx) {
       choiceBox.style.display = 'flex';
       choiceBox.classList.add('show');
       choiceBox.innerHTML = step.choices.map(c =>
-        '<div class="choice" onclick="sfChoose(\'' + c + '\')">' + c + '</div>'
+        '<div class="choice" onclick="sfChoose(\'' + c + '\')">'+c+'</div>'
       ).join('');
     } else if (step.type === 'end') {
       tapHint.style.visibility = 'visible';
@@ -4753,48 +4769,64 @@ function sfShowStep(idx) {
   });
 }
 
+
 function sfTypeText(text, cb) {
   const el = document.getElementById('sf-text-body');
   if (!el) { if (cb) cb(); return; }
   el.style.whiteSpace = 'pre-wrap';
-  el.textContent = text;
+  el.textContent = '';
+  _sfTyping = true;
+  if (window._sfTypeInterval) clearInterval(window._sfTypeInterval);
+  let i = 0;
+  window._sfTypeInterval = setInterval(() => {
+    if (i < text.length) {
+      el.textContent += text[i++];
+    } else {
+      clearInterval(window._sfTypeInterval);
+      window._sfTypeInterval = null;
+      _sfTyping = false;
+      if (cb) cb();
+    }
+  }, 50);
+}
+
+function sfSkipType(text) {
+  if (window._sfTypeInterval) { clearInterval(window._sfTypeInterval); window._sfTypeInterval = null; }
+  const el = document.getElementById('sf-text-body');
+  if (el) { el.style.whiteSpace = 'pre-wrap'; el.textContent = text; }
   _sfTyping = false;
-  window._sfTypeInterval = null;
-  if (cb) cb();
 }
 
 function sfTap() {
   if (!_sfReady || _sfDone) return;
   const step = SF_STEPS[_sfStep];
   if (!step) return;
+
   if (_sfTyping) {
-    // タイピング中はスキップ
-    if (window._sfTypeInterval) { clearInterval(window._sfTypeInterval); window._sfTypeInterval = null; }
-    const el = document.getElementById('sf-text-body');
-    if (el) { el.style.whiteSpace = 'pre-wrap'; el.textContent = step.text; }
-    _sfTyping = false;
+    sfSkipType(step.text);
     const tapHint = document.getElementById('sf-tap-hint');
+    const choiceBox = document.getElementById('sf-choice-box');
     if (step.type === 'text') tapHint.style.visibility = 'visible';
     if (step.type === 'date') document.getElementById('sf-date-area').style.display = 'block';
     if (step.type === 'choice') {
-      const box = document.getElementById('sf-choice-box');
-      box.style.display = 'flex';
-      box.classList.add('show');
-      box.innerHTML = step.choices.map(c =>
-        '<div class="choice" onclick="sfChoose(\'' + c + '\')">' + c + '</div>'
+      choiceBox.style.display = 'flex';
+      choiceBox.classList.add('show');
+      choiceBox.innerHTML = step.choices.map(c =>
+        '<div class="choice" onclick="sfChoose(\'' + c + '\')">'+c+'</div>'
       ).join('');
     }
     return;
   }
-  if (step.type === 'text') {
-    _sfStep++;
-    sfShowStep(_sfStep);
-  }
+
+  if (!_sfTextShown) { sfRevealText(); return; }
+
+  if (step.type === 'text') { _sfStep++; sfShowStep(_sfStep); }
   if (step.type === 'end') {
     _sfDone = true;
     document.getElementById('startFlowOverlay').style.display = 'none';
   }
 }
+
 
 function sfDateNext() {
   const val = document.getElementById('sf-date-input').value;
