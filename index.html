@@ -4700,15 +4700,12 @@ async function sfOpen() {
   sfEl.style.transition = 'none';
   sfEl.style.display = 'block';
   await hideHome();
+  sfShowStep(0);
   requestAnimationFrame(() => {
     sfEl.style.transition = 'opacity 600ms ease';
     sfEl.style.opacity = '1';
   });
-  // フェードイン完了後にステップ開始
-  setTimeout(() => {
-    sfShowStep(0);
-    setTimeout(() => { _sfReady = true; }, 300);
-  }, 650);
+  setTimeout(() => { _sfReady = true; }, 700);
 }
 
 function sfShowStep(idx) {
