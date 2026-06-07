@@ -4699,8 +4699,8 @@ async function sfOpen() {
   sfEl.style.opacity = '0';
   sfEl.style.transition = 'none';
   sfEl.style.display = 'block';
-  await hideHome();
   sfShowStep(0);
+  await hideHome();
   requestAnimationFrame(() => {
     sfEl.style.transition = 'opacity 600ms ease';
     sfEl.style.opacity = '1';
@@ -4740,22 +4740,11 @@ function sfShowStep(idx) {
 function sfTypeText(text, cb) {
   const el = document.getElementById('sf-text-body');
   if (!el) { if (cb) cb(); return; }
-  el.textContent = '';
   el.style.whiteSpace = 'pre-wrap';
-  _sfTyping = true;
-  if (window._sfTypeInterval) clearInterval(window._sfTypeInterval);
-  let i = 0;
-  window._sfTypeInterval = setInterval(() => {
-    if (i < text.length) {
-      el.textContent += text[i];
-      i++;
-    } else {
-      clearInterval(window._sfTypeInterval);
-      window._sfTypeInterval = null;
-      _sfTyping = false;
-      if (cb) cb();
-    }
-  }, 35);
+  el.textContent = text;
+  _sfTyping = false;
+  window._sfTypeInterval = null;
+  if (cb) cb();
 }
 
 function sfTap() {
