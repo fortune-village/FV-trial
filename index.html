@@ -4657,15 +4657,16 @@ function fvChatSendMsg() {
 
 // ── スタートフロー（シーン形式） ─────────────────────────────
 const SF_STEPS = [
-  { type:'text',   text:'ようこそ。\nわたしはロアン。\nあなたの村の案内人を\n一緒に探しましょう。' },
-  { type:'text',   text:'いくつか質問させてください。\nあなただけの案内人を\nご提案します。' },
-  { type:'date',   text:'まず、生年月日を\n教えていただけますか？', key:'birthday' },
-  { type:'choice', text:'性別を\n教えてください。', key:'gender', choices:['男性','女性'] },
-  { type:'choice', text:'年齢感はいかがでしょうか？', key:'age', choices:['若年','成年','壮年','老年'] },
-  { type:'choice', text:'髪形はどちらが\nお好みですか？', key:'hair', choices:['短髪','ミディアム','長髪','特徴的'] },
-  { type:'choice', text:'身長はいかがでしょう？', key:'height', choices:['小柄','普通','高め'] },
-  { type:'choice', text:'顔のタイプは\nどれに近いですか？', key:'face', choices:['優しい','きりっとした','穏やか','神秘的'] },
-  { type:'end',    text:'ありがとうございます。\n案内人の準備を\nはじめますね。' }
+  { type:'text', text:'ようこそ。フォーチュン・ヴィレッジへ。\n私はフォーチュン・ヴィレッジ公式案内人の\nロアンです。' },
+  { type:'text', text:'今日は、あなたが初めてご自身の村に入るために\n必要な案内人の条件を選んでいきましょう。' },
+  { type:'date', text:'フォーチュン・ヴィレッジは、あなたの生年月日に\n刻まれた干支をもとにして生まれた、特別な村です。\nまずは、村に命を吹き込むために必要となる、\n生年月日を教えていただけますか？', key:'birthday' },
+  { type:'text', text:'次に、あなたの村を案内する代表者を\n決めていきましょう。' },
+  { type:'choice', text:'あなたの村の代表案内人は、\nどちらの性別がよいですか？', key:'gender', choices:['男性','女性'] },
+  { type:'choice', text:'どのような年齢感の案内人がよいですか？', key:'age', choices:['若年','成年','壮年','老年'] },
+  { type:'choice', text:'髪形の印象はいかがでしょうか？', key:'hair', choices:['短髪','ミディアム','長髪','特徴的'] },
+  { type:'choice', text:'身長はどのくらいがよいですか？', key:'height', choices:['小柄','普通','高め'] },
+  { type:'choice', text:'顔の印象はいかがでしょうか？', key:'face', choices:['優しい','きりっとした','穏やか','神秘的'] },
+  { type:'end',   text:'ありがとうございます。\nこれで案内人の条件が揃いました。\n準備が整い次第、ご連絡いたします。' }
 ];
 
 let _sfStep = 0;
