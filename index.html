@@ -2604,8 +2604,8 @@ fetch(`${clientBase}FV_data.json`)
     const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
     // 初期設定未完了時はホームボタンを「スタート」に変更
-    const setupDone = fvData.fvData?.setup?.done || false;
-    if (!setupDone) {
+    window._fvSetupDone = fvData.fvData?.setup?.done || false;
+    if (!window._fvSetupDone) {
       const vBtn = document.getElementById('btnVillage');
       if (vBtn) { vBtn.textContent = 'スタート ✦ 村づくりをはじめる'; vBtn.style.borderColor='rgba(216,185,120,0.9)'; vBtn.style.background='linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98))'; }
     }
@@ -4637,7 +4637,8 @@ function openFvTsushin() {
   overlay.style.display = 'flex';
   fvChatLoad();
   // 既読処理
-  window._fvTsushinBadge = false;
+  window._fvSetupDone = false;
+window._fvTsushinBadge = false;
   localStorage.setItem('fv_tsushin_read_ts', Date.now().toString());
 }
 
@@ -5102,7 +5103,7 @@ $("btnAboutVideo").addEventListener("click", (e) => {
 
 $("btnVillage").addEventListener("click", async (e) => {
   // 初期設定未完了ならスタートフローへ
-  if (!(fvData.fvData?.setup?.done)) {
+  if (!window._fvSetupDone) {
     e.stopPropagation();
     document.getElementById("startFlowOverlay").style.display = "flex";
     return;
@@ -5422,6 +5423,7 @@ $("sphereAcquireFlash").addEventListener("click", (e) => e.stopPropagation());
 $("shizukuAcquireFlash").addEventListener("click", (e) => e.stopPropagation());
 
 showDevBanner();
+window._fvSetupDone = false;
 window._fvTsushinBadge = false;
 fvTsushinCheckNew();
 $("fvChatClose").addEventListener("click", (e) => { e.stopPropagation(); closeFvTsushin(); });
