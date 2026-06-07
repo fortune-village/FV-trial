@@ -2037,7 +2037,7 @@ body {
     </div>
   </div>
 
-  <!-- FV通信オーバーレイ -->
+  <!-- FV通信：一覧 -->
   <div id="fvTsushinOverlay" class="char-card-overlay" style="z-index:310">
     <div class="char-card-scroll" onclick="event.stopPropagation()">
       <div class="char-card-inner" style="padding:24px 20px">
@@ -2047,8 +2047,36 @@ body {
           <div style="font-size:20px;font-weight:700;color:rgba(45,28,20,0.92);letter-spacing:.12em">FV通信</div>
           <div style="width:48px;height:1px;background:rgba(216,185,120,0.5);margin:10px auto 0"></div>
         </div>
-        <div id="fvTsushinList" style="display:flex;flex-direction:column;gap:12px;min-height:80px">
+        <div id="fvTsushinList" style="display:flex;flex-direction:column;gap:10px;min-height:80px">
           <div style="text-align:center;color:#9a9590;font-size:13px;padding:24px 0">読み込み中...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FV通信：手紙詳細 -->
+  <div id="fvLetterOverlay" class="char-card-overlay" style="z-index:320">
+    <div class="char-card-scroll" onclick="event.stopPropagation()">
+      <div class="char-card-inner" style="padding:24px 20px">
+        <button class="char-card-close" id="fvLetterClose">×</button>
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:10px;letter-spacing:.18em;color:rgba(216,185,120,0.7);margin-bottom:4px">📜 手紙</div>
+          <div id="fvLetterDate" style="font-size:11px;color:rgba(141,89,96,0.8);letter-spacing:.08em"></div>
+        </div>
+        <div id="fvLetterBody" style="font-size:14px;color:rgba(45,28,20,0.9);line-height:2.0;letter-spacing:.04em;white-space:pre-wrap;margin-bottom:20px;padding:16px;background:rgba(216,185,120,0.08);border:1px solid rgba(216,185,120,0.28);border-radius:10px"></div>
+        <!-- 返信エリア -->
+        <div id="fvReplyArea" style="display:none;border-top:1px solid rgba(216,185,120,0.24);padding-top:16px;margin-top:4px">
+          <div style="font-size:11px;color:rgba(141,89,96,0.8);letter-spacing:.08em;margin-bottom:8px">返信を書く</div>
+          <textarea id="fvReplyText" rows="4" placeholder="メッセージを入力..."
+            style="width:100%;padding:10px 12px;border:1px solid rgba(216,185,120,0.42);border-radius:8px;font-size:13px;font-family:inherit;background:rgba(255,252,245,0.9);color:rgba(45,28,20,0.9);resize:vertical;letter-spacing:.04em"></textarea>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+            <button id="fvReplyCancel" style="padding:7px 16px;border:1px solid rgba(141,89,96,0.4);border-radius:999px;background:transparent;color:rgba(141,89,96,0.8);font-size:12px;cursor:pointer;font-family:inherit">キャンセル</button>
+            <button id="fvReplySend" style="padding:7px 18px;border:none;border-radius:999px;background:linear-gradient(180deg,rgba(141,89,96,0.9),rgba(91,52,68,0.9));color:rgba(255,241,218,0.96);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.06em">送信する</button>
+          </div>
+        </div>
+        <div id="fvReplySent" style="display:none;text-align:center;color:rgba(141,89,96,0.8);font-size:13px;padding:12px 0">✉ 返信を送りました</div>
+        <div style="display:flex;justify-content:center;gap:10px;margin-top:16px" id="fvLetterBtns">
+          <button id="fvReplyBtn" style="padding:8px 22px;border:1px solid rgba(216,185,120,0.6);border-radius:999px;background:transparent;color:rgba(141,89,96,0.9);font-size:13px;cursor:pointer;font-family:inherit;letter-spacing:.06em">返信する</button>
         </div>
       </div>
     </div>
@@ -4540,13 +4568,20 @@ function openFvTsushin() {
         list.innerHTML = '<div style="text-align:center;color:#9a9590;font-size:13px;padding:24px 0">まだ届いている手紙はありません。</div>';
         return;
       }
-      list.innerHTML = json.replies.slice().reverse().map(r => {
+      const letters = json.replies.slice().reverse();
+      list.innerHTML = letters.map((r, i) => {
         const d = r.timestamp ? new Date(r.timestamp).toLocaleString('ja-JP', {year:'numeric',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
-        return `<div style="background:rgba(216,185,120,0.08);border:1px solid rgba(216,185,120,0.32);border-radius:10px;padding:14px 16px">
-          <div style="font-size:10px;color:rgba(141,89,96,0.8);letter-spacing:.1em;margin-bottom:8px">📜 ${d}</div>
-          <div style="font-size:14px;color:rgba(45,28,20,0.9);line-height:1.9;letter-spacing:.04em;white-space:pre-wrap">${r.message}</div>
+        const preview = r.message.length > 30 ? r.message.slice(0, 30) + '…' : r.message;
+        return `<div onclick="openFvLetter(${i})" style="cursor:pointer;display:flex;align-items:center;gap:12px;background:rgba(255,252,245,0.7);border:1px solid rgba(216,185,120,0.38);border-radius:10px;padding:12px 14px;transition:background .15s" onmouseover="this.style.background='rgba(216,185,120,0.14)'" onmouseout="this.style.background='rgba(255,252,245,0.7)'">
+          <span style="font-size:22px">📜</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:10px;color:rgba(141,89,96,0.7);margin-bottom:3px">${d}</div>
+            <div style="font-size:13px;color:rgba(45,28,20,0.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${preview}</div>
+          </div>
+          <span style="font-size:13px;color:rgba(216,185,120,0.7)">›</span>
         </div>`;
       }).join('');
+      window._fvLetters = letters;
     })
     .catch(() => {
       list.innerHTML = '<div style="text-align:center;color:#c06060;font-size:13px;padding:24px 0">通信エラーが発生しました。</div>';
@@ -4555,6 +4590,23 @@ function openFvTsushin() {
 
 function closeFvTsushin() {
   $("fvTsushinOverlay").classList.remove("show");
+}
+
+function openFvLetter(idx) {
+  const r = window._fvLetters[idx];
+  if (!r) return;
+  const d = r.timestamp ? new Date(r.timestamp).toLocaleString('ja-JP', {year:'numeric',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+  $("fvLetterDate").textContent = d;
+  $("fvLetterBody").textContent = r.message;
+  $("fvReplyArea").style.display = 'none';
+  $("fvReplySent").style.display = 'none';
+  $("fvLetterBtns").style.display = 'flex';
+  $("fvReplyText").value = '';
+  $("fvLetterOverlay").classList.add("show");
+}
+
+function closeFvLetter() {
+  $("fvLetterOverlay").classList.remove("show");
 }
 
 async function loadStudioMessages() {
@@ -5203,6 +5255,31 @@ $("shizukuAcquireFlash").addEventListener("click", (e) => e.stopPropagation());
 showDevBanner();
 $("fvTsushinClose").addEventListener("click", (e) => { e.stopPropagation(); closeFvTsushin(); });
 $("fvTsushinOverlay").addEventListener("click", (e) => { if(e.target===$("fvTsushinOverlay")) closeFvTsushin(); });
+$("fvLetterClose").addEventListener("click", (e) => { e.stopPropagation(); closeFvLetter(); });
+$("fvLetterOverlay").addEventListener("click", (e) => { if(e.target===$("fvLetterOverlay")) closeFvLetter(); });
+$("fvReplyBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("fvReplyArea").style.display = 'block';
+  $("fvLetterBtns").style.display = 'none';
+  $("fvReplyText").focus();
+});
+$("fvReplyCancel").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("fvReplyArea").style.display = 'none';
+  $("fvLetterBtns").style.display = 'flex';
+});
+$("fvReplySend").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const text = $("fvReplyText").value.trim();
+  if (!text) return;
+  const data = new FormData();
+  data.append(ENTRY_FEEDBACK, '[FV通信への返信] ' + text);
+  data.append(ENTRY_CLIENT, clientId);
+  fetch(FORM_ACTION, { method: 'POST', mode: 'no-cors', body: data });
+  $("fvReplyArea").style.display = 'none';
+  $("fvLetterBtns").style.display = 'none';
+  $("fvReplySent").style.display = 'block';
+});
 </script>
 </body>
 </html>
