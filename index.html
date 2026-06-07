@@ -2063,16 +2063,15 @@ body {
     <div class="textbox" id="sf-textbox">
       <div class="name-bar">ロアン</div>
       <div class="text-body" id="sf-text-body"></div>
+      <!-- 日付入力（textbox内） -->
+      <div id="sf-date-area" style="display:none;padding:10px 14px 8px" onclick="event.stopPropagation()">
+        <input type="date" id="sf-date-input" style="width:100%;padding:10px 12px;border:1px solid rgba(141,89,96,0.5);border-radius:8px;background:rgba(255,252,245,0.9);color:rgba(45,28,20,0.9);font-size:14px;font-family:inherit;margin-bottom:10px">
+        <button onclick="sfDateNext()" style="width:100%;padding:11px;border:none;border-radius:8px;background:linear-gradient(180deg,rgba(141,89,96,0.9),rgba(91,52,68,0.95));color:rgba(255,241,218,0.96);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.08em">次へ ›</button>
+      </div>
       <div class="tap-hint" id="sf-tap-hint" style="visibility:hidden">タップして進む</div>
     </div>
     <!-- 選択肢 -->
     <div class="choice-box" id="sf-choice-box" onclick="event.stopPropagation()"></div>
-    <!-- 日付入力 -->
-    <div id="sf-date-area" style="position:absolute;left:26px;right:26px;bottom:226px;display:none;background:rgba(20,12,30,0.9);border:1px solid rgba(216,185,120,0.42);border-radius:16px;padding:16px;z-index:5" onclick="event.stopPropagation()">
-      <div style="font-size:11px;color:rgba(216,185,120,0.8);letter-spacing:.1em;margin-bottom:10px">生年月日を入力してください</div>
-      <input type="date" id="sf-date-input" style="width:100%;padding:10px 12px;border:1px solid rgba(216,185,120,0.5);border-radius:8px;background:rgba(255,252,245,0.9);color:rgba(45,28,20,0.9);font-size:14px;font-family:inherit;margin-bottom:12px">
-      <button onclick="sfDateNext()" style="width:100%;padding:11px;border:none;border-radius:8px;background:linear-gradient(180deg,rgba(141,89,96,0.9),rgba(91,52,68,0.95));color:rgba(255,241,218,0.96);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.08em">次へ ›</button>
-    </div>
   </div>
 
   <!-- FV通信：チャット画面 -->
