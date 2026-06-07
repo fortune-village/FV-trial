@@ -4673,6 +4673,20 @@ const _sfValues = { birthday:'', gender:'', age:'', hair:'', height:'', face:'' 
 
 let _sfReady = false;
 
+async function sfFadeTransition(callback) {
+  const ol = document.getElementById('sceneTransitionOverlay');
+  ol.style.transition = 'opacity 400ms ease';
+  ol.style.opacity = '1';
+  ol.style.pointerEvents = 'auto';
+  await new Promise(r => setTimeout(r, 400));
+  callback();
+  await new Promise(r => setTimeout(r, 100));
+  ol.style.opacity = '0';
+  ol.style.pointerEvents = 'none';
+}
+
+
+
 function sfOpen() {
   _sfStep = 0;
   _sfDone = false;
@@ -4682,11 +4696,11 @@ function sfOpen() {
   const roanImg = document.getElementById('sf-roan-img');
   if (roanImg) roanImg.src = appBase + 'common/roan_high.png';
   document.getElementById('startFlowOverlay').style.display = 'block';
-  // transitionSceneのフェードイン完了後にステップ開始（タップ誤作動も防止）
+  // フェードイン完了後にステップ開始（タップ誤作動も防止）
   setTimeout(() => {
     sfShowStep(0);
     setTimeout(() => { _sfReady = true; }, 300);
-  }, 650);
+  }, 200);
 }
 
 function sfShowStep(idx) {
@@ -5151,7 +5165,7 @@ $("btnVillage").addEventListener("click", async (e) => {
   // 初期設定未完了ならスタートフローへ
   if (!window._fvSetupDone) {
     e.stopPropagation();
-    transitionScene(() => { sfOpen(); });
+    sfFadeTransition(() => { sfOpen(); });
     return;
   }
   e.stopPropagation();
