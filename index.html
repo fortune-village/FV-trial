@@ -2507,7 +2507,7 @@ fetch(`${clientBase}FV_data.json`)
       btnNorthEl.innerHTML = '北エリア<span class="area-tag">準備中</span>';
     }
 
-    const STEP_TO_SUFFIX = { s2:'', s3:'-lmk', s3b:'-star', s5:'-street', s6:'-lmkcu', s7:'-starcu' };
+    const STEP_TO_SUFFIX = { s2:'', s4:'', s4L:'', s3:'-lmk', s3b:'-star', s5:'-street', s6:'-lmkcu', s7:'-starcu' };
 
     function buildAreaScenes(dir, cfg, dirScenes) {
       if (!dirScenes || dirScenes.length === 0) {
