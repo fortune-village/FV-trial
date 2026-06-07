@@ -4671,16 +4671,20 @@ let _sfTyping = false;
 let _sfDone = false;
 const _sfValues = { birthday:'', gender:'', age:'', hair:'', height:'', face:'' };
 
+let _sfReady = false;
+
 function sfOpen() {
   _sfStep = 0;
   _sfDone = false;
+  _sfReady = false;
   Object.keys(_sfValues).forEach(k => _sfValues[k] = '');
   // ロアン画像パスをappBaseで解決
   const roanImg = document.getElementById('sf-roan-img');
   if (roanImg) roanImg.src = appBase + 'roan_high.png';
-  console.log('[sfOpen] called, appBase=', appBase);
   document.getElementById('startFlowOverlay').style.display = 'block';
   sfShowStep(0);
+  // 開いた直後のタップ誤作動を防止（400ms待機）
+  setTimeout(() => { _sfReady = true; }, 400);
 }
 
 function sfShowStep(idx) {
@@ -4734,7 +4738,7 @@ function sfTypeText(text, cb) {
 }
 
 function sfTap() {
-  if (_sfDone) return;
+  if (!_sfReady || _sfDone) return;
   const step = SF_STEPS[_sfStep];
   if (!step) return;
   if (_sfTyping) {
