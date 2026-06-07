@@ -4820,7 +4820,7 @@ function sfTap() {
 
   if (!_sfTextShown) { sfRevealText(); return; }
 
-  if (step.type === 'text') { _sfStep++; sfShowStep(_sfStep); }
+  if (step.type === 'text') { _sfStep++; sfShowStep(_sfStep); sfRevealText(); }
   if (step.type === 'end') {
     _sfDone = true;
     document.getElementById('startFlowOverlay').style.display = 'none';
