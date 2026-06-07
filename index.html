@@ -2055,7 +2055,7 @@ body {
     <div class="parchment-glow"></div>
     <!-- キャラ -->
     <div class="char-sprite bust" id="sf-char-sprite">
-      <img id="sf-roan-img" src="" alt="ロアン">
+      <img id="sf-roan-img" src="./roan_high.png" alt="">
     </div>
     <!-- テキストボックス -->
     <div class="textbox" id="sf-textbox">
@@ -4678,6 +4678,7 @@ function sfOpen() {
   // ロアン画像パスをappBaseで解決
   const roanImg = document.getElementById('sf-roan-img');
   if (roanImg) roanImg.src = appBase + 'roan_high.png';
+  console.log('[sfOpen] called, appBase=', appBase);
   document.getElementById('startFlowOverlay').style.display = 'block';
   sfShowStep(0);
 }
@@ -4713,20 +4714,23 @@ function sfShowStep(idx) {
 
 function sfTypeText(text, cb) {
   const el = document.getElementById('sf-text-body');
+  if (!el) { if (cb) cb(); return; }
   el.textContent = '';
   el.style.whiteSpace = 'pre-wrap';
   _sfTyping = true;
+  if (window._sfTypeInterval) clearInterval(window._sfTypeInterval);
   let i = 0;
-  const interval = setInterval(() => {
+  window._sfTypeInterval = setInterval(() => {
     if (i < text.length) {
-      el.textContent += text[i++];
+      el.textContent += text[i];
+      i++;
     } else {
-      clearInterval(interval);
+      clearInterval(window._sfTypeInterval);
+      window._sfTypeInterval = null;
       _sfTyping = false;
       if (cb) cb();
     }
-  }, 40);
-  window._sfTypeInterval = interval;
+  }, 35);
 }
 
 function sfTap() {
@@ -4735,11 +4739,10 @@ function sfTap() {
   if (!step) return;
   if (_sfTyping) {
     // タイピング中はスキップ
+    if (window._sfTypeInterval) { clearInterval(window._sfTypeInterval); window._sfTypeInterval = null; }
     const el = document.getElementById('sf-text-body');
-    el.style.whiteSpace = 'pre-wrap';
-    el.textContent = step.text;
+    if (el) { el.style.whiteSpace = 'pre-wrap'; el.textContent = step.text; }
     _sfTyping = false;
-    if (window._sfTypeInterval) clearInterval(window._sfTypeInterval);
     const tapHint = document.getElementById('sf-tap-hint');
     if (step.type === 'text') tapHint.style.visibility = 'visible';
     if (step.type === 'date') document.getElementById('sf-date-area').style.display = 'block';
