@@ -2055,7 +2055,7 @@ body {
     <div class="parchment-glow"></div>
     <!-- キャラ -->
     <div class="char-sprite bust" id="sf-char-sprite">
-      <img src="common/roan_high.png" alt="ロアン">
+      <img id="sf-roan-img" src="" alt="ロアン">
     </div>
     <!-- テキストボックス -->
     <div class="textbox" id="sf-textbox">
@@ -4675,6 +4675,9 @@ function sfOpen() {
   _sfStep = 0;
   _sfDone = false;
   Object.keys(_sfValues).forEach(k => _sfValues[k] = '');
+  // ロアン画像パスをappBaseで解決
+  const roanImg = document.getElementById('sf-roan-img');
+  if (roanImg) roanImg.src = appBase + 'roan_high.png';
   document.getElementById('startFlowOverlay').style.display = 'block';
   sfShowStep(0);
 }
