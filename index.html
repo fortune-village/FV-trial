@@ -2048,81 +2048,28 @@ body {
   </div>
 
   <!-- スタートフロー（キャラ診断アンケート） -->
-  <div id="startFlowOverlay" style="position:fixed;inset:0;z-index:400;display:none;flex-direction:column;overflow-y:auto;background:linear-gradient(180deg,rgba(243,223,185,0.98),rgba(213,184,142,0.98))">
-    <div style="max-width:430px;margin:0 auto;width:100%;padding:28px 24px 40px">
-      <!-- ヘッダー -->
-      <div style="text-align:center;margin-bottom:28px">
-        <div style="font-size:10px;letter-spacing:.24em;color:rgba(141,89,96,0.7);margin-bottom:6px">FORTUNE VILLAGE</div>
-        <div style="font-size:20px;font-weight:700;color:rgba(45,28,20,0.92);letter-spacing:.1em">村のはじまり</div>
-        <div style="width:48px;height:1px;background:rgba(216,185,120,0.6);margin:10px auto"></div>
-        <div style="font-size:12px;color:rgba(91,52,40,0.7);line-height:1.8;letter-spacing:.04em">あなただけの村をつくるために<br>いくつかお聞きします</div>
-      </div>
-
-      <!-- 生年月日 -->
-      <div class="sf-section">
-        <div class="sf-label">生年月日</div>
-        <input type="date" id="sf-birthday" class="sf-input" />
-      </div>
-
-      <!-- 性別 -->
-      <div class="sf-section">
-        <div class="sf-label">性別</div>
-        <div class="sf-radio-group" id="sf-gender">
-          <button class="sf-radio" onclick="sfSelect('sf-gender',this,'男性')">男性</button>
-          <button class="sf-radio" onclick="sfSelect('sf-gender',this,'女性')">女性</button>
-        </div>
-      </div>
-
-      <!-- 年齢感 -->
-      <div class="sf-section">
-        <div class="sf-label">年齢感</div>
-        <div class="sf-radio-group" id="sf-age">
-          <button class="sf-radio" onclick="sfSelect('sf-age',this,'若年')">若年</button>
-          <button class="sf-radio" onclick="sfSelect('sf-age',this,'成年')">成年</button>
-          <button class="sf-radio" onclick="sfSelect('sf-age',this,'壮年')">壮年</button>
-          <button class="sf-radio" onclick="sfSelect('sf-age',this,'老年')">老年</button>
-        </div>
-      </div>
-
-      <!-- 髪形 -->
-      <div class="sf-section">
-        <div class="sf-label">髪形</div>
-        <div class="sf-radio-group" id="sf-hair">
-          <button class="sf-radio" onclick="sfSelect('sf-hair',this,'短髪')">短髪</button>
-          <button class="sf-radio" onclick="sfSelect('sf-hair',this,'ミディアム')">ミディアム</button>
-          <button class="sf-radio" onclick="sfSelect('sf-hair',this,'長髪')">長髪</button>
-          <button class="sf-radio" onclick="sfSelect('sf-hair',this,'特徴的')">特徴的</button>
-        </div>
-      </div>
-
-      <!-- 身長 -->
-      <div class="sf-section">
-        <div class="sf-label">身長</div>
-        <div class="sf-radio-group" id="sf-height">
-          <button class="sf-radio" onclick="sfSelect('sf-height',this,'小柄')">小柄</button>
-          <button class="sf-radio" onclick="sfSelect('sf-height',this,'普通')">普通</button>
-          <button class="sf-radio" onclick="sfSelect('sf-height',this,'高め')">高め</button>
-        </div>
-      </div>
-
-      <!-- 顔のタイプ -->
-      <div class="sf-section">
-        <div class="sf-label">顔のタイプ</div>
-        <div class="sf-radio-group" id="sf-face">
-          <button class="sf-radio" onclick="sfSelect('sf-face',this,'優しい')">優しい</button>
-          <button class="sf-radio" onclick="sfSelect('sf-face',this,'きりっとした')">きりっとした</button>
-          <button class="sf-radio" onclick="sfSelect('sf-face',this,'穏やか')">穏やか</button>
-          <button class="sf-radio" onclick="sfSelect('sf-face',this,'神秘的')">神秘的</button>
-        </div>
-      </div>
-
-      <!-- 送信 -->
-      <div id="sf-error" style="display:none;color:rgba(180,60,60,0.9);font-size:12px;text-align:center;margin-bottom:10px"></div>
-      <button id="sf-submit" onclick="sfSubmit()" style="width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(180deg,rgba(141,89,96,0.92),rgba(91,52,68,0.95));color:rgba(255,241,218,0.96);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.1em">村づくりをはじめる</button>
-      <div id="sf-sent" style="display:none;text-align:center;padding:20px 0">
-        <div style="font-size:18px;margin-bottom:10px">✨</div>
-        <div style="font-size:14px;color:rgba(45,28,20,0.85);line-height:1.9;letter-spacing:.06em">受け付けました。<br>あなたの村の案内人を<br>準備しています。</div>
-      </div>
+  <!-- スタートフロー（シーン形式） -->
+  <div id="startFlowOverlay" style="position:fixed;inset:0;z-index:400;display:none;cursor:pointer" onclick="sfTap()">
+    <!-- 背景 -->
+    <div class="bg bg-room"></div>
+    <div class="parchment-glow"></div>
+    <!-- キャラ -->
+    <div class="char-sprite bust" id="sf-char-sprite">
+      <img src="common/roan_high.png" alt="ロアン">
+    </div>
+    <!-- テキストボックス -->
+    <div class="textbox" id="sf-textbox">
+      <div class="name-bar">ロアン</div>
+      <div class="text-body" id="sf-text-body"></div>
+      <div class="tap-hint" id="sf-tap-hint" style="visibility:hidden">タップして進む</div>
+    </div>
+    <!-- 選択肢 -->
+    <div class="choice-box" id="sf-choice-box" onclick="event.stopPropagation()"></div>
+    <!-- 日付入力 -->
+    <div id="sf-date-area" style="position:absolute;left:26px;right:26px;bottom:226px;display:none;background:rgba(20,12,30,0.9);border:1px solid rgba(216,185,120,0.42);border-radius:16px;padding:16px;z-index:5" onclick="event.stopPropagation()">
+      <div style="font-size:11px;color:rgba(216,185,120,0.8);letter-spacing:.1em;margin-bottom:10px">生年月日を入力してください</div>
+      <input type="date" id="sf-date-input" style="width:100%;padding:10px 12px;border:1px solid rgba(216,185,120,0.5);border-radius:8px;background:rgba(255,252,245,0.9);color:rgba(45,28,20,0.9);font-size:14px;font-family:inherit;margin-bottom:12px">
+      <button onclick="sfDateNext()" style="width:100%;padding:11px;border:none;border-radius:8px;background:linear-gradient(180deg,rgba(141,89,96,0.9),rgba(91,52,68,0.95));color:rgba(255,241,218,0.96);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.08em">次へ ›</button>
     </div>
   </div>
 
@@ -4706,39 +4653,139 @@ function fvChatSendMsg() {
     });
 }
 
-// ── スタートフロー（キャラ診断） ─────────────────────────────
-const _sfValues = { gender:'', age:'', hair:'', height:'', face:'' };
+// ── スタートフロー（シーン形式） ─────────────────────────────
+const SF_STEPS = [
+  { type:'text',   text:'ようこそ。\nわたしはロアン。\nあなたの村の案内人を\n一緒に探しましょう。' },
+  { type:'text',   text:'いくつか質問させてください。\nあなただけの案内人を\nご提案します。' },
+  { type:'date',   text:'まず、生年月日を\n教えていただけますか？', key:'birthday' },
+  { type:'choice', text:'性別を\n教えてください。', key:'gender', choices:['男性','女性'] },
+  { type:'choice', text:'年齢感はいかがでしょうか？', key:'age', choices:['若年','成年','壮年','老年'] },
+  { type:'choice', text:'髪形はどちらが\nお好みですか？', key:'hair', choices:['短髪','ミディアム','長髪','特徴的'] },
+  { type:'choice', text:'身長はいかがでしょう？', key:'height', choices:['小柄','普通','高め'] },
+  { type:'choice', text:'顔のタイプは\nどれに近いですか？', key:'face', choices:['優しい','きりっとした','穏やか','神秘的'] },
+  { type:'end',    text:'ありがとうございます。\n案内人の準備を\nはじめますね。' }
+];
 
-function sfSelect(groupId, btn, value) {
-  const key = groupId.replace('sf-','');
-  _sfValues[key] = value;
-  document.querySelectorAll('#' + groupId + ' .sf-radio').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
+let _sfStep = 0;
+let _sfTyping = false;
+let _sfDone = false;
+const _sfValues = { birthday:'', gender:'', age:'', hair:'', height:'', face:'' };
+
+function sfOpen() {
+  _sfStep = 0;
+  _sfDone = false;
+  Object.keys(_sfValues).forEach(k => _sfValues[k] = '');
+  document.getElementById('startFlowOverlay').style.display = 'block';
+  sfShowStep(0);
 }
 
-async function sfSubmit() {
-  const birthday = document.getElementById('sf-birthday').value;
-  const errEl    = document.getElementById('sf-error');
-  errEl.style.display = 'none';
+function sfShowStep(idx) {
+  const step = SF_STEPS[idx];
+  if (!step) return;
+  const choiceBox = document.getElementById('sf-choice-box');
+  const dateArea  = document.getElementById('sf-date-area');
+  const tapHint   = document.getElementById('sf-tap-hint');
+  choiceBox.style.display = 'none';
+  choiceBox.innerHTML = '';
+  dateArea.style.display = 'none';
+  tapHint.style.visibility = 'hidden';
+  sfTypeText(step.text, () => {
+    if (step.type === 'text') {
+      tapHint.style.visibility = 'visible';
+    } else if (step.type === 'date') {
+      dateArea.style.display = 'block';
+      document.getElementById('sf-date-input').value = _sfValues.birthday || '';
+    } else if (step.type === 'choice') {
+      choiceBox.style.display = 'flex';
+      choiceBox.classList.add('show');
+      choiceBox.innerHTML = step.choices.map(c =>
+        '<div class="choice" onclick="sfChoose(\'' + c + '\')">' + c + '</div>'
+      ).join('');
+    } else if (step.type === 'end') {
+      tapHint.style.visibility = 'visible';
+      sfDoSubmit();
+    }
+  });
+}
 
-  if (!birthday)             { errEl.textContent='生年月日を入力してください'; errEl.style.display='block'; return; }
-  if (!_sfValues.gender)     { errEl.textContent='性別を選択してください';   errEl.style.display='block'; return; }
-  if (!_sfValues.age)        { errEl.textContent='年齢感を選択してください'; errEl.style.display='block'; return; }
-  if (!_sfValues.hair)       { errEl.textContent='髪形を選択してください';   errEl.style.display='block'; return; }
-  if (!_sfValues.height)     { errEl.textContent='身長を選択してください';   errEl.style.display='block'; return; }
-  if (!_sfValues.face)       { errEl.textContent='顔のタイプを選択してください'; errEl.style.display='block'; return; }
+function sfTypeText(text, cb) {
+  const el = document.getElementById('sf-text-body');
+  el.textContent = '';
+  el.style.whiteSpace = 'pre-wrap';
+  _sfTyping = true;
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i < text.length) {
+      el.textContent += text[i++];
+    } else {
+      clearInterval(interval);
+      _sfTyping = false;
+      if (cb) cb();
+    }
+  }, 40);
+  window._sfTypeInterval = interval;
+}
 
-  const btn = document.getElementById('sf-submit');
-  btn.disabled = true; btn.textContent = '送信中...';
+function sfTap() {
+  if (_sfDone) return;
+  const step = SF_STEPS[_sfStep];
+  if (!step) return;
+  if (_sfTyping) {
+    // タイピング中はスキップ
+    const el = document.getElementById('sf-text-body');
+    el.style.whiteSpace = 'pre-wrap';
+    el.textContent = step.text;
+    _sfTyping = false;
+    if (window._sfTypeInterval) clearInterval(window._sfTypeInterval);
+    const tapHint = document.getElementById('sf-tap-hint');
+    if (step.type === 'text') tapHint.style.visibility = 'visible';
+    if (step.type === 'date') document.getElementById('sf-date-area').style.display = 'block';
+    if (step.type === 'choice') {
+      const box = document.getElementById('sf-choice-box');
+      box.style.display = 'flex';
+      box.classList.add('show');
+      box.innerHTML = step.choices.map(c =>
+        '<div class="choice" onclick="sfChoose(\'' + c + '\')">' + c + '</div>'
+      ).join('');
+    }
+    return;
+  }
+  if (step.type === 'text') {
+    _sfStep++;
+    sfShowStep(_sfStep);
+  }
+  if (step.type === 'end') {
+    _sfDone = true;
+    document.getElementById('startFlowOverlay').style.display = 'none';
+  }
+}
 
+function sfDateNext() {
+  const val = document.getElementById('sf-date-input').value;
+  if (!val) { alert('生年月日を入力してください'); return; }
+  _sfValues.birthday = val;
+  document.getElementById('sf-date-area').style.display = 'none';
+  _sfStep++;
+  sfShowStep(_sfStep);
+}
+
+function sfChoose(val) {
+  const step = SF_STEPS[_sfStep];
+  if (step && step.key) _sfValues[step.key] = val;
+  document.getElementById('sf-choice-box').style.display = 'none';
+  _sfStep++;
+  sfShowStep(_sfStep);
+}
+
+async function sfDoSubmit() {
   try {
-    const res  = await fetch(GAS_REPLY_URL, {
+    await fetch(GAS_REPLY_URL, {
       method: 'POST',
       body: JSON.stringify({
-        token: GAS_REPLY_TOKEN,
-        action: 'survey',
-        cid: clientId,
-        birthday,
+        token:   GAS_REPLY_TOKEN,
+        action:  'survey',
+        cid:     clientId,
+        birthday: _sfValues.birthday,
         gender:  _sfValues.gender,
         age:     _sfValues.age,
         hair:    _sfValues.hair,
@@ -4746,20 +4793,7 @@ async function sfSubmit() {
         face:    _sfValues.face
       })
     });
-    const json = await res.json();
-    if (json.status === 'ok') {
-      document.getElementById('sf-submit').style.display = 'none';
-      document.getElementById('sf-sent').style.display = 'block';
-    } else {
-      errEl.textContent = '送信エラー: ' + json.message;
-      errEl.style.display = 'block';
-      btn.disabled = false; btn.textContent = '村づくりをはじめる';
-    }
-  } catch(e) {
-    errEl.textContent = '通信エラー: ' + e.message;
-    errEl.style.display = 'block';
-    btn.disabled = false; btn.textContent = '村づくりをはじめる';
-  }
+  } catch(e) { console.warn('survey送信エラー:', e); }
 }
 
 async function fvTsushinCheckNew() {
@@ -5105,7 +5139,7 @@ $("btnVillage").addEventListener("click", async (e) => {
   // 初期設定未完了ならスタートフローへ
   if (!window._fvSetupDone) {
     e.stopPropagation();
-    document.getElementById("startFlowOverlay").style.display = "flex";
+    sfOpen();
     return;
   }
   e.stopPropagation();
