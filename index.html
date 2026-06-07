@@ -2054,7 +2054,7 @@ body {
     <div class="bg bg-room"></div>
     <div class="parchment-glow"></div>
     <!-- キャラ -->
-    <div class="char-sprite bust" id="sf-char-sprite">
+    <div class="char-sprite bust" id="sf-char-sprite" style="bottom:220px">
       <img id="sf-roan-img" src="common/roan_high.png" alt="">
     </div>
     <!-- テキストボックス -->
@@ -4683,8 +4683,8 @@ function sfOpen() {
   if (roanImg) roanImg.src = appBase + 'common/roan_high.png';
   document.getElementById('startFlowOverlay').style.display = 'block';
   sfShowStep(0);
-  // 開いた直後のタップ誤作動を防止（400ms待機）
-  setTimeout(() => { _sfReady = true; }, 400);
+  // 開いた直後のタップ誤作動を防止（500ms待機）
+  setTimeout(() => { _sfReady = true; }, 500);
 }
 
 function sfShowStep(idx) {
