@@ -2438,7 +2438,7 @@ fetch(`${clientBase}data.json`)
     ];
     const st = document.createElement('style');
     st.textContent = northBgs.map(({ cls, file, pos }) =>
-      `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}") ${pos} / cover no-repeat !important; }`
+      `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}?v=${fvData.dataVersion||1}") ${pos} / cover no-repeat !important; }`
     ).join('\n');
     document.head.appendChild(st);
   })
@@ -2545,7 +2545,7 @@ fetch(`${clientBase}FV_data.json`)
       ];
       stepFiles.forEach(({ suffix, file, pos }) => {
         bgStyles.push(
-          `.bg.bg-${cfg.cls}${suffix} { mix-blend-mode:normal !important; background:#1e1c28 url("${clientBase}${file}") ${pos} / cover no-repeat !important; }`
+          `.bg.bg-${cfg.cls}${suffix} { mix-blend-mode:normal !important; background:#1e1c28 url("${clientBase}${file}?v=${fvData.dataVersion||1}") ${pos} / cover no-repeat !important; }`
         );
       });
 
