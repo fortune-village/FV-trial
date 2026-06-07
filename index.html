@@ -4687,7 +4687,7 @@ async function sfFadeTransition(callback) {
 
 
 
-function sfOpen() {
+async function sfOpen() {
   _sfStep = 0;
   _sfDone = false;
   _sfReady = false;
@@ -4695,12 +4695,20 @@ function sfOpen() {
   // ロアン画像パスをappBaseで解決
   const roanImg = document.getElementById('sf-roan-img');
   if (roanImg) roanImg.src = appBase + 'common/roan_high.png';
-  document.getElementById('startFlowOverlay').style.display = 'block';
-  // フェードイン完了後にステップ開始（タップ誤作動も防止）
+  const sfEl = document.getElementById('startFlowOverlay');
+  sfEl.style.opacity = '0';
+  sfEl.style.transition = 'none';
+  sfEl.style.display = 'block';
+  await hideHome();
+  requestAnimationFrame(() => {
+    sfEl.style.transition = 'opacity 600ms ease';
+    sfEl.style.opacity = '1';
+  });
+  // フェードイン完了後にステップ開始
   setTimeout(() => {
     sfShowStep(0);
     setTimeout(() => { _sfReady = true; }, 300);
-  }, 200);
+  }, 650);
 }
 
 function sfShowStep(idx) {
@@ -5165,7 +5173,7 @@ $("btnVillage").addEventListener("click", async (e) => {
   // 初期設定未完了ならスタートフローへ
   if (!window._fvSetupDone) {
     e.stopPropagation();
-    sfFadeTransition(() => { sfOpen(); });
+    sfOpen();
     return;
   }
   e.stopPropagation();
