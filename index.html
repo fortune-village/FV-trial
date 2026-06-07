@@ -2058,7 +2058,7 @@ body {
       <img id="sf-roan-img" src="common/roan_high.png" alt="">
     </div>
     <!-- テキストボックス -->
-    <div class="textbox" id="sf-textbox" style="z-index:5">
+    <div class="textbox" id="sf-textbox">
       <div class="name-bar">ロアン</div>
       <div class="text-body" id="sf-text-body"></div>
       <div class="tap-hint" id="sf-tap-hint" style="visibility:hidden">タップして進む</div>
@@ -4682,9 +4682,11 @@ function sfOpen() {
   const roanImg = document.getElementById('sf-roan-img');
   if (roanImg) roanImg.src = appBase + 'common/roan_high.png';
   document.getElementById('startFlowOverlay').style.display = 'block';
-  sfShowStep(0);
-  // 開いた直後のタップ誤作動を防止（500ms待機）
-  setTimeout(() => { _sfReady = true; }, 500);
+  // transitionSceneのフェードイン完了後にステップ開始（タップ誤作動も防止）
+  setTimeout(() => {
+    sfShowStep(0);
+    setTimeout(() => { _sfReady = true; }, 300);
+  }, 650);
 }
 
 function sfShowStep(idx) {
@@ -5149,7 +5151,7 @@ $("btnVillage").addEventListener("click", async (e) => {
   // 初期設定未完了ならスタートフローへ
   if (!window._fvSetupDone) {
     e.stopPropagation();
-    sfOpen();
+    transitionScene(() => { sfOpen(); });
     return;
   }
   e.stopPropagation();
