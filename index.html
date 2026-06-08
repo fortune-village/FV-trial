@@ -4774,7 +4774,7 @@ function sfRevealText() {
       choiceBox.style.display = 'flex';
       choiceBox.classList.add('show');
       choiceBox.innerHTML = step.choices.map(c =>
-        '<div class="choice" onclick="sfChoose(\'' + c + '\')">'+c+'</div>'
+        '<div class="choice" style="text-align:center;max-width:82%;margin:0 auto" onclick="sfChoose(\'' + c + '\')">' + c + '</div>'
       ).join('');
     } else if (step.type === 'end') {
       tapHint.style.visibility = 'visible';
@@ -4827,7 +4827,7 @@ function sfTap() {
       choiceBox.style.display = 'flex';
       choiceBox.classList.add('show');
       choiceBox.innerHTML = step.choices.map(c =>
-        '<div class="choice" onclick="sfChoose(\'' + c + '\')">'+c+'</div>'
+        '<div class="choice" style="text-align:center;max-width:82%;margin:0 auto" onclick="sfChoose(\'' + c + '\')">' + c + '</div>'
       ).join('');
     }
     return;
