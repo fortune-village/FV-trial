@@ -2542,6 +2542,10 @@ const SHOW_TEST_TOOLS = false;
 function updateRealVH() {
   const h = window.innerHeight;
   document.documentElement.style.setProperty('--real-vh', h + 'px');
+  // デバッグ表示（確認後に削除）
+  let dbg = document.getElementById('fv-debug-vh');
+  if (!dbg) { dbg = document.createElement('div'); dbg.id = 'fv-debug-vh'; dbg.style.cssText = 'position:fixed;top:4px;right:4px;z-index:99999;background:rgba(0,0,0,0.7);color:#0f0;font-size:11px;padding:3px 6px;border-radius:4px;pointer-events:none'; document.body.appendChild(dbg); }
+  dbg.textContent = 'vh:' + h;
   // char-sprite.bust のサイズをJSで直接制限（LINEブラウザ対応）
   const maxBustH = Math.min(530, h - 270);
   const maxSpriteH = Math.min(480, h - 300);
