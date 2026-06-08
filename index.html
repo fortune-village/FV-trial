@@ -4815,14 +4815,14 @@ function sfRevealText() {
       if (!document.getElementById('sf-line-btn-style')) {
         const s = document.createElement('style');
         s.id = 'sf-line-btn-style';
-        s.textContent = '@keyframes sfLineShine{0%{background-position:-120% center}60%,100%{background-position:220% center}}';
+        s.textContent = '@keyframes sfLineShine{0%{background-position:-150% center}35%,100%{background-position:260% center}}';
         document.head.appendChild(s);
       }
       // LINEボタンを表示
       choiceBox.style.display = 'flex';
       choiceBox.classList.add('show');
       choiceBox.innerHTML =
-        '<div class="choice" style="text-align:center;width:82%;margin:0 auto;background:linear-gradient(105deg,rgba(6,190,80,0.92) 30%,rgba(160,255,190,0.95) 50%,rgba(6,190,80,0.92) 70%);background-size:280% 100%;border:2.5px solid rgba(6,199,85,1);border-top-color:rgba(120,255,160,0.9);border-bottom-color:rgba(0,140,55,1);color:#ffffff;font-weight:600;letter-spacing:.06em;text-shadow:0 1px 3px rgba(0,80,30,0.5);box-shadow:0 4px 14px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.25);animation:sfLineShine 3s ease-in-out infinite" onclick="sfLineJoin()">LINE フォーチュン・ヴィレッジ公式アカウントへ</div>' +
+        '<div class="choice" style="text-align:center;width:82%;margin:0 auto;background:linear-gradient(105deg,rgba(6,190,80,0.92) 30%,rgba(160,255,190,0.95) 50%,rgba(6,190,80,0.92) 70%);background-size:280% 100%;border:2.5px solid rgba(6,199,85,1);border-top-color:rgba(120,255,160,0.9);border-bottom-color:rgba(0,140,55,1);color:#ffffff;font-weight:600;letter-spacing:.06em;text-shadow:0 1px 3px rgba(0,80,30,0.5);box-shadow:0 4px 14px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.25);animation:sfLineShine 5s ease-in-out infinite" onclick="sfLineJoin()">LINE フォーチュン・ヴィレッジ公式アカウントへ</div>' +
         '<div class="choice" style="text-align:center;width:82%;margin:0 auto;opacity:0.65" onclick="sfFinish()">後で</div>';
     }
   });
