@@ -978,14 +978,14 @@ html {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background: #c99d6e;
+  background: #1a1010; /* LINE余白用：部屋の床色 */
 }
 body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background: #c99d6e;
+  background: #1a1010; /* LINE余白用：部屋の床色 */
 }
 #app {
   position: fixed;
@@ -1970,6 +1970,24 @@ body {
 
 
 
+/* ── LINEブラウザ対策：メディアクエリ上書き ──────────────────
+   min-height:740px がLINE(753px)で発火しロアンが大きくなる問題
+   強いセレクタ（ID指定）で5点すべてを上書き                    */
+@media (max-width: 430px) and (min-height: 740px) {
+  #startFlowOverlay #sf-char-sprite.char-sprite.bust {
+    width: 440px !important;
+    height: 430px !important;
+    left: 58% !important;
+    bottom: 180px !important;
+  }
+  #startFlowOverlay #sf-char-sprite.char-sprite.bust img {
+    width: 470px !important;
+    max-width: none !important;
+    max-height: none !important;
+    transform: translate(4px, 25px) !important;
+  }
+}
+
 /* ── LINE/ブラウザUI高さ対応：fixed全画面要素を--real-vhに統一 ── */
 .guide-board-overlay,
 .area-title-card,
@@ -2141,7 +2159,7 @@ body {
 
   <!-- スタートフロー（キャラ診断アンケート） -->
   <!-- スタートフロー（シーン形式） -->
-  <div id="startFlowOverlay" style="position:fixed;inset:0;z-index:400;display:none;cursor:pointer" onclick="sfTap()">
+  <div id="startFlowOverlay" style="position:fixed;top:0;left:0;right:0;height:var(--real-vh,100dvh);z-index:400;display:none;overflow:hidden;cursor:pointer" onclick="sfTap()">
     <!-- 背景 -->
     <div class="bg bg-room"></div>
     <div class="parchment-glow"></div>
@@ -2529,11 +2547,13 @@ const urlParams = new URLSearchParams(window.location.search);
 const SHOW_TEST_TOOLS = false;
 // ── LINE/ブラウザバー対応：実際の表示高さをCSS変数に設定 ──
 function updateRealVH() {
-  const h = Math.round(
+  const rawH = Math.round(
     (window.visualViewport && window.visualViewport.height) ||
     window.innerHeight ||
     document.documentElement.clientHeight
   );
+  // LINE（ツールバーなし）の余分な高さを画面幅×1.7で制限
+  const h = Math.min(rawH, Math.round(window.innerWidth * 1.7));
   document.documentElement.style.setProperty('--real-vh', h + 'px');
 }
 updateRealVH();
