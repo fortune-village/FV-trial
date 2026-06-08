@@ -2069,7 +2069,10 @@ body {
         <input type="date" id="sf-date-input" style="display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none;padding:14px 12px;min-height:48px;border:1px solid rgba(141,89,96,0.5);border-radius:8px;background:rgba(255,252,245,0.9);color:rgba(45,28,20,0.9);font-size:15px;font-family:inherit;margin-bottom:10px">
         <button onclick="sfDateNext()" style="width:100%;padding:11px;border:none;border-radius:8px;background:linear-gradient(180deg,rgba(141,89,96,0.9),rgba(91,52,68,0.95));color:rgba(255,241,218,0.96);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.08em">次へ ›</button>
       </div>
-      <div class="tap-hint" id="sf-tap-hint" style="visibility:hidden">タップして進む</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 6px">
+        <button id="sf-back-btn" onclick="event.stopPropagation();sfBack()" style="display:none;background:transparent;border:none;color:rgba(141,89,96,0.7);font-size:12px;cursor:pointer;font-family:inherit;letter-spacing:.06em;padding:4px 0">‹ 戻る</button>
+        <div class="tap-hint" id="sf-tap-hint" style="visibility:hidden;flex:1;text-align:right">タップして進む</div>
+      </div>
     </div>
     <!-- 選択肢 -->
     <div class="choice-box" id="sf-choice-box" onclick="event.stopPropagation()"></div>
@@ -4734,6 +4737,7 @@ function sfShowStep(idx) {
   const dateArea  = document.getElementById('sf-date-area');
   const tapHint   = document.getElementById('sf-tap-hint');
   const textBody  = document.getElementById('sf-text-body');
+  const backBtn   = document.getElementById('sf-back-btn');
   choiceBox.style.display = 'none';
   choiceBox.innerHTML = '';
   dateArea.style.display = 'none';
@@ -4741,6 +4745,14 @@ function sfShowStep(idx) {
   _sfTextShown = false;
   _sfTyping = false;
   tapHint.style.visibility = 'visible';
+  if (backBtn) backBtn.style.display = idx > 0 ? 'block' : 'none';
+}
+
+function sfBack() {
+  if (_sfStep <= 0) return;
+  _sfStep--;
+  sfShowStep(_sfStep);
+  sfRevealText();
 }
 
 function sfRevealText() {
