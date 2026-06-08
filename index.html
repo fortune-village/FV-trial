@@ -1975,6 +1975,7 @@ body {
 .area-title-card,
 #purchaseOverlay,
 #sceneTransitionOverlay,
+#startFlowOverlay,
 .parchment-cover,
 .sphere-acquire-flash,
 .shard-book-overlay,
@@ -2528,25 +2529,16 @@ const urlParams = new URLSearchParams(window.location.search);
 const SHOW_TEST_TOOLS = false;
 // ── LINE/ブラウザバー対応：実際の表示高さをCSS変数に設定 ──
 function updateRealVH() {
-  const rawH = window.innerHeight;
-  // Chrome(665px)を基準にキャラサイズをスケール
-  // LINE(753px)では 665/753=0.883倍に縮小
-  const REF_H = 665;
-  const scale = Math.min(1.0, REF_H / rawH);
-  const bustH = Math.round(540 * scale);   // .char-sprite.bust
-  const spriteH = Math.round(480 * scale); // .char-sprite
-  let el = document.getElementById('fv-char-scale');
-  if (!el) {
-    el = document.createElement('style');
-    el.id = 'fv-char-scale';
-    document.head.appendChild(el);
-  }
-  el.textContent =
-    '.char-sprite{height:' + spriteH + 'px!important}' +
-    '.char-sprite.bust{height:' + bustH + 'px!important}';
+  const h = Math.round(
+    (window.visualViewport && window.visualViewport.height) ||
+    window.innerHeight ||
+    document.documentElement.clientHeight
+  );
+  document.documentElement.style.setProperty('--real-vh', h + 'px');
 }
 updateRealVH();
 window.addEventListener('resize', updateRealVH);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', updateRealVH);
 
 const clientId = urlParams.get('c') || 'sample';
 
