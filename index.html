@@ -990,8 +990,8 @@ body {
 #app {
   position: fixed;
   inset: 0;
-  height: 100dvh;
-  min-height: 100dvh;
+  height: var(--real-vh, 100dvh);
+  min-height: var(--real-vh, 100dvh);
   overflow: hidden;
 }
 
@@ -2513,6 +2513,13 @@ const urlParams = new URLSearchParams(window.location.search);
 
 // ── テスト用ツール表示フラグ（falseで非表示） ──
 const SHOW_TEST_TOOLS = false;
+// ── LINE/ブラウザバー対応：実際の表示高さをCSS変数に設定 ──
+function updateRealVH() {
+  document.documentElement.style.setProperty('--real-vh', window.innerHeight + 'px');
+}
+updateRealVH();
+window.addEventListener('resize', updateRealVH);
+
 const clientId = urlParams.get('c') || 'sample';
 
 // ── STORESの入村申請URL（STORESショップ開設後に更新） ──
@@ -2735,7 +2742,25 @@ fetch(`${clientBase}FV_data.json`)
       document.head.appendChild(stArea);
     }
   })
-  .catch(() => {});
+  .catch(() => {
+    // fvData.json が存在しない場合（sampleクライアント等）
+    window._fvSetupDone = false;
+    const vBtn = document.getElementById('btnVillage');
+    if (vBtn) {
+      vBtn.textContent = 'スタート ✦ 村づくりをはじめる';
+      vBtn.style.borderColor = 'rgba(216,185,120,0.9)';
+      vBtn.style.background = 'linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98))';
+    }
+    ['btnNorth','btnSouth','btnEast','btnWest','btnCentral'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.classList.remove('disabled');
+      btn.classList.add('locked');
+      btn.innerHTML = btn.innerHTML.replace(/<span class="area-tag">.*?<\/span>/g, '')
+        + '<span class="area-tag">🔒</span>';
+      btn.onclick = (e) => { e.stopPropagation(); showPurchaseOverlay(); };
+    });
+  });
 
 // ── テキストボックス最小化 ────────────────────────────────────
 function toggleTextbox(e) {
