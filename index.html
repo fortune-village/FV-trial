@@ -1617,6 +1617,83 @@ body {
   cursor: not-allowed;
   pointer-events: none;
 }
+.area-btn.locked {
+  opacity: 0.72;
+  cursor: pointer;
+  pointer-events: auto;
+  background: linear-gradient(180deg,rgba(30,18,6,0.92),rgba(20,10,2,0.95));
+  border-color: rgba(160,120,60,0.5);
+  color: rgba(200,170,100,0.75);
+}
+.area-btn.locked:active { transform: scale(0.97); }
+
+/* 購入案内オーバーレイ */
+#purchaseOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(10,5,2,0.88);
+  align-items: center;
+  justify-content: center;
+}
+#purchaseOverlay.visible { display: flex; }
+.purchase-box {
+  background: linear-gradient(160deg,rgba(38,22,6,0.98),rgba(25,14,4,0.99));
+  border: 1px solid rgba(201,168,76,0.45);
+  border-radius: 16px;
+  padding: 36px 28px 28px;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(201,168,76,0.12);
+}
+.purchase-lock-icon {
+  font-size: 36px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 8px rgba(201,168,76,0.4));
+}
+.purchase-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(230,200,140,0.95);
+  letter-spacing: .12em;
+  margin-bottom: 12px;
+}
+.purchase-desc {
+  font-size: 12px;
+  color: rgba(200,180,140,0.75);
+  line-height: 1.9;
+  letter-spacing: .06em;
+  margin-bottom: 24px;
+}
+.purchase-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(201,168,76,0.7);
+  background: linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98));
+  color: rgba(230,200,140,0.95);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 10px;
+  transition: background .15s, opacity .15s;
+}
+.purchase-btn:active { opacity: 0.8; }
+.purchase-close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(180,150,100,0.55);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: .06em;
+  padding: 6px;
+}
 .area-north     { grid-column: 2; grid-row: 1; }
 .area-west      { grid-column: 1; grid-row: 2; }
 .area-center-btn{ grid-column: 2; grid-row: 2; }
@@ -1894,7 +1971,7 @@ body {
 .collection-shizuku-inner { flex:1; overflow:hidden; display:flex; flex-direction:column; }
 
 </style>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js" async></script>
 </head>
 <body>
 <div id="app" aria-label="Fortune Village Trial Novel UI">
@@ -2438,6 +2515,9 @@ const urlParams = new URLSearchParams(window.location.search);
 const SHOW_TEST_TOOLS = false;
 const clientId = urlParams.get('c') || 'sample';
 
+// ── STORESの入村申請URL（STORESショップ開設後に更新） ──
+const STORES_PURCHASE_URL = 'https://fortune-village.stores.jp/';
+
 const appBase =
   window.location.hostname.endsWith("github.io")
     ? "/FV-trial/"
@@ -2561,6 +2641,17 @@ fetch(`${clientBase}FV_data.json`)
     if (!window._fvSetupDone) {
       const vBtn = document.getElementById('btnVillage');
       if (vBtn) { vBtn.textContent = 'スタート ✦ 村づくりをはじめる'; vBtn.style.borderColor='rgba(216,185,120,0.9)'; vBtn.style.background='linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98))'; }
+      // エリアボタンをlocked状態に（購入案内に変更）
+      ['btnNorth','btnSouth','btnEast','btnWest','btnCentral'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.classList.remove('disabled');
+        btn.classList.add('locked');
+        const label = btn.textContent.replace(/準備中|\s/g,'').replace('<span','').split('<')[0].trim();
+        btn.innerHTML = btn.innerHTML.replace(/<span class="area-tag">.*?<\/span>/g, '')
+          + '<span class="area-tag">🔒</span>';
+        btn.onclick = (e) => { e.stopPropagation(); showPurchaseOverlay(); };
+      });
     }
 
     const DIR_CONFIG = {
@@ -4604,6 +4695,7 @@ const LIFF_ID = '2010325604-0QN7Bcqx';
 // ── LIFF初期化（LINEから開いた場合にuserIDを取得） ──
 async function initLiff() {
   try {
+    if (typeof liff === 'undefined') return;
     await liff.init({ liffId: LIFF_ID });
     if (liff.isInClient() && liff.isLoggedIn()) {
       const profile = await liff.getProfile();
@@ -4622,7 +4714,8 @@ async function initLiff() {
     console.log('LIFF init:', e);
   }
 }
-initLiff();
+// ページ完全読み込み後にLIFF初期化（ゲーム初期化に干渉しないよう遅延）
+window.addEventListener('load', () => setTimeout(initLiff, 1500));
 
 
 // ── FV通信（チャット） ──────────────────────────────────────────
@@ -5003,6 +5096,18 @@ async function sfDoSubmit() {
       })
     });
   } catch(e) { console.warn('survey送信エラー:', e); }
+}
+
+function showPurchaseOverlay() {
+  const el = document.getElementById('purchaseOverlay');
+  if (el) el.classList.add('visible');
+}
+function closePurchaseOverlay() {
+  const el = document.getElementById('purchaseOverlay');
+  if (el) el.classList.remove('visible');
+}
+function openStores() {
+  window.open(STORES_PURCHASE_URL, '_blank');
 }
 
 async function fvTsushinCheckNew() {
@@ -5664,5 +5769,23 @@ $("fvChatInput").addEventListener("keydown", (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); fvChatSendMsg(); }
 });
 </script>
+
+<!-- 購入案内オーバーレイ -->
+<div id="purchaseOverlay">
+  <div class="purchase-box">
+    <div class="purchase-lock-icon">🔒</div>
+    <div class="purchase-title">村の扉は閉ざされています</div>
+    <div class="purchase-desc">
+      このエリアに足を踏み入れるには、<br>
+      フォーチュン・ヴィレッジへの<br>
+      入村申請が必要です。<br><br>
+      あなたの生年月日に刻まれた命式から<br>
+      生まれた、唯一の村があなたを<br>
+      待っています。
+    </div>
+    <button class="purchase-btn" onclick="openStores()">✦ 入村申請をする</button>
+    <button class="purchase-close-btn" onclick="closePurchaseOverlay()">閉じる</button>
+  </div>
+</div>
 </body>
 </html>
