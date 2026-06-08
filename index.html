@@ -989,13 +989,7 @@ body {
 }
 #app {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--real-vh, 100dvh);
-  /* LINEブラウザ（ツールバーなし）とSafari（ツールバーあり）の
-     高さの差を吸収：画面幅×2.05 を上限にする */
-  max-height: calc(min(100vw, 430px) * 2.05);
+  inset: 0;
   overflow: hidden;
 }
 
@@ -2146,7 +2140,7 @@ body {
 
   <!-- スタートフロー（キャラ診断アンケート） -->
   <!-- スタートフロー（シーン形式） -->
-  <div id="startFlowOverlay" style="position:fixed;top:0;left:0;right:0;height:var(--real-vh,100dvh);z-index:400;display:none;cursor:pointer" onclick="sfTap()">
+  <div id="startFlowOverlay" style="position:fixed;inset:0;z-index:400;display:none;cursor:pointer" onclick="sfTap()">
     <!-- 背景 -->
     <div class="bg bg-room"></div>
     <div class="parchment-glow"></div>
@@ -2176,7 +2170,7 @@ body {
   </div>
 
   <!-- FV通信：チャット画面 -->
-  <div id="fvChatOverlay" style="position:fixed;top:0;left:0;right:0;height:var(--real-vh,100dvh);z-index:310;display:none;flex-direction:column;background:rgba(243,223,185,0.97)">
+  <div id="fvChatOverlay" style="position:fixed;inset:0;z-index:310;display:none;flex-direction:column;background:rgba(243,223,185,0.97)">
     <!-- ヘッダー -->
     <div style="flex-shrink:0;display:flex;align-items:center;padding:14px 18px;background:rgba(91,43,34,0.92);border-bottom:1px solid rgba(216,185,120,0.38)">
       <div>
@@ -2534,11 +2528,22 @@ const urlParams = new URLSearchParams(window.location.search);
 const SHOW_TEST_TOOLS = false;
 // ── LINE/ブラウザバー対応：実際の表示高さをCSS変数に設定 ──
 function updateRealVH() {
-  // LINE（ツールバーなし）とSafari/Chrome（ツールバーあり）の
-  // 高さの差を吸収：画面幅×1.7 を上限に（Chrome相当の高さに制限）
   const rawH = window.innerHeight;
-  const h = Math.min(rawH, Math.round(window.innerWidth * 1.7));
-  document.documentElement.style.setProperty('--real-vh', h + 'px');
+  // Chrome(665px)を基準にキャラサイズをスケール
+  // LINE(753px)では 665/753=0.883倍に縮小
+  const REF_H = 665;
+  const scale = Math.min(1.0, REF_H / rawH);
+  const bustH = Math.round(540 * scale);   // .char-sprite.bust
+  const spriteH = Math.round(480 * scale); // .char-sprite
+  let el = document.getElementById('fv-char-scale');
+  if (!el) {
+    el = document.createElement('style');
+    el.id = 'fv-char-scale';
+    document.head.appendChild(el);
+  }
+  el.textContent =
+    '.char-sprite{height:' + spriteH + 'px!important}' +
+    '.char-sprite.bust{height:' + bustH + 'px!important}';
 }
 updateRealVH();
 window.addEventListener('resize', updateRealVH);
