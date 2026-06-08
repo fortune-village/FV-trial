@@ -5290,8 +5290,6 @@ $("btnVillage").addEventListener("click", async (e) => {
   // 初期設定未完了ならスタートフローへ
   if (!window._fvSetupDone) {
     e.stopPropagation();
-    // 回答済みなら何もしない
-    if (localStorage.getItem('fv_survey_done_' + clientId)) return;
     sfOpen();
     return;
   }
