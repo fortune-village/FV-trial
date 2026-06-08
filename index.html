@@ -5107,7 +5107,12 @@ function closePurchaseOverlay() {
   if (el) el.classList.remove('visible');
 }
 function openStores() {
-  window.open(STORES_PURCHASE_URL, '_blank');
+  // LIFF内（LINE）では liff.openWindow で外部ブラウザを開く
+  if (typeof liff !== 'undefined' && liff.isInClient()) {
+    liff.openWindow({ url: STORES_PURCHASE_URL, external: true });
+  } else {
+    window.open(STORES_PURCHASE_URL, '_blank');
+  }
 }
 
 async function fvTsushinCheckNew() {
