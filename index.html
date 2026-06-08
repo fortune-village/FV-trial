@@ -4607,6 +4607,7 @@ function openFvTsushin() {
   fvChatLoad();
   // 既読処理
   window._fvSetupDone = false;
+updateSurveyBtn();
 window._fvTsushinBadge = false;
   localStorage.setItem('fv_tsushin_read_ts', Date.now().toString());
 }
@@ -4696,6 +4697,18 @@ let _sfDone = false;
 const _sfValues = { birthday:'', gender:'', age:'', hair:'', height:'', face:'' };
 
 let _sfReady = false;
+
+function updateSurveyBtn() {
+  const btn = document.getElementById('btnVillage');
+  if (!btn) return;
+  const done = localStorage.getItem('fv_survey_done_' + clientId);
+  if (done && !window._fvSetupDone) {
+    btn.textContent = '✓ アンケート回答済み';
+    btn.style.opacity = '0.65';
+    btn.style.cursor = 'default';
+    btn.setAttribute('data-survey-done', 'true');
+  }
+}
 
 async function sfFadeTransition(callback) {
   const ol = document.getElementById('sceneTransitionOverlay');
@@ -4855,7 +4868,19 @@ function sfTap() {
   if (step.type === 'text') { _sfStep++; sfShowStep(_sfStep); sfRevealText(); }
   if (step.type === 'end') {
     _sfDone = true;
-    document.getElementById('startFlowOverlay').style.display = 'none';
+    // 回答済みフラグを保存
+    localStorage.setItem('fv_survey_done_' + clientId, 'true');
+    // ホーム画面へ
+    setTimeout(async () => {
+      const sfEl = document.getElementById('startFlowOverlay');
+      sfEl.style.transition = 'opacity 800ms ease';
+      sfEl.style.opacity = '0';
+      await new Promise(r => setTimeout(r, 800));
+      sfEl.style.display = 'none';
+      sfEl.style.opacity = '1';
+      showHome();
+      updateSurveyBtn();
+    }, 600);
   }
 }
 
@@ -5264,6 +5289,8 @@ $("btnVillage").addEventListener("click", async (e) => {
   // 初期設定未完了ならスタートフローへ
   if (!window._fvSetupDone) {
     e.stopPropagation();
+    // 回答済みなら何もしない
+    if (localStorage.getItem('fv_survey_done_' + clientId)) return;
     sfOpen();
     return;
   }
@@ -5571,6 +5598,7 @@ $("shizukuAcquireFlash").addEventListener("click", (e) => e.stopPropagation());
 
 showDevBanner();
 window._fvSetupDone = false;
+updateSurveyBtn();
 window._fvTsushinBadge = false;
 fvTsushinCheckNew();
 $("fvChatClose").addEventListener("click", (e) => { e.stopPropagation(); closeFvTsushin(); });
