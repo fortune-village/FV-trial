@@ -4741,7 +4741,7 @@ function sfShowStep(idx) {
   choiceBox.style.display = 'none';
   choiceBox.innerHTML = '';
   dateArea.style.display = 'none';
-  if (textBody) textBody.textContent = '';
+  if (textBody) { textBody.innerHTML = ''; textBody.style.whiteSpace = 'normal'; }
   _sfTextShown = false;
   _sfTyping = false;
   tapHint.style.visibility = 'visible';
@@ -4786,14 +4786,15 @@ function sfRevealText() {
 function sfTypeText(text, cb) {
   const el = document.getElementById('sf-text-body');
   if (!el) { if (cb) cb(); return; }
-  el.style.whiteSpace = 'pre-wrap';
-  el.textContent = '';
+  el.style.whiteSpace = 'normal';
+  el.innerHTML = '';
   _sfTyping = true;
   if (window._sfTypeInterval) clearInterval(window._sfTypeInterval);
   let i = 0;
   window._sfTypeInterval = setInterval(() => {
     if (i < text.length) {
-      el.textContent += text[i++];
+      i++;
+      el.innerHTML = text.slice(0, i).split('\n').join('<br>');
     } else {
       clearInterval(window._sfTypeInterval);
       window._sfTypeInterval = null;
@@ -4806,7 +4807,7 @@ function sfTypeText(text, cb) {
 function sfSkipType(text) {
   if (window._sfTypeInterval) { clearInterval(window._sfTypeInterval); window._sfTypeInterval = null; }
   const el = document.getElementById('sf-text-body');
-  if (el) { el.style.whiteSpace = 'pre-wrap'; el.textContent = text; }
+  if (el) { el.style.whiteSpace = 'normal'; el.innerHTML = text.split('\n').join('<br>'); }
   _sfTyping = false;
 }
 
