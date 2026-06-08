@@ -1988,6 +1988,11 @@ body {
   }
 }
 
+/* テキストボックスを余白分下に伸ばして黒帯を隠す */
+#sf-textbox {
+  padding-bottom: calc(var(--vh-gap, 0px) + 12px) !important;
+}
+
 /* ── LINE/ブラウザUI高さ対応：fixed全画面要素を--real-vhに統一 ── */
 .guide-board-overlay,
 .area-title-card,
@@ -2555,6 +2560,8 @@ function updateRealVH() {
   // LINE（ツールバーなし）の余分な高さを画面幅×1.7で制限
   const h = Math.min(rawH, Math.round(window.innerWidth * 1.7));
   document.documentElement.style.setProperty('--real-vh', h + 'px');
+  // 余白の高さを変数に設定（テキストボックス拡張用）
+  document.documentElement.style.setProperty('--vh-gap', (rawH - h) + 'px');
 }
 updateRealVH();
 window.addEventListener('resize', updateRealVH);
