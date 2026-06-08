@@ -978,14 +978,14 @@ html {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background: #1a1010; /* LINE余白用：部屋の床色 */
+  background: #c99d6e;
 }
 body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background: #1a1010; /* LINE余白用：部屋の床色 */
+  background: #c99d6e;
 }
 #app {
   position: fixed;
@@ -1988,11 +1988,6 @@ body {
   }
 }
 
-/* テキストボックスを余白分下に伸ばして黒帯を隠す */
-#sf-textbox {
-  padding-bottom: calc(var(--vh-gap, 0px) + 12px) !important;
-}
-
 /* ── LINE/ブラウザUI高さ対応：fixed全画面要素を--real-vhに統一 ── */
 .guide-board-overlay,
 .area-title-card,
@@ -2164,7 +2159,7 @@ body {
 
   <!-- スタートフロー（キャラ診断アンケート） -->
   <!-- スタートフロー（シーン形式） -->
-  <div id="startFlowOverlay" style="position:fixed;top:0;left:0;right:0;height:var(--real-vh,100dvh);z-index:400;display:none;overflow:hidden;cursor:pointer" onclick="sfTap()">
+  <div id="startFlowOverlay" style="position:fixed;inset:0;z-index:400;display:none;cursor:pointer" onclick="sfTap()">
     <!-- 背景 -->
     <div class="bg bg-room"></div>
     <div class="parchment-glow"></div>
@@ -2558,10 +2553,7 @@ function updateRealVH() {
     document.documentElement.clientHeight
   );
   // LINE（ツールバーなし）の余分な高さを画面幅×1.7で制限
-  const h = Math.min(rawH, Math.round(window.innerWidth * 1.7));
-  document.documentElement.style.setProperty('--real-vh', h + 'px');
-  // 余白の高さを変数に設定（テキストボックス拡張用）
-  document.documentElement.style.setProperty('--vh-gap', (rawH - h) + 'px');
+  document.documentElement.style.setProperty('--real-vh', rawH + 'px');
 }
 updateRealVH();
 window.addEventListener('resize', updateRealVH);
