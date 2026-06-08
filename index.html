@@ -4808,8 +4808,19 @@ function sfRevealText() {
         '<div class="choice" style="text-align:center;width:72%;margin:0 auto" onclick="sfChoose(\'' + c + '\')">' + c + '</div>'
       ).join('');
     } else if (step.type === 'end') {
-      tapHint.style.visibility = 'visible';
+      tapHint.style.visibility = 'hidden';
       sfDoSubmit();
+      _sfDone = true;
+      setTimeout(async () => {
+        const sfEl = document.getElementById('startFlowOverlay');
+        sfEl.style.transition = 'opacity 1000ms ease';
+        sfEl.style.opacity = '0';
+        await new Promise(r => setTimeout(r, 1000));
+        sfEl.style.display = 'none';
+        sfEl.style.opacity = '1';
+        showHome();
+        updateSurveyBtn();
+      }, 1800);
     }
   });
 }
