@@ -1975,19 +1975,24 @@ body {
 .collection-shizuku-inner { flex:1; overflow:hidden; display:flex; flex-direction:column; }
 
 
-/* LINE/Safari高さ差吸収：char-spriteの高さをCSS変数ベースに */
+/* LINE/Safari高さ差吸収：!importantで全メディアクエリを上書き */
 .char-sprite {
-  height: min(480px, calc(var(--real-vh, 100svh) - 300px));
+  height: min(480px, calc(var(--real-vh, 100svh) - 300px)) !important;
 }
 .char-sprite.bust {
-  height: min(540px, calc(var(--real-vh, 100svh) - 270px));
+  height: min(530px, calc(var(--real-vh, 100svh) - 270px)) !important;
+}
+@media (max-width: 430px) and (min-height: 740px) {
+  .char-sprite.bust {
+    height: min(530px, calc(var(--real-vh, 100svh) - 270px)) !important;
+  }
 }
 @media (max-height: 720px) {
   .char-sprite {
-    height: min(430px, calc(var(--real-vh, 100svh) - 270px));
+    height: min(430px, calc(var(--real-vh, 100svh) - 270px)) !important;
   }
   .char-sprite.bust {
-    height: min(430px, calc(var(--real-vh, 100svh) - 260px));
+    height: min(420px, calc(var(--real-vh, 100svh) - 260px)) !important;
   }
 }
 </style>
@@ -2535,7 +2540,15 @@ const urlParams = new URLSearchParams(window.location.search);
 const SHOW_TEST_TOOLS = false;
 // ── LINE/ブラウザバー対応：実際の表示高さをCSS変数に設定 ──
 function updateRealVH() {
-  document.documentElement.style.setProperty('--real-vh', window.innerHeight + 'px');
+  const h = window.innerHeight;
+  document.documentElement.style.setProperty('--real-vh', h + 'px');
+  // char-sprite.bust のサイズをJSで直接制限（LINEブラウザ対応）
+  const maxBustH = Math.min(530, h - 270);
+  const maxSpriteH = Math.min(480, h - 300);
+  const styleId = 'fv-vh-override';
+  let el = document.getElementById(styleId);
+  if (!el) { el = document.createElement('style'); el.id = styleId; document.head.appendChild(el); }
+  el.textContent = `.char-sprite{height:${maxSpriteH}px!important}.char-sprite.bust{height:${maxBustH}px!important}`;
 }
 updateRealVH();
 window.addEventListener('resize', updateRealVH);
