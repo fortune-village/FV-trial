@@ -1894,6 +1894,7 @@ body {
 .collection-shizuku-inner { flex:1; overflow:hidden; display:flex; flex-direction:column; }
 
 </style>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
 <div id="app" aria-label="Fortune Village Trial Novel UI">
@@ -4598,6 +4599,30 @@ $("aboutTextCloseBtn").addEventListener("click", (e) => {
 $("aboutTextOverlay").addEventListener("click", (e) => e.stopPropagation());
 const GAS_REPLY_URL = 'https://script.google.com/macros/s/AKfycbwaxud5L3FK33181fC-GhhbEgsaaZavtw1oV0BIZQ6ycwfZaXeU2bi9mpjzdJ76WnpjHA/exec';
 const GAS_REPLY_TOKEN = 'fv_studio_2026';
+const LIFF_ID = '2010325604-0QN7Bcqx';
+
+// ── LIFF初期化（LINEから開いた場合にuserIDを取得） ──
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (liff.isInClient() && liff.isLoggedIn()) {
+      const profile = await liff.getProfile();
+      const lineUserId = profile.userId;
+      await fetch(GAS_REPLY_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          token: GAS_REPLY_TOKEN,
+          action: 'line_register',
+          cid: clientId,
+          lineUserId: lineUserId
+        })
+      });
+    }
+  } catch(e) {
+    console.log('LIFF init:', e);
+  }
+}
+initLiff();
 
 
 // ── FV通信（チャット） ──────────────────────────────────────────
