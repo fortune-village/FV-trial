@@ -1975,6 +1975,20 @@ body {
 .collection-shizuku-inner { flex:1; overflow:hidden; display:flex; flex-direction:column; }
 
 
+
+/* ── LINE/ブラウザUI高さ対応：fixed全画面要素を--real-vhに統一 ── */
+.guide-board-overlay,
+.area-title-card,
+#purchaseOverlay,
+#sceneTransitionOverlay,
+.parchment-cover,
+.sphere-acquire-flash,
+.shard-book-overlay,
+.shard-acquire-flash,
+.collection-overlay {
+  height: var(--real-vh, 100dvh) !important;
+  min-height: unset !important;
+}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" async></script>
 </head>
@@ -2132,7 +2146,7 @@ body {
 
   <!-- スタートフロー（キャラ診断アンケート） -->
   <!-- スタートフロー（シーン形式） -->
-  <div id="startFlowOverlay" style="position:fixed;inset:0;z-index:400;display:none;cursor:pointer" onclick="sfTap()">
+  <div id="startFlowOverlay" style="position:fixed;top:0;left:0;right:0;height:var(--real-vh,100dvh);z-index:400;display:none;cursor:pointer" onclick="sfTap()">
     <!-- 背景 -->
     <div class="bg bg-room"></div>
     <div class="parchment-glow"></div>
@@ -2162,7 +2176,7 @@ body {
   </div>
 
   <!-- FV通信：チャット画面 -->
-  <div id="fvChatOverlay" style="position:fixed;inset:0;z-index:310;display:none;flex-direction:column;background:rgba(243,223,185,0.97)">
+  <div id="fvChatOverlay" style="position:fixed;top:0;left:0;right:0;height:var(--real-vh,100dvh);z-index:310;display:none;flex-direction:column;background:rgba(243,223,185,0.97)">
     <!-- ヘッダー -->
     <div style="flex-shrink:0;display:flex;align-items:center;padding:14px 18px;background:rgba(91,43,34,0.92);border-bottom:1px solid rgba(216,185,120,0.38)">
       <div>
