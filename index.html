@@ -4811,20 +4811,35 @@ function sfRevealText() {
       tapHint.style.visibility = 'hidden';
       sfDoSubmit();
       _sfDone = true;
-      setTimeout(async () => {
-        const sfEl = document.getElementById('startFlowOverlay');
-        sfEl.style.transition = 'opacity 1000ms ease';
-        sfEl.style.opacity = '0';
-        await new Promise(r => setTimeout(r, 1000));
-        sfEl.style.display = 'none';
-        sfEl.style.opacity = '1';
-        showHome();
-        updateSurveyBtn();
-      }, 1800);
+      // LINEボタンを表示
+      choiceBox.style.display = 'flex';
+      choiceBox.classList.add('show');
+      choiceBox.innerHTML =
+        '<div class="choice" style="text-align:center;width:80%;margin:0 auto;background:rgba(6,199,85,0.15);border-color:rgba(6,199,85,0.6);color:rgba(255,245,225,0.95)" onclick="sfLineJoin()">📱 LINEで受け取る</div>' +
+        '<div class="choice" style="text-align:center;width:80%;margin:0 auto;opacity:0.7" onclick="sfFinish()">後で</div>';
     }
   });
 }
 
+
+function sfLineJoin() {
+  const lineUrl = 'https://line.me/R/ti/p/@340iufcc?ref=' + encodeURIComponent(clientId);
+  window.open(lineUrl, '_blank');
+  sfFinish();
+}
+
+function sfFinish() {
+  setTimeout(async () => {
+    const sfEl = document.getElementById('startFlowOverlay');
+    sfEl.style.transition = 'opacity 800ms ease';
+    sfEl.style.opacity = '0';
+    await new Promise(r => setTimeout(r, 800));
+    sfEl.style.display = 'none';
+    sfEl.style.opacity = '1';
+    showHome();
+    updateSurveyBtn();
+  }, 300);
+}
 
 function sfTypeText(text, cb) {
   const el = document.getElementById('sf-text-body');
