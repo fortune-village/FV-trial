@@ -4811,12 +4811,19 @@ function sfRevealText() {
       tapHint.style.visibility = 'hidden';
       sfDoSubmit();
       _sfDone = true;
+      // LINEボタン用スタイル動的追加
+      if (!document.getElementById('sf-line-btn-style')) {
+        const s = document.createElement('style');
+        s.id = 'sf-line-btn-style';
+        s.textContent = '@keyframes sfLineGlow{0%,100%{box-shadow:0 4px 14px rgba(0,0,0,0.5),0 0 10px rgba(6,199,85,0.5),inset 0 1px 0 rgba(255,255,255,0.25)}50%{box-shadow:0 4px 14px rgba(0,0,0,0.5),0 0 28px rgba(6,199,85,0.9),0 0 50px rgba(6,199,85,0.35),inset 0 1px 0 rgba(255,255,255,0.25)}}';
+        document.head.appendChild(s);
+      }
       // LINEボタンを表示
       choiceBox.style.display = 'flex';
       choiceBox.classList.add('show');
       choiceBox.innerHTML =
-        '<div class="choice" style="text-align:center;width:80%;margin:0 auto;background:rgba(6,199,85,0.85);border-color:rgba(6,199,85,0.9);color:rgba(10,40,20,0.95)" onclick="sfLineJoin()">LINE フォーチュン・ヴィレッジ公式アカウントへ</div>' +
-        '<div class="choice" style="text-align:center;width:80%;margin:0 auto;opacity:0.7" onclick="sfFinish()">後で</div>';
+        '<div class="choice" style="text-align:center;width:82%;margin:0 auto;background:rgba(6,190,80,0.92);border:2.5px solid rgba(6,199,85,1);border-top-color:rgba(120,255,160,0.9);border-bottom-color:rgba(0,140,55,1);color:#ffffff;font-weight:600;letter-spacing:.06em;text-shadow:0 1px 3px rgba(0,80,30,0.5);animation:sfLineGlow 2.2s ease-in-out infinite" onclick="sfLineJoin()">LINE フォーチュン・ヴィレッジ公式アカウントへ</div>' +
+        '<div class="choice" style="text-align:center;width:82%;margin:0 auto;opacity:0.65" onclick="sfFinish()">後で</div>';
     }
   });
 }
