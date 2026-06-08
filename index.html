@@ -2256,7 +2256,7 @@ body {
     <div id="home-client-name" class="home-client-name"></div>
     <div id="home-data-version" style="font-size:11px;color:rgba(58,28,8,0.55);letter-spacing:.12em;text-align:center;min-height:16px;margin-bottom:4px"></div>
     <div class="home-buttons">
-      <button class="home-btn" id="btnContinue" style="display:none; border-color: rgba(216,185,120,0.9); background: linear-gradient(180deg, rgba(62,38,14,0.96), rgba(38,22,6,0.98));">続きから ▶</button>
+
       <button class="home-btn" id="btnAbout">フォーチュン・ヴィレッジについて</button>
       <button class="home-btn" id="btnVillage">村長の家へ</button>
       <div id="homeUpdateInfo" class="home-update-info">
@@ -4098,7 +4098,12 @@ function renderScene() {
   if (s.achievementScene) unlockByScene(s.achievementScene);
   const total = currentSceneSet.length;
   $("progressBar").style.width = `${((sceneIndex + 1) / total) * 100}%`;
-  renderChoices(s.choices);
+  // 村長の家シーンで「続きから」を動的追加
+  let dynamicChoices = s.choices ? [...s.choices] : [];
+  if (currentScreen === 'house' && sceneIndex === 0 && loadProgress()) {
+    dynamicChoices = ['続きから ▶', ...dynamicChoices];
+  }
+  renderChoices(dynamicChoices);
   $("btnHomeFixed").classList.add("visible");
   // 村長の家の最初のシーンのみ占いボタンを表示
   $("btnFortune").classList.remove("visible"); // 選択肢に統合済みのため非表示
@@ -4173,6 +4178,18 @@ function renderChoices(choices) {
         } else if (["村の強みを活かす","村の課題を解決する","他の村との交易","今年の村の計画","今後の村の展望","村について深く知る"].includes(label)) {
           pushBack(() => { currentScreen='area'; currentSceneSet=councilScenes; sceneIndex=1; renderScene(); });
           transitionScene(() => { box.style.display="none"; currentSceneSet=councilScenes; sceneIndex=1; renderScene(); });
+        } else if (label === "続きから ▶") {
+          e.stopPropagation();
+          const data = loadProgress();
+          if (!data) return;
+          const set = sceneSetMap[data.sceneSetName];
+          if (!set) return;
+          await hideHome();
+          currentScreen = data.screen;
+          currentSceneSet = set;
+          sceneIndex = data.sceneIndex;
+          hideAllSceneElements();
+          renderScene();
         } else if (label === "FV通信") {
           e.stopPropagation();
           openFvTsushin();
@@ -5541,19 +5558,7 @@ $("chatInput").addEventListener("keydown", (e) => {
 $("chatInput").addEventListener("click", (e) => e.stopPropagation());
 $("chatOverlay").addEventListener("click", (e) => e.stopPropagation());
 // ── 続きからボタン ──
-$("btnContinue").addEventListener("click", async (e) => {
-  e.stopPropagation();
-  const data = loadProgress();
-  if (!data) return;
-  const set = sceneSetMap[data.sceneSetName];
-  if (!set) return;
-  await hideHome();
-  currentScreen = data.screen;
-  currentSceneSet = set;
-  sceneIndex = data.sceneIndex;
-  hideAllSceneElements();
-  renderScene();
-});
+
 
 // ── スフィアの記録（統合コレクション） ──
 $("collectionCloseBtn").addEventListener("click", (e) => { e.stopPropagation(); closeCollection(); });
