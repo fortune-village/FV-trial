@@ -606,3 +606,21 @@ body {
   }
 }
 
+
+/* ── LINEブラウザ対策（2026-06-08）──────────────────────────
+   min-height:740px のメディアクエリがLINE(753px)だけで発火し
+   ロアンが大きくなる問題を、強いセレクタで上書きする          */
+@media (max-width: 430px) and (min-height: 740px) {
+  #startFlowOverlay #sf-char-sprite.char-sprite.bust {
+    width: 440px !important;
+    height: 430px !important;
+    left: 58% !important;
+    bottom: 180px !important;
+  }
+  #startFlowOverlay #sf-char-sprite.char-sprite.bust img {
+    width: 470px !important;
+    max-width: none !important;
+    max-height: none !important;
+    transform: translate(4px, 25px) !important;
+  }
+}
