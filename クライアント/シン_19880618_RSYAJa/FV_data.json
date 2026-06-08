@@ -1,0 +1,25 @@
+{
+  "name": "シン",
+  "birthday": "19880618",
+  "savedInp": {
+    "initial": "",
+    "gender": "男",
+    "birthday": "19880618",
+    "yk": "戊",
+    "ys": "辰",
+    "mk": "戊",
+    "ms": "午",
+    "dk": "甲",
+    "ds": "辰"
+  },
+  "fvData": {
+    "release": {
+      "N": false,
+      "S": false,
+      "E": false,
+      "W": false,
+      "C": false
+    }
+  },
+  "exportedAt": "2026-06-08T06:29:04.446Z"
+}
