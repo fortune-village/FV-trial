@@ -989,9 +989,13 @@ body {
 }
 #app {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: var(--real-vh, 100dvh);
-  min-height: var(--real-vh, 100dvh);
+  /* LINEブラウザ（ツールバーなし）とSafari（ツールバーあり）の
+     高さの差を吸収：画面幅×2.05 を上限にする */
+  max-height: calc(min(100vw, 430px) * 2.05);
   overflow: hidden;
 }
 
@@ -1970,6 +1974,22 @@ body {
 /* しずくセクション */
 .collection-shizuku-inner { flex:1; overflow:hidden; display:flex; flex-direction:column; }
 
+
+/* LINE/Safari高さ差吸収：char-spriteの高さをCSS変数ベースに */
+.char-sprite {
+  height: min(480px, calc(var(--real-vh, 100svh) - 300px));
+}
+.char-sprite.bust {
+  height: min(540px, calc(var(--real-vh, 100svh) - 270px));
+}
+@media (max-height: 720px) {
+  .char-sprite {
+    height: min(430px, calc(var(--real-vh, 100svh) - 270px));
+  }
+  .char-sprite.bust {
+    height: min(430px, calc(var(--real-vh, 100svh) - 260px));
+  }
+}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" async></script>
 </head>
