@@ -1975,26 +1975,6 @@ body {
 .collection-shizuku-inner { flex:1; overflow:hidden; display:flex; flex-direction:column; }
 
 
-/* LINE/Safari高さ差吸収：!importantで全メディアクエリを上書き */
-.char-sprite {
-  height: min(480px, calc(var(--real-vh, 100svh) - 300px)) !important;
-}
-.char-sprite.bust {
-  height: min(530px, calc(var(--real-vh, 100svh) - 270px)) !important;
-}
-@media (max-width: 430px) and (min-height: 740px) {
-  .char-sprite.bust {
-    height: min(530px, calc(var(--real-vh, 100svh) - 270px)) !important;
-  }
-}
-@media (max-height: 720px) {
-  .char-sprite {
-    height: min(430px, calc(var(--real-vh, 100svh) - 270px)) !important;
-  }
-  .char-sprite.bust {
-    height: min(420px, calc(var(--real-vh, 100svh) - 260px)) !important;
-  }
-}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" async></script>
 </head>
@@ -2540,19 +2520,11 @@ const urlParams = new URLSearchParams(window.location.search);
 const SHOW_TEST_TOOLS = false;
 // ── LINE/ブラウザバー対応：実際の表示高さをCSS変数に設定 ──
 function updateRealVH() {
-  const h = window.innerHeight;
+  // LINE（ツールバーなし）とSafari/Chrome（ツールバーあり）の
+  // 高さの差を吸収：画面幅×1.7 を上限に（Chrome相当の高さに制限）
+  const rawH = window.innerHeight;
+  const h = Math.min(rawH, Math.round(window.innerWidth * 1.7));
   document.documentElement.style.setProperty('--real-vh', h + 'px');
-  // デバッグ表示（確認後に削除）
-  let dbg = document.getElementById('fv-debug-vh');
-  if (!dbg) { dbg = document.createElement('div'); dbg.id = 'fv-debug-vh'; dbg.style.cssText = 'position:fixed;top:4px;right:4px;z-index:99999;background:rgba(0,0,0,0.7);color:#0f0;font-size:11px;padding:3px 6px;border-radius:4px;pointer-events:none'; document.body.appendChild(dbg); }
-  dbg.textContent = 'vh:' + h;
-  // char-sprite.bust のサイズをJSで直接制限（LINEブラウザ対応）
-  const maxBustH = Math.min(530, h - 270);
-  const maxSpriteH = Math.min(480, h - 300);
-  const styleId = 'fv-vh-override';
-  let el = document.getElementById(styleId);
-  if (!el) { el = document.createElement('style'); el.id = styleId; document.head.appendChild(el); }
-  el.textContent = `.char-sprite{height:${maxSpriteH}px!important}.char-sprite.bust{height:${maxBustH}px!important}`;
 }
 updateRealVH();
 window.addEventListener('resize', updateRealVH);
