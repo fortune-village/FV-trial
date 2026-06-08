@@ -4856,10 +4856,34 @@ function sfDateNext() {
 function sfChoose(val) {
   const step = SF_STEPS[_sfStep];
   if (step && step.key) _sfValues[step.key] = val;
-  document.getElementById('sf-choice-box').style.display = 'none';
-  _sfStep++;
-  sfShowStep(_sfStep);
+
+  // 選択アニメーション
+  const box = document.getElementById('sf-choice-box');
+  const btns = box.querySelectorAll('.choice');
+  btns.forEach(btn => {
+    const isSelected = btn.textContent.trim() === val;
+    if (isSelected) {
+      btn.style.transition = 'all 250ms ease';
+      btn.style.background = 'linear-gradient(135deg,rgba(216,185,120,0.95),rgba(180,140,80,0.95))';
+      btn.style.color = 'rgba(20,12,30,0.95)';
+      btn.style.fontWeight = '700';
+      btn.style.transform = 'scale(1.06)';
+      btn.style.borderColor = 'rgba(216,185,120,0.9)';
+      btn.style.boxShadow = '0 6px 20px rgba(216,185,120,0.4)';
+    } else {
+      btn.style.transition = 'opacity 250ms ease';
+      btn.style.opacity = '0.35';
+    }
+  });
+
+  setTimeout(() => {
+    box.style.display = 'none';
+    _sfStep++;
+    sfShowStep(_sfStep);
+    sfRevealText();
+  }, 450);
 }
+
 
 async function sfDoSubmit() {
   try {
