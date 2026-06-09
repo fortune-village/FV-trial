@@ -339,7 +339,10 @@
       "E": true,
       "W": true,
       "C": false
+    },
+    "setup": {
+      "done": true
     }
   },
-  "exportedAt": "2026-06-09T01:50:31.633Z"
+  "exportedAt": "2026-06-09T05:34:53.821Z"
 }
