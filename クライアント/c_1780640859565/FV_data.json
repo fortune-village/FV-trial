@@ -1,7 +1,7 @@
 {
   "name": "安藤準",
   "birthday": "19780313",
-  "dataVersion": 5,
+  "dataVersion": 6,
   "updateNote": "東エリアを公開しました。 2026/6/6 ",
   "savedInp": {
     "initial": "",
@@ -335,14 +335,14 @@
     "imagePrompts": "",
     "release": {
       "N": true,
-      "S": true,
-      "E": true,
-      "W": true,
+      "S": false,
+      "E": false,
+      "W": false,
       "C": false
     },
     "setup": {
       "done": true
     }
   },
-  "exportedAt": "2026-06-09T05:31:54.172Z"
+  "exportedAt": "2026-06-09T05:39:43.952Z"
 }
