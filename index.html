@@ -2249,7 +2249,7 @@ body[data-line-browser="1"] .bg {
       <button class="char-btn" id="btnCentralGuide">村の読み方を確認する</button>
       <button class="char-btn" id="btnCentralParams">村のスフィアエネルギー</button>
       <button class="char-btn" id="btnCharList">エリア代表一覧</button>
-      <button class="char-btn fv-shop-btn" id="btnFVShop">🪙 FVショップへ</button>
+      <button class="char-btn fv-shop-btn" id="btnFVShop"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe588,#d4a017,#a07828);border:1.5px solid #8a6418;box-shadow:0 1px 3px rgba(160,100,20,0.4);vertical-align:-2px;margin-right:4px;flex-shrink:0;"></span>FVショップへ</button>
     </div>
   </div>
 
@@ -2438,6 +2438,7 @@ body[data-line-browser="1"] .bg {
   <div id="navMenu" class="nav-menu">
     <button class="nav-menu-btn" id="btnGoHome">ホームへ戻る</button>
     <button class="nav-menu-btn" id="btnGoHouse">村長の家へ戻る</button>
+    <button class="nav-menu-btn" id="btnNavShop" style="color:rgba(230,200,140,0.92);border-top:1px solid rgba(216,185,120,0.18);margin-top:2px;padding-top:12px;">🪙 FVショップ</button>
   </div>
 
   <!-- 開発中バナー -->
@@ -5355,7 +5356,7 @@ function openFVShop() {
       return `
         <div class="fvshop-item" onclick="openStoresItem('${item.url}')">
           <div class="fvshop-item-left">
-            <span class="fvshop-item-name">🪙 ${item.name}</span>
+            <span class="fvshop-item-name"><span style="display:inline-block;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe588,#d4a017,#a07828);border:1px solid #8a6418;box-shadow:0 1px 2px rgba(160,100,20,0.4);vertical-align:-2px;margin-right:4px;flex-shrink:0;"></span>${item.name}</span>
             ${bonusHtml}
           </div>
           <div class="fvshop-item-right">
@@ -5899,6 +5900,11 @@ $("btnGoHome").addEventListener("click", async (e) => {
 $("btnGoHouse").addEventListener("click", async (e) => {
   e.stopPropagation();
   $("navMenu").classList.remove("visible");
+$("btnNavShop").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("navMenu").classList.remove("visible");
+  openFVShop();
+});
   clearNavStack();
   transitionScene(() => {
     currentScreen = 'intro';
@@ -6049,7 +6055,7 @@ $("fvChatInput").addEventListener("keydown", (e) => {
 <div id="fvShopOverlay">
   <div class="fvshop-box">
     <div class="fvshop-header">
-      <span class="fvshop-title">🪙 FVショップ</span>
+      <span class="fvshop-title"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe588,#d4a017,#a07828);border:1.5px solid #8a6418;box-shadow:0 1px 4px rgba(160,100,20,0.5);vertical-align:-3px;margin-right:5px;flex-shrink:0;"></span>FVショップ</span>
       <button class="fvshop-close-btn" onclick="closeFVShop()">✕</button>
     </div>
     <div class="fvshop-balance-row">
