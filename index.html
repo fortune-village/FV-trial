@@ -2842,7 +2842,7 @@ fetch(`${clientBase}FV_data.json`)
     const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
     // コイン残高をグローバルに保存 + HUD更新
-    window._fvCoinBalance = fvData.fvData?.coins?.balance ?? null;
+    window._fvCoinBalance = fvData.fvData?.coins?.balance ?? 0;
     updateCoinHud();
     // 初期設定未完了時はホームボタンを「スタート」に変更
     window._fvSetupDone = fvData.fvData?.setup?.done || false;
