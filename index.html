@@ -1106,18 +1106,6 @@ body {
   cursor: not-allowed;
   pointer-events: none;
 }
-.home-btn-coin {
-  border-color: rgba(220, 180, 60, 0.95);
-  background: linear-gradient(180deg, rgba(90, 60, 8, 0.94), rgba(50, 30, 4, 0.96));
-  color: rgba(255, 230, 140, 0.98);
-  letter-spacing: 0.12em;
-}
-.nav-menu-btn-coin {
-  border-top: 1px solid rgba(184, 142, 68, 0.3);
-  color: rgba(255, 220, 100, 0.95);
-  margin-top: 4px;
-  padding-top: 10px;
-}
 
 /* 羊皮紙フェードカバー */
 .parchment-cover {
@@ -1627,83 +1615,7 @@ body {
   cursor: not-allowed;
   pointer-events: none;
 }
-.area-btn.locked {
-  opacity: 0.72;
-  cursor: pointer;
-  pointer-events: auto;
-  background: linear-gradient(180deg,rgba(30,18,6,0.92),rgba(20,10,2,0.95));
-  border-color: rgba(160,120,60,0.5);
-  color: rgba(200,170,100,0.75);
-}
-.area-btn.locked:active { transform: scale(0.97); }
 
-/* 購入案内オーバーレイ */
-#purchaseOverlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9000;
-  background: rgba(10,5,2,0.88);
-  align-items: center;
-  justify-content: center;
-}
-#purchaseOverlay.visible { display: flex; }
-.purchase-box {
-  background: linear-gradient(160deg,rgba(38,22,6,0.98),rgba(25,14,4,0.99));
-  border: 1px solid rgba(201,168,76,0.45);
-  border-radius: 16px;
-  padding: 36px 28px 28px;
-  max-width: 320px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 0 40px rgba(201,168,76,0.12);
-}
-.purchase-lock-icon {
-  font-size: 36px;
-  margin-bottom: 16px;
-  filter: drop-shadow(0 0 8px rgba(201,168,76,0.4));
-}
-.purchase-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: rgba(230,200,140,0.95);
-  letter-spacing: .12em;
-  margin-bottom: 12px;
-}
-.purchase-desc {
-  font-size: 12px;
-  color: rgba(200,180,140,0.75);
-  line-height: 1.9;
-  letter-spacing: .06em;
-  margin-bottom: 24px;
-}
-.purchase-btn {
-  display: block;
-  width: 100%;
-  padding: 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(201,168,76,0.7);
-  background: linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98));
-  color: rgba(230,200,140,0.95);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  cursor: pointer;
-  font-family: inherit;
-  margin-bottom: 10px;
-  transition: background .15s, opacity .15s;
-}
-.purchase-btn:active { opacity: 0.8; }
-.purchase-close-btn {
-  background: transparent;
-  border: none;
-  color: rgba(180,150,100,0.55);
-  font-size: 12px;
-  cursor: pointer;
-  font-family: inherit;
-  letter-spacing: .06em;
-  padding: 6px;
-}
 .area-north     { grid-column: 2; grid-row: 1; }
 .area-west      { grid-column: 1; grid-row: 2; }
 .area-center-btn{ grid-column: 2; grid-row: 2; }
@@ -2009,7 +1921,6 @@ body[data-line-browser="1"] .bg {
 /* ── LINE/ブラウザUI高さ対応：fixed全画面要素を--real-vhに統一 ── */
 .guide-board-overlay,
 .area-title-card,
-#purchaseOverlay,
 #sceneTransitionOverlay,
 #startFlowOverlay,
 .parchment-cover,
@@ -2313,7 +2224,6 @@ body[data-line-browser="1"] .bg {
   <div id="navMenu" class="nav-menu">
     <button class="nav-menu-btn" id="btnGoHome">ホームへ戻る</button>
     <button class="nav-menu-btn" id="btnGoHouse">村長の家へ戻る</button>
-    <button class="nav-menu-btn nav-menu-btn-coin" onclick="openStores()">🪙 FVコインを購入する</button>
   </div>
 
   <!-- 開発中バナー -->
@@ -2388,7 +2298,6 @@ body[data-line-browser="1"] .bg {
 
       <button class="home-btn" id="btnAbout">フォーチュン・ヴィレッジについて</button>
       <button class="home-btn" id="btnVillage">村長の家へ</button>
-      <button class="home-btn home-btn-coin" id="btnBuyCoin" onclick="openStores()">🪙 FVコインを購入する</button>
       <div id="homeUpdateInfo" class="home-update-info">
         <div class="home-update-label">更新情報</div>
         <div class="home-update-text" id="home-update-text">中央の施設を「中央村役場」に、村のパラメータを「村のスフィアエネルギー」に改称しました</div>
@@ -2586,9 +2495,6 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', upda
 
 const clientId = urlParams.get('c') || 'sample';
 
-// ── STORESの入村申請URL（STORESショップ開設後に更新） ──
-const STORES_PURCHASE_URL = 'https://fortune-village.stores.jp/items/6a279513918325065a20ba50';
-
 const appBase =
   window.location.hostname.endsWith("github.io")
     ? "/FV-trial/"
@@ -2712,18 +2618,7 @@ fetch(`${clientBase}FV_data.json`)
     if (!window._fvSetupDone) {
       const vBtn = document.getElementById('btnVillage');
       if (vBtn) { vBtn.textContent = 'スタート ✦ 村づくりをはじめる'; vBtn.style.borderColor='rgba(216,185,120,0.9)'; vBtn.style.background='linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98))'; }
-      // エリアボタンをlocked状態に（購入案内に変更）
-      ['btnNorth','btnSouth','btnEast','btnWest','btnCentral'].forEach(id => {
-        const btn = document.getElementById(id);
-        if (!btn) return;
-        btn.classList.remove('disabled');
-        btn.classList.add('locked');
-        const label = btn.textContent.replace(/準備中|\s/g,'').replace('<span','').split('<')[0].trim();
-        btn.innerHTML = btn.innerHTML.replace(/<span class="area-tag">.*?<\/span>/g, '')
-          + '<span class="area-tag">🔒</span>';
-        btn.onclick = (e) => { e.stopPropagation(); showPurchaseOverlay(); };
-      });
-    }
+     }
 
     const DIR_CONFIG = {
       N: { btnId:'btnNorth',   label:'北エリア',   key:'north',   dirJp:'北',   cls:'north'   },
@@ -2815,15 +2710,6 @@ fetch(`${clientBase}FV_data.json`)
       vBtn.style.borderColor = 'rgba(216,185,120,0.9)';
       vBtn.style.background = 'linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98))';
     }
-    ['btnNorth','btnSouth','btnEast','btnWest','btnCentral'].forEach(id => {
-      const btn = document.getElementById(id);
-      if (!btn) return;
-      btn.classList.remove('disabled');
-      btn.classList.add('locked');
-      btn.innerHTML = btn.innerHTML.replace(/<span class="area-tag">.*?<\/span>/g, '')
-        + '<span class="area-tag">🔒</span>';
-      btn.onclick = (e) => { e.stopPropagation(); showPurchaseOverlay(); };
-    });
   });
 
 // ── テキストボックス最小化 ────────────────────────────────────
@@ -5187,23 +5073,6 @@ async function sfDoSubmit() {
   } catch(e) { console.warn('survey送信エラー:', e); }
 }
 
-function showPurchaseOverlay() {
-  const el = document.getElementById('purchaseOverlay');
-  if (el) el.classList.add('visible');
-}
-function closePurchaseOverlay() {
-  const el = document.getElementById('purchaseOverlay');
-  if (el) el.classList.remove('visible');
-}
-function openStores() {
-  // LIFF内（LINE）では liff.openWindow で外部ブラウザを開く
-  if (typeof liff !== 'undefined' && liff.isInClient()) {
-    liff.openWindow({ url: STORES_PURCHASE_URL, external: true });
-  } else {
-    window.open(STORES_PURCHASE_URL, '_blank');
-  }
-}
-
 async function fvTsushinCheckNew() {
   try {
     const res  = await fetch(GAS_REPLY_URL + '?token=' + GAS_REPLY_TOKEN + '&action=chat&cid=' + encodeURIComponent(clientId));
@@ -5864,22 +5733,5 @@ $("fvChatInput").addEventListener("keydown", (e) => {
 });
 </script>
 
-<!-- 購入案内オーバーレイ -->
-<div id="purchaseOverlay">
-  <div class="purchase-box">
-    <div class="purchase-lock-icon">🔒</div>
-    <div class="purchase-title">村の扉は閉ざされています</div>
-    <div class="purchase-desc">
-      このエリアに足を踏み入れるには、<br>
-      フォーチュン・ヴィレッジへの<br>
-      入村申請が必要です。<br><br>
-      あなたの生年月日に刻まれた命式から<br>
-      生まれた、唯一の村があなたを<br>
-      待っています。
-    </div>
-    <button class="purchase-btn" onclick="openStores()">✦ 入村申請をする</button>
-    <button class="purchase-close-btn" onclick="closePurchaseOverlay()">閉じる</button>
-  </div>
-</div>
 </body>
 </html>
