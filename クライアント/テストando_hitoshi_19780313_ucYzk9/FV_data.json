@@ -1,6 +1,8 @@
 {
   "name": "安藤準",
   "birthday": "19780313",
+  "dataVersion": 6,
+  "updateNote": "東エリアを公開しました。 2026/6/6 ",
   "savedInp": {
     "initial": "",
     "gender": "男",
@@ -339,5 +341,5 @@
       "C": false
     }
   },
-  "exportedAt": "2026-06-09T01:48:42.579Z"
+  "exportedAt": "2026-06-09T01:50:31.633Z"
 }
