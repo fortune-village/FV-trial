@@ -5900,11 +5900,6 @@ $("btnGoHome").addEventListener("click", async (e) => {
 $("btnGoHouse").addEventListener("click", async (e) => {
   e.stopPropagation();
   $("navMenu").classList.remove("visible");
-$("btnNavShop").addEventListener("click", (e) => {
-  e.stopPropagation();
-  $("navMenu").classList.remove("visible");
-  openFVShop();
-});
   clearNavStack();
   transitionScene(() => {
     currentScreen = 'intro';
@@ -5913,6 +5908,12 @@ $("btnNavShop").addEventListener("click", (e) => {
     hideAllSceneElements();
     renderScene();
   });
+});
+
+$("btnNavShop").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("navMenu").classList.remove("visible");
+  openFVShop();
 });
 
 $("btnBackToHouse").addEventListener("click", (e) => {
