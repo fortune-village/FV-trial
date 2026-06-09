@@ -1106,6 +1106,18 @@ body {
   cursor: not-allowed;
   pointer-events: none;
 }
+.home-btn-coin {
+  border-color: rgba(220, 180, 60, 0.95);
+  background: linear-gradient(180deg, rgba(90, 60, 8, 0.94), rgba(50, 30, 4, 0.96));
+  color: rgba(255, 230, 140, 0.98);
+  letter-spacing: 0.12em;
+}
+.nav-menu-btn-coin {
+  border-top: 1px solid rgba(184, 142, 68, 0.3);
+  color: rgba(255, 220, 100, 0.95);
+  margin-top: 4px;
+  padding-top: 10px;
+}
 
 /* 羊皮紙フェードカバー */
 .parchment-cover {
@@ -2301,6 +2313,7 @@ body[data-line-browser="1"] .bg {
   <div id="navMenu" class="nav-menu">
     <button class="nav-menu-btn" id="btnGoHome">ホームへ戻る</button>
     <button class="nav-menu-btn" id="btnGoHouse">村長の家へ戻る</button>
+    <button class="nav-menu-btn nav-menu-btn-coin" onclick="openStores()">🪙 FVコインを購入する</button>
   </div>
 
   <!-- 開発中バナー -->
@@ -2375,6 +2388,7 @@ body[data-line-browser="1"] .bg {
 
       <button class="home-btn" id="btnAbout">フォーチュン・ヴィレッジについて</button>
       <button class="home-btn" id="btnVillage">村長の家へ</button>
+      <button class="home-btn home-btn-coin" id="btnBuyCoin" onclick="openStores()">🪙 FVコインを購入する</button>
       <div id="homeUpdateInfo" class="home-update-info">
         <div class="home-update-label">更新情報</div>
         <div class="home-update-text" id="home-update-text">中央の施設を「中央村役場」に、村のパラメータを「村のスフィアエネルギー」に改称しました</div>
@@ -2573,7 +2587,7 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', upda
 const clientId = urlParams.get('c') || 'sample';
 
 // ── STORESの入村申請URL（STORESショップ開設後に更新） ──
-const STORES_PURCHASE_URL = 'https://fortune-village.stores.jp/';
+const STORES_PURCHASE_URL = 'https://fortune-village.stores.jp/items/6a279513918325065a20ba50';
 
 const appBase =
   window.location.hostname.endsWith("github.io")
