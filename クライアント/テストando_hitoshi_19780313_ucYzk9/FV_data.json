@@ -1,0 +1,343 @@
+{
+  "name": "安藤準",
+  "birthday": "19780313",
+  "savedInp": {
+    "initial": "",
+    "gender": "男",
+    "birthday": "19780313",
+    "yk": "戊",
+    "ys": "午",
+    "mk": "乙",
+    "ms": "卯",
+    "dk": "甲",
+    "ds": "戌"
+  },
+  "fvData": {
+    "script": "## ① 景色の紹介\n\n北エリアには、山を背にした落ち着いた景色が広がっています。\n石造りの建物と瓦屋根が並び、風格のある石畳の道が、静かな奥行きをつくっています。\n\n---\n\n## ② 北エリアの大枠・雰囲気\n\nここは、村の中で学びや記録を扱う北エリアです。\n\nにぎやかに言葉が飛び交うというより、\n古くから積み重ねられてきたものが、静かに息づいている場所です。\n\n山のふもとに立つ建物のように、\nこのエリアには、安定した落ち着きと、\n時間をかけて深まっていく空気が流れています。\n\n---\n\n## ③ 固定施設の説明\n\n図書館や書院には、古い記録や書物を求めて人が集まります。\n\nここでは、知ったことを急いで広げるより、\n読み直し、確かめ、静かに受け渡す時間が流れています。\n\n---\n\n## ④ 特徴的な施設の説明\n\n市場や交易所も、この北エリアでは、にぎわいだけの場所ではありません。\n\n人々は品物とともに、\n経験や記録、遠くから届いた話を持ち寄り、\n必要としている人へ渡していきます。\n\n---\n\n## ⑤ エリア全体の空気\n\n書院で確かめられた知恵は、\n交易所を通じて人の手へ届いていきます。\n\nここでは、古くから残るものと、\n人の間を巡るものが結びつき、\n静かな力を持つ場所になっています。\n\n---\n\n## ⑥ 暮らしや仕事で生きる形\n\nこの北エリアの力は、暮らしや仕事の中では、\n知識や経験を、必要な人へ届く形に整えるときに生きてきます。\n\n記録をまとめること。\n誰かに教えること。\n相談を受けて、道筋を整えること。\n\n引き継ぎや仕組みづくりのように、\n「次の人が使える形にして渡す」場面で、\nこの場所の力がよく働きます。\n\n---\n\n## ⑦ エリアの活かし方\n\nだから、この北エリアを活かすときは、\n急いで答えを出そうとしなくて大丈夫です。\n\nまずは、これまで積み重ねてきたものを見直して、\n何が残せるのか、何を渡せるのかを整理してみてください。\n\n確かめたものほど、\nちゃんと誰かの手に届く知恵になっていきます。\n\n---\n\n## ⑧ 締めの言葉\n\nこの北エリアは、知恵をただしまっておく場所ではありません。\n\n残されたものを整え、\n必要な人へ渡し、\n次の流れへつなげていく場所です。\n\n北の山のように、\n静かだけれど、村の奥でしっかりと重心を支えている。\n\nここには、そんな確かな力が流れています。\n",
+    "blockD": {
+      "C_性格": "軸1（基本気質）：この人物は、人と人の間に立ち、力の偏りをならしていくことを自然に行います（Ssm）。ただし、その調整は場当たり的なものではなく、中心にあるものを守るために、関係をひとつの形へまとめようとします（Kkb・Kob・Cu）。周囲から影響を受け取りながら、相手の動きをやわらかく変えていく調子もあります（Jti）。\n　軸2（対人傾向）：誰かを上に置いたり下に置いたりするよりも、対等な位置から関わろうとします（Ssm）。本心の層でこの性質が働くため、表面的な社交よりも、「本当にこの場がまとまるか」を見ています（Pms・Cu）。自分から強く押し出すより、相手の反応を受け取り、その場に自然な合意が生まれるように働きかけます（Jti）。\n　軸3（ストレス反応）：上下関係や一方的な支配が強まると、この人物の中では反発が起こります（Ssm）。ただし、その反発はすぐに外へ噴き出すというより、内側で受け止めすぎて、言うべきことを飲み込む形になりやすいです（Jti・Pms）。場が固まりすぎて動かなくなると、調整役でありながら、自分自身もその場に閉じ込められたように感じます（Cu）。\n　軸4（成長方向）：この人物の成長は、人と人をつなぐだけでなく、「何を守るためにつなぐのか」を見極める方向へ進みます（Ssm）。柔らかく回り込みながらも、中心の軸を失わないことで、ただの迎合ではない調整力になります（Kkb・Kob）。受け取る力が強いぶん、自分の意志を静かに示すことが、中央代表としての成熟につながります（Jti・Pms）。",
+      "C_価値観": "この人物は、村の豊かさや安定を、ひとりで抱え込むものではなく、人と人の関係の中で保たれるものとして見ています（禄徳・Ssm）。まっすぐな芯を持ちながら、相手に合わせて道筋を変えるため、豊かさを固定資産ではなく、関係の中で巡らせるものとして扱います（Kkb・Kob）。その価値観は本心の層に強くあり、表向きの役割よりも、村の中心が本当に安定しているかに意識が向きます（Pms）。",
+      "C_メンタル": "人から何かを受け取る場面、誰かの思いを預かる場面では、静かな強さを発揮します（Jti）。現実的な判断力は中庸ですが、精神的には、場のためなら自分を脇に置けるような強さがあります（Jti・Ssm）。一方で、受け取りすぎると自分の意志を後回しにし、中央にいるのに自分の声だけが薄くなることがあります（Jti・Pms）。",
+      "C_社交性": "この人物の社交性は、前に出て場を支配する形ではなく、相手を受け止めることで場を動かす形です（Jti・Ssm）。人が集まる場では、誰が中心かを決めるよりも、それぞれが自然に居場所を得られるように調整します（Ssm・Cu）。ただし、相手の意見を受け取りすぎると、自分の立場を明確にするまでに時間がかかり、決定の場面で沈黙が長くなることがあります（Jti・Pms）。",
+      "C_癖": "この人物は、つい「全員が納得できる形はどこか」を探してしまいます（Ssm）。その癖は、村の中心で意見が集まる場面ほど強く働き、すぐに結論を出すより、関係の形が整うまで待とうとします（Pms・Cu）。うまく働けば合意形成の力になりますが、強く出すぎると、自分の望みまで調整対象にしてしまいます（Jti・Kob）。",
+      "C_好嫌": "この人物は、人が安心して集まり、自然に役割を分け合える場に引かれます（禄徳・Ssm）。反対に、誰か一人が強く場を支配する空気や、対等さが失われる関係を避けようとします（Ssm）。ただし、強い対立を嫌うあまり、本来は止めるべき不均衡まで一度受け止めてしまうことがあります（Jti・Pms）。",
+      "C_習慣": "この人物は、日々の中で人の様子や場の空気を確認することを欠かしません（Ssm・Pms）。それは単なる気配りではなく、中央の安定がどこから揺れ始めるかを早く察知するための習慣です（禄徳・Cu）。自分の調子が崩れると、この確認が過剰になり、まだ起きていない不和まで先に受け取ろうとします（Jti）。",
+      "C_弱点": "人と人の間を整える力があるからこそ、自分自身の立場を後ろへ下げすぎることがあります（Ssm・Jti）。受け取る力が強く、場をまとめようとする性質が重なるため、誰かの不満や迷いまで自分の責任のように抱え込みやすいです（Kob・Cu・Pms）。中央で静かに場を支えるこの人物が、実は「自分はどうしたいのか」を言葉にするまで時間がかかる——そこに、このキャラクターの人間味があります。\n```\n\n### 東エリア代表（FV_INT_E）\n\n```",
+      "E_性格": "【未生成】",
+      "E_価値観": "【未生成】",
+      "E_メンタル": "【未生成】",
+      "E_社交性": "【未生成】",
+      "E_癖": "【未生成】",
+      "E_好嫌": "【未生成】",
+      "E_習慣": "【未生成】",
+      "E_弱点": "【未生成】\n```\n\n### 西エリア代表（FV_INT_W）\n\n```",
+      "W_性格": "【未生成】",
+      "W_価値観": "【未生成】",
+      "W_メンタル": "【未生成】",
+      "W_社交性": "【未生成】",
+      "W_癖": "【未生成】",
+      "W_好嫌": "【未生成】",
+      "W_習慣": "【未生成】",
+      "W_弱点": "【未生成】\n```\n\n### 南エリア代表（FV_INT_S）\n\n```",
+      "S_性格": "【未生成】",
+      "S_価値観": "【未生成】",
+      "S_メンタル": "【未生成】",
+      "S_社交性": "【未生成】",
+      "S_癖": "【未生成】",
+      "S_好嫌": "【未生成】",
+      "S_習慣": "【未生成】",
+      "S_弱点": "【未生成】\n```\n\n### 北エリア代表（FV_INT_N）\n\n```",
+      "N_性格": "【未生成】",
+      "N_価値観": "【未生成】",
+      "N_メンタル": "【未生成】",
+      "N_社交性": "【未生成】",
+      "N_癖": "【未生成】",
+      "N_好嫌": "【未生成】",
+      "N_習慣": "【未生成】",
+      "N_弱点": "【未生成】\n```\n\n---\n\n## BLOCK E｜FV_T_ / FV_R_　占技・命式元データ\n\n### 命式元データ（FV_R）\n\n```\nFV_R01dk〜FV_R12mc1　：【未生成】\n```\n\n### 占技データ（FV_T）\n\n```\nFV_T01-BA　：【未生成】（位相法）\nFV_T01-IS　：【未生成】（位相法）\nFV_T01-KK　：【未生成】（位相法）\nFV_T01-BK　：【未生成】（位相法）\nFV_T01-NEXT：【未生成】（位相法）\nFV_T02　　 ：【未生成】（守護神法）\n```\n\n---\n\n## BLOCK F｜FV_TD_　変換データ\n\n```\nFV_TD_CHI　　　：山\nFV_TD_FUN　　　：雄大な\nFV_TD_SAK　　　：石材採掘・石工\nFV_TD_SOZ　　　：木材・石材とレンガ・土漆喰の壁、瓦葺きの屋根\nFV_TD_FUN_SOZ　：重厚な\nFV_TD_MIC　　　：風格のある石畳の\nFV_TD_FUN_MIC　：風格のある\nFV_TD_SHG　　　：岩石・石材\n```\n\n### FV_IMG_YAML｜画像プロンプト（Stage4）\n\n**カメラ方向：1｜北向き**\n\n#### ①風景のみ\n\n```yaml\n# FV_Stage4｜風景のみ\n# 命式：戊午・乙卯・甲戌\n# カメラ方向：1 北向き\n# 正面=北：山 / 左=西：山 / 右=東：畑\n\nprompt:\n  style: >\n    Medieval fantasy landscape, anime-film illustration style.\n    Realistic anime background art, not photorealistic.\n    Fine linework, cinematic lighting, detailed textures,\n    elegant fantasy atmosphere, suitable for Fortune Village.\n\n  composition: >\n    Elevated viewpoint approximately 20 meters above ground,\n    foreground grass should appear as smooth texture without individual blades visible,\n    ground occupies lower half of frame, sky occupies upper half,\n    16:9 horizontal composition.\n\n  lighting: >\n    Bright midday sunlight, partly cloudy sky with soft white clouds,\n    soft natural shadows.\n\n  view:\n    foreground: \"open flat grassland, empty space for future village placement\"\n    center: \"mountain ranges in the far distance\"\n    left: \"mountain slopes\"\n    right: \"farmland and cultivated fields\"\n\n  atmosphere: >\n    A peaceful rural fantasy landscape surrounded by mountains,\n    with cultivated fields extending on the right side.\n    The scene should feel calm, spacious, refined, and storybook-like,\n    while keeping enough visual clarity for later village composition.\n\nnegative_prompt: >\n  no buildings, no village, no roads, no structures,\n  no characters, no text, no modern elements,\n  photorealistic, realistic photo, DSLR photo, real-world photography,\n  documentary style, tourism photo, 3D render, Unreal Engine,\n  game screenshot, hyperrealistic texture, overly sharp realistic texture,\n  photographic lighting,\n  no Ghibli style, no watercolor softness,\n  no fisheye distortion, no night scene, no sunset, no fog,\n  no close-up grass blades, no ground-level perspective,\n  no ocean, no sea, no rivers, no streams.\n\nsize: \"1536x1024\"\n```\n\n#### ②村の景色\n\n```yaml\n# FV_Stage4｜村の景色（地形＋街）\n# 命式：戊午・乙卯・甲戌\n# カメラ方向：1 北向き\n# 使用方法：\n#   1. ①の風景のみプロンプトで背景画像を生成\n#   2. その背景画像を「@画像1」としてアップロード\n#   3. 以下のpromptを使用\n\nreference_image: \"山村_背景.png\"\n\nprompt: >\n  @画像1\n  Refer to @画像1 for composition, art style, lighting, sky, and mountains.\n  A large dense medieval village fills the central flat area of the foreground of @画像1.\n  Many buildings tightly packed together,\n  filling the width and depth of the central flat area.\n  The village is built with natural stone, rough-cut rock,\n  rammed earth walls,\n  dark soot-toned brick details,\n  whitewashed finish,\n  clay tile roofs,\n  and cobblestone streets.\n  Stone-framed windows and heavy wooden doors appear throughout the village.\n  Finely cut stone with decorative details appears in small refined accents.\n  Buildings extend from the bottom edge to the middle of the frame.\n  The village has a heavy, dignified, old-world atmosphere.\n  The central flat area is fully occupied by the village,\n  with no large empty grassland remaining in the center.\n  Keep the left mountain slopes and right farmland consistent with the reference image.\n  Only distant mountain ranges and sky remain visible in the background.\n\nnegative_prompt: >\n  no open fields in foreground,\n  no large empty grassland in center,\n  no modern elements,\n  no characters,\n  no text,\n  no thatched roofs,\n  no wooden plank walls,\n  no earthen walls,\n  no photorealistic style,\n  no realistic photo,\n  no DSLR photo,\n  no 3D render,\n  no Unreal Engine,\n  no game screenshot,\n  no Ghibli style,\n  no fisheye distortion,\n  no night scene,\n  no sunset,\n  no fog,\n  no ocean,\n  no sea,\n  no rivers,\n  no streams.\n\nsize: \"1536x1024\"\n```\n\n#### ③施設追加\n\n```yaml\n# FV_Stage4｜③施設追加\n# 命式：戊午・乙卯・甲戌\n# カメラ方向：1｜北向き\n# 対象エリア：北エリア\n# 追加施設：\n#   Building 1：図書館・書院 / Library and Archive Hall\n#   Building 2：市場・交易所 / Market and Trading Hall\n\nreference_image: \"openart-image_1777942440756_1433fa58_1777942441191_a3d7fcf2.png\"\n\nprompt: >\n  @画像1\n  Keep all existing buildings, landscape, mountains, farmland, sky,\n  lighting, composition, perspective, and anime art style exactly as in @画像1.\n  Do not alter any existing residential houses, streets, roof shapes,\n  mountain silhouettes, distant fields, or sky.\n\n  Add two landmark buildings in the northern side of the village,\n  clearly distinguishable from the surrounding residential houses\n  by their shape and function, not just by height.\n  The new buildings must blend naturally into the existing medieval village.\n\n  Building 1 — Library and Archive Hall:\n  A two-story public building, about 1.3 times wider than an ordinary house,\n  with a small dome or cupola, arched windows, and a modest portico.\n  It should look like a dignified archive and study hall,\n  not a church, not a cathedral, and not a tower.\n  Located in the mid-to-back area of the village,\n  slightly left or center-left of the main street,\n  visible but not dominating the skyline.\n\n  Building 2 — Market and Trading Hall:\n  A long one-story trading hall with five continuous arches,\n  an arcade-like front, a spacious forecourt,\n  and small barrels and crates placed near the entrance.\n  It should feel like a lively but orderly market facility,\n  integrated into the village square.\n  Located in the foreground-to-mid area near an open square,\n  without covering the main street or existing houses unnaturally.\n\n  All roofs must use clay tile roofs consistent with\n  the existing roof materials throughout the village.\n  Both buildings are constructed mainly of natural stone and rough-cut rock,\n  consistent with the existing village materials and anime art style of @画像1.\n  Use stone-framed windows, heavy wooden doors,\n  subtle dark soot-toned brick details,\n  and small refined decorative stone accents only where appropriate.\n\n  The two buildings should be readable as public facilities,\n  while keeping the village dense, balanced, old-world, and dignified.\n  Keep the scale restrained: no single building should become the main subject\n  of the entire image.\n\nnegative_prompt: >\n  no changes to existing residential houses,\n  no changes to existing streets,\n  no changes to mountains, farmland, or sky,\n  no new roads or paths not present in @画像1,\n  no towers,\n  no cathedral,\n  no church steeple,\n  no single building dominating the entire skyline,\n  no buildings that look like enlarged houses,\n  no overly tall landmark,\n  no fantasy castle,\n  no palace,\n  no fortress,\n  no earthen walls,\n  no wooden plank walls,\n  no thatched roofs,\n  no modern elements,\n  no characters,\n  no text,\n  no signs,\n  no logos,\n  no photorealistic style,\n  no realistic photo,\n  no 3D render,\n  no Unreal Engine,\n  no game screenshot,\n  no Ghibli style,\n  no fisheye distortion,\n  no night scene,\n  no sunset,\n  no fog.\n\nsize: \"1536x1024\"\n```\n\n---\n\n## BLOCK G｜FV_FAC_　施設データ\n\n```\nFV_FAC_N_FIX　：図書館・書院\nFV_FAC_N_LMK　：市場・交易所（禄存星）\nFV_FAC_S_FIX　：食堂・劇場\nFV_FAC_S_LMK　：集会所（石門星）\nFV_FAC_E_FIX　：旅立ち広場\nFV_FAC_E_LMK　：倉庫・帳簿管理所（司禄星）\nFV_FAC_W_FIX　：役所・法務館\nFV_FAC_W_LMK　：役所・法務館（牽牛星）\nFV_FAC_C_FIX　：統治・中枢施設\nFV_FAC_C_LMK　：集会所（石門星）\n```"
+    },
+    "blockF": "",
+    "meta": "",
+    "blockA": "",
+    "blockB": "",
+    "blockC": "",
+    "scenes": {
+      "north": [
+        {
+          "imgSlotId": "北エリア",
+          "text": "北の方角には、遠くまで山並みが静かに連なっています。\nその山並みは、このエリア全体を包み込むように広がり、時間をかけて物事を受け止めるような、落ち着いた空気をつくっています。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "北_街並み",
+          "text": "山を背にした街並みには、石造りの建物と瓦葺きの屋根が並んでいます。\n足元には風格のある石畳の道が続き、村の中でも、とくに静けさと重みを感じる景色になっています。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "北_図書館",
+          "text": "道の奥に見えているのが、北エリアを支える図書館・書院です。\n石造りの落ち着いた建物は、周囲の街並みの中で、静かな存在感を放っています。\nここでは、知識や記録が大切に扱われ、時を越えて残るものとして守られています。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "北_交易所",
+          "text": "その少し手前には、市場・交易所があります。\nここは、ただ品物が売り買いされる場所ではありません。\n必要なもの、積み重ねられた経験、誰かが残した知恵が、人から人へ、山の地層のように静かに受け継がれていく場所です。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "北エリア",
+          "text": "住民たちは、書物を読み、記録を確かめ、必要な品や経験を受け渡しています。\n人々の営みは急がず、ひとつずつ確かめるように進んでいきます。\n北エリアでは、知恵はその場だけで終わらず、残され、読み継がれ、次の誰かへと渡っていきます。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "北エリア",
+          "text": "こうして積み重ねられた知恵は、村の中へ少しずつ広がっていきます。\n記録され、確かめられ、人へ渡ることで、村全体に落ち着いた判断の流れが生まれていきます。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "北エリア",
+          "text": "現実の暮らしでは、学び直すこと、記録を残すこと、経験を誰かへ渡すこととして表れます。\nすぐに答えを出すよりも、物事を確かめ、積み重ね、必要な形で受け渡していく場面に、この北エリアの力が表れます。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "北エリア",
+          "text": "北の山並みは、変わらず静かにこの場所を見守っています。\n山に守られたこの場所では、知恵は静かに残され、読み継がれ、人へ渡りながら、村の奥深くに根づいていきます。\n\n目立つにぎわいとは違う形で、村の判断を支える。\n北エリアは、静かな深みを持った、大切な場所です。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        }
+      ],
+      "east": [
+        {
+          "imgSlotId": "",
+          "text": "東エリアには、なだらかな丘陵に沿って畑と農地が広がり、暮らしの手触りがそのまま景色になったような穏やかな風景があります。土はよく耕され、低い丘の起伏に合わせて区画が整えられ、日々の営みが少しずつ積み重ねられてきたことを感じさせます。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "",
+          "text": "その地形になじむ街並みは、木材の温かさ、石材の落ち着き、レンガの素朴さ、土漆喰のやわらかさが調和し、派手ではないけれど長く住み続けられる安心感を持っています。家々の壁は丈夫で、必要なものを内側に守りながら、外へ向かう道も静かに開いています。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "",
+          "text": "その中心にある旅立ち広場は、勢いよく飛び出すための場所というより、これまで蓄えてきたものを確認し、整然と積まれた準備を胸に、一歩を踏み出すための場です。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "",
+          "text": "生活蓄積庫には、身近な暮らしを守るための品々が安定して保管され、必要な時に必要なものを取り出せるよう、すみずみまで整えられています。このエリアの幸福は、大きな出来事によって突然訪れるものではなく、家庭的な温もりの中で、身近を守る力として働きます。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "",
+          "text": "現実では、日々の小さな管理、使ったものを戻すこと、約束を忘れないこと、暮らしの基盤を乱さないことが力になります。大きく変えようとするより、今あるものを丁寧に保ち、少しずつ積み上げる姿勢が安定を生みます。東エリアは、村の中で暮らしの土台を支え、安心して外へ向かえる幸福の根を育てる場所です。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        }
+      ],
+      "south": [
+        {
+          "imgSlotId": "南エリア",
+          "text": "村の南エリアには、明るく開けた草原が広がり、風に揺れる草花が、訪れる人の言葉や気持ちをやわらかく受け止めています。地面はなだらかで、視界をさえぎるものが少なく、遠くまで声が届いていくような、のびやかな空気があります。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "南_街並み",
+          "text": "その草原に沿って続く街並みには、石畳の道が敷かれています。硬すぎず、乱れすぎず、人々が行き交う足音を自然に受け止めるその道は、このエリアの交流の流れを静かに支えています。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "南_芸術ホール",
+          "text": "南の核となる食堂や劇場は、誰か一人が中心に立つ場所というより、多くの人が同じ目線で集まれる、開かれた器です。扉は広く、席と席のあいだにも余白があり、そこには垣根のない、隔てのない雰囲気が流れています。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "南エリア",
+          "text": "その中心にある賑わい寄合所では、思いを表に出すことが、特別な才能ではなく、対等な集まりの中で自然に育っていきます。話す人、聞く人、うなずく人、それぞれの存在が表現の一部となり、ひとつの場を形づくっています。このエリアでの表現・伝達は、強く主張するためのものではなく、協和を生み、仲間とのつながりの中で安心感を育み、仲間の中で声を通わせていく力として働きます。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "南エリア",
+          "text": "日常では、自分の考えを一方的に押し出すよりも、人の声を拾いながら伝える姿勢が大切になります。ひとりで完成させようとせず、同じ場にいる人たちと歩調を合わせることで、言葉や行動に自然な広がりが生まれます。南エリアは、村に息づく表現を人と人のあいだへ運び、仲間の声を重ねながら、村全体にあたたかな賑わいをもたらす役割を担っています。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        }
+      ],
+      "west": [
+        {
+          "imgSlotId": "",
+          "text": "西エリアには、山と岩山が連なる、硬く静かな景色が広がっています。遠くに重なる山肌は、軽々しく動かない意志のように村を見守り、岩の稜線は、ここが名誉と責任を扱う場所であることを無言のうちに示しています。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "",
+          "text": "その地形になじむ街並みには、瓦葺きの屋根をもつ建物が整然と並びます。瓦の重なりは一枚一枚が役目を持って屋根を支えるようで、このエリア全体に、積み上げられた規律と落ち着いた秩序を感じさせます。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "",
+          "text": "街の奥には、役所と法務館が構えています。そこは声を荒らして物事を決める場ではなく、定められた手順を守り、必要な判断を静かに下すための器です。規律、秩序、統制が行き届いているため、誰か一人の感情に流されることなく、村全体の信頼を保つ役割を担っています。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "",
+          "text": "その中心にある名誉登録所では、責任を引き受けた人の働きや、まとめ役として果たした務めが丁寧に記録されます。ここで重んじられるのは、目立つ成果だけではありません。場を乱さず、必要なときに前へ出て、役目が終われば静かに引くこと。その引き際まで含めて、品位ある働きとして扱われます。",
+          "charName": "ロアン",
+          "charMode": "bust"
+        },
+        {
+          "imgSlotId": "",
+          "text": "このエリアの力は、日常では、約束を守る姿勢、役割を途中で投げ出さない態度、そして自分の立場にふさわしい振る舞いとして表れます。何でも背負い込む必要はありませんが、任されたことには筋を通し、終えるべき時にはきちんと区切りをつけることが大切です。評価を求めすぎず、けれど責任から逃げない。その落ち着いた姿勢が、周囲からの信頼を育てていきます。西エリアは、村の中で名誉をただ飾るのではなく、責任を形にし、秩序と品位によって全体を引き締める役割を果たしています。\n",
+          "charName": "ロアン",
+          "charMode": "bust"
+        }
+      ],
+      "N": [
+        {
+          "text": "北の方角には、遠くまで山並みが静かに連なっています。\nその山並みは、このエリア全体を包み込むように広がり、時間をかけて物事を受け止めるような、落ち着いた空気をつくっています。",
+          "imgStep": "s2"
+        },
+        {
+          "text": "山を背にした街並みには、石造りの建物と瓦葺きの屋根が並んでいます。\n足元には風格のある石畳の道が続き、村の中でも、とくに静けさと重みを感じる景色になっています。",
+          "imgStep": "s5"
+        },
+        {
+          "text": "道の奥に見えているのが、北エリアを支える図書館・書院です。\n石造りの落ち着いた建物は、周囲の街並みの中で、静かな存在感を放っています。\nここでは、知識や記録が大切に扱われ、時を越えて残るものとして守られています。",
+          "imgStep": "s3"
+        },
+        {
+          "text": "その少し手前には、市場・交易所があります。\nここは、ただ品物が売り買いされる場所ではありません。\n必要なもの、積み重ねられた経験、誰かが残した知恵が、人から人へ、山の地層のように静かに受け継がれていく場所です。",
+          "imgStep": "s3b"
+        },
+        {
+          "text": "住民たちは、書物を読み、記録を確かめ、必要な品や経験を受け渡しています。\n人々の営みは急がず、ひとつずつ確かめるように進んでいきます。\n北エリアでは、知恵はその場だけで終わらず、残され、読み継がれ、次の誰かへと渡っていきます。",
+          "imgStep": "s2"
+        },
+        {
+          "text": "こうして積み重ねられた知恵は、村の中へ少しずつ広がっていきます。\n記録され、確かめられ、人へ渡ることで、村全体に落ち着いた判断の流れが生まれていきます。",
+          "imgStep": "s2"
+        },
+        {
+          "text": "現実の暮らしでは、学び直すこと、記録を残すこと、経験を誰かへ渡すこととして表れます。\nすぐに答えを出すよりも、物事を確かめ、積み重ね、必要な形で受け渡していく場面に、この北エリアの力が表れます。",
+          "imgStep": "s2"
+        },
+        {
+          "text": "北の山並みは、変わらず静かにこの場所を見守っています。\n山に守られたこの場所では、知恵は静かに残され、読み継がれ、人へ渡りながら、村の奥深くに根づいていきます。",
+          "imgStep": "s2"
+        },
+        {
+          "text": "目立つにぎわいとは違う形で、村の判断を支える。\n北エリアは、静かな深みを持った、大切な場所です。",
+          "imgStep": "s2"
+        }
+      ],
+      "S": [
+        {
+          "text": "村の南エリアには、明るく開けた草原が広がり、風に揺れる草花が、訪れる人の言葉や気持ちをやわらかく受け止めています。地面はなだらかで、視界をさえぎるものが少なく、遠くまで声が届いていくような、のびやかな空気があります。",
+          "imgStep": "s2"
+        },
+        {
+          "imgStep": "s5",
+          "text": "その草原に沿って続く街並みには、石畳の道が敷かれています。硬すぎず、乱れすぎず、人々が行き交う足音を自然に受け止めるその道は、このエリアの交流の流れを静かに支えています。"
+        },
+        {
+          "imgStep": "s3",
+          "text": "南の核となる食堂や劇場は、誰か一人が中心に立つ場所というより、多くの人が同じ目線で集まれる、開かれた器です。扉は広く、席と席のあいだにも余白があり、そこには垣根のない、隔てのない雰囲気が流れています。"
+        },
+        {
+          "imgStep": "s3b",
+          "text": "その中心にある賑わい寄合所では、思いを表に出すことが、特別な才能ではなく、対等な集まりの中で自然に育っていきます。話す人、聞く人、うなずく人、それぞれの存在が表現の一部となり、ひとつの場を形づくっています。このエリアでの表現・伝達は、強く主張するためのものではなく、協和を生み、仲間とのつながりの中で安心感を育み、仲間の中で声を通わせていく力として働きます。"
+        },
+        {
+          "imgStep": "s5",
+          "text": "日常では、自分の考えを一方的に押し出すよりも、人の声を拾いながら伝える姿勢が大切になります。ひとりで完成させようとせず、同じ場にいる人たちと歩調を合わせることで、言葉や行動に自然な広がりが生まれます。南エリアは、村に息づく表現を人と人のあいだへ運び、仲間の声を重ねながら、村全体にあたたかな賑わいをもたらす役割を担っています。"
+        }
+      ],
+      "E": [
+        {
+          "text": "東エリアには、なだらかな丘陵に沿って畑と農地が広がり、暮らしの手触りがそのまま景色になったような穏やかな風景があります。土はよく耕され、低い丘の起伏に合わせて区画が整えられ、日々の営みが少しずつ積み重ねられてきたことを感じさせます。",
+          "imgStep": "s4L"
+        },
+        {
+          "imgStep": "s5",
+          "text": "その地形になじむ街並みは、木材の温かさ、石材の落ち着き、レンガの素朴さ、土漆喰のやわらかさが調和し、派手ではないけれど長く住み続けられる安心感を持っています。家々の壁は丈夫で、必要なものを内側に守りながら、外へ向かう道も静かに開いています。"
+        },
+        {
+          "imgStep": "s7",
+          "text": "その中心にある旅立ち広場は、勢いよく飛び出すための場所というより、これまで蓄えてきたものを確認し、整然と積まれた準備を胸に、一歩を踏み出すための場です。"
+        },
+        {
+          "imgStep": "s6",
+          "text": "生活蓄積庫には、身近な暮らしを守るための品々が安定して保管され、必要な時に必要なものを取り出せるよう、すみずみまで整えられています。"
+        },
+        {
+          "imgStep": "s5",
+          "text": "このエリアの幸福は、大きな出来事によって突然訪れるものではなく、家庭的な温もりの中で、身近を守る力として働きます。現実では、日々の小さな管理、使ったものを戻すこと、約束を忘れないこと、暮らしの基盤を乱さないことが力になります。"
+        },
+        {
+          "imgStep": "s4L",
+          "text": "大きく変えようとするより、今あるものを丁寧に保ち、少しずつ積み上げる姿勢が安定を生みます。東エリアは、村の中で暮らしの土台を支え、安心して外へ向かえる幸福の根を育てる場所です。"
+        }
+      ],
+      "W": [
+        {
+          "text": "西エリアには、山と岩山が連なる、硬く静かな景色が広がっています。遠くに重なる山肌は、軽々しく動かない意志のように村を見守り、岩の稜線は、ここが名誉と責任を扱う場所であることを無言のうちに示しています。",
+          "imgStep": "s4L"
+        },
+        {
+          "imgStep": "s5",
+          "text": "その地形になじむ街並みには、瓦葺きの屋根をもつ建物が整然と並びます。瓦の重なりは一枚一枚が役目を持って屋根を支えるようで、このエリア全体に、積み上げられた規律と落ち着いた秩序を感じさせます。"
+        },
+        {
+          "text": "街の奥には、役所と法務館が構えています。そこは声を荒らして物事を決める場ではなく、定められた手順を守り、必要な判断を静かに下すための器です。規律、秩序、統制が行き届いているため、誰か一人の感情に流されることなく、村全体の信頼を保つ役割を担っています。",
+          "imgStep": "s6"
+        },
+        {
+          "imgStep": "s7",
+          "text": "その中心にある名誉登録所では、責任を引き受けた人の働きや、まとめ役として果たした務めが丁寧に記録されます。ここで重んじられるのは、目立つ成果だけではありません。場を乱さず、必要なときに前へ出て、役目が終われば静かに引くこと。その引き際まで含めて、品位ある働きとして扱われます。"
+        },
+        {
+          "text": "このエリアの力は、日常では、約束を守る姿勢、役割を途中で投げ出さない態度、そして自分の立場にふさわしい振る舞いとして表れます。何でも背負い込む必要はありませんが、任されたことには筋を通し、終えるべき時にはきちんと区切りをつけることが大切です。",
+          "imgStep": "s4L"
+        },
+        {
+          "imgStep": "s4L",
+          "text": "評価を求めすぎず、けれど責任から逃げない。その落ち着いた姿勢が、周囲からの信頼を育てていきます。西エリアは、村の中で名誉をただ飾るのではなく、責任を形にし、秩序と品位によって全体を引き締める役割を果たしています。"
+        }
+      ],
+      "C": []
+    },
+    "scriptSections": {
+      "center": "```\nFV_INT_C_性格　：\n　軸1（基本気質）：この人物は、人と人の間に立ち、力の偏りをならしていくことを自然に行います（Ssm）。ただし、その調整は場当たり的なものではなく、中心にあるものを守るために、関係をひとつの形へまとめようとします（Kkb・Kob・Cu）。周囲から影響を受け取りながら、相手の動きをやわらかく変えていく調子もあります（Jti）。\n　軸2（対人傾向）：誰かを上に置いたり下に置いたりするよりも、対等な位置から関わろうとします（Ssm）。本心の層でこの性質が働くため、表面的な社交よりも、「本当にこの場がまとまるか」を見ています（Pms・Cu）。自分から強く押し出すより、相手の反応を受け取り、その場に自然な合意が生まれるように働きかけます（Jti）。\n　軸3（ストレス反応）：上下関係や一方的な支配が強まると、この人物の中では反発が起こります（Ssm）。ただし、その反発はすぐに外へ噴き出すというより、内側で受け止めすぎて、言うべきことを飲み込む形になりやすいです（Jti・Pms）。場が固まりすぎて動かなくなると、調整役でありながら、自分自身もその場に閉じ込められたように感じます（Cu）。\n　軸4（成長方向）：この人物の成長は、人と人をつなぐだけでなく、「何を守るためにつなぐのか」を見極める方向へ進みます（Ssm）。柔らかく回り込みながらも、中心の軸を失わないことで、ただの迎合ではない調整力になります（Kkb・Kob）。受け取る力が強いぶん、自分の意志を静かに示すことが、中央代表としての成熟につながります（Jti・Pms）。\n\nFV_INT_C_価値観　：この人物は、村の豊かさや安定を、ひとりで抱え込むものではなく、人と人の関係の中で保たれるものとして見ています（禄徳・Ssm）。まっすぐな芯を持ちながら、相手に合わせて道筋を変えるため、豊かさを固定資産ではなく、関係の中で巡らせるものとして扱います（Kkb・Kob）。その価値観は本心の層に強くあり、表向きの役割よりも、村の中心が本当に安定しているかに意識が向きます（Pms）。\n\nFV_INT_C_メンタル：人から何かを受け取る場面、誰かの思いを預かる場面では、静かな強さを発揮します（Jti）。現実的な判断力は中庸ですが、精神的には、場のためなら自分を脇に置けるような強さがあります（Jti・Ssm）。一方で、受け取りすぎると自分の意志を後回しにし、中央にいるのに自分の声だけが薄くなることがあります（Jti・Pms）。\n\nFV_INT_C_社交性　：この人物の社交性は、前に出て場を支配する形ではなく、相手を受け止めることで場を動かす形です（Jti・Ssm）。人が集まる場では、誰が中心かを決めるよりも、それぞれが自然に居場所を得られるように調整します（Ssm・Cu）。ただし、相手の意見を受け取りすぎると、自分の立場を明確にするまでに時間がかかり、決定の場面で沈黙が長くなることがあります（Jti・Pms）。\n\nFV_INT_C_癖　　　：この人物は、つい「全員が納得できる形はどこか」を探してしまいます（Ssm）。その癖は、村の中心で意見が集まる場面ほど強く働き、すぐに結論を出すより、関係の形が整うまで待とうとします（Pms・Cu）。うまく働けば合意形成の力になりますが、強く出すぎると、自分の望みまで調整対象にしてしまいます（Jti・Kob）。\n\nFV_INT_C_好嫌　　：この人物は、人が安心して集まり、自然に役割を分け合える場に引かれます（禄徳・Ssm）。反対に、誰か一人が強く場を支配する空気や、対等さが失われる関係を避けようとします（Ssm）。ただし、強い対立を嫌うあまり、本来は止めるべき不均衡まで一度受け止めてしまうことがあります（Jti・Pms）。\n\nFV_INT_C_習慣　　：この人物は、日々の中で人の様子や場の空気を確認することを欠かしません（Ssm・Pms）。それは単なる気配りではなく、中央の安定がどこから揺れ始めるかを早く察知するための習慣です（禄徳・Cu）。自分の調子が崩れると、この確認が過剰になり、まだ起きていない不和まで先に受け取ろうとします（Jti）。\n\nFV_INT_C_弱点　　：人と人の間を整える力があるからこそ、自分自身の立場を後ろへ下げすぎることがあります（Ssm・Jti）。受け取る力が強く、場をまとめようとする性質が重なるため、誰かの不満や迷いまで自分の責任のように抱え込みやすいです（Kob・Cu・Pms）。中央で静かに場を支えるこの人物が、実は「自分はどうしたいのか」を言葉にするまで時間がかかる——そこに、このキャラクターの人間味があります。\n```",
+      "north": "北の方角には、遠くまで山並みが静かに連なっています。\nその山並みは、このエリア全体を包み込むように広がり、時間をかけて物事を受け止めるような、落ち着いた空気をつくっています。\n\n山を背にした街並みには、石造りの建物と瓦葺きの屋根が並んでいます。\n足元には風格のある石畳の道が続き、村の中でも、とくに静けさと重みを感じる景色になっています。\n\n道の奥に見えているのが、北エリアを支える図書館・書院です。\n石造りの落ち着いた建物は、周囲の街並みの中で、静かな存在感を放っています。\nここでは、知識や記録が大切に扱われ、時を越えて残るものとして守られています。\n\nその少し手前には、市場・交易所があります。\nここは、ただ品物が売り買いされる場所ではありません。\n必要なもの、積み重ねられた経験、誰かが残した知恵が、人から人へ、山の地層のように静かに受け継がれていく場所です。\n\n住民たちは、書物を読み、記録を確かめ、必要な品や経験を受け渡しています。\n人々の営みは急がず、ひとつずつ確かめるように進んでいきます。\n北エリアでは、知恵はその場だけで終わらず、残され、読み継がれ、次の誰かへと渡っていきます。\n\nこうして積み重ねられた知恵は、村の中へ少しずつ広がっていきます。\n記録され、確かめられ、人へ渡ることで、村全体に落ち着いた判断の流れが生まれていきます。\n\n現実の暮らしでは、学び直すこと、記録を残すこと、経験を誰かへ渡すこととして表れます。\nすぐに答えを出すよりも、物事を確かめ、積み重ね、必要な形で受け渡していく場面に、この北エリアの力が表れます。\n\n北の山並みは、変わらず静かにこの場所を見守っています。\n山に守られたこの場所では、知恵は静かに残され、読み継がれ、人へ渡りながら、村の奥深くに根づいていきます。\n\n目立つにぎわいとは違う形で、村の判断を支える。\n北エリアは、静かな深みを持った、大切な場所です。",
+      "intro": "すべて保存テスト。",
+      "south": "村の南エリアには、明るく開けた草原が広がり、風に揺れる草花が、訪れる人の言葉や気持ちをやわらかく受け止めています。地面はなだらかで、視界をさえぎるものが少なく、遠くまで声が届いていくような、のびやかな空気があります。その草原に沿って続く街並みには、石畳の道が敷かれています。硬すぎず、乱れすぎず、人々が行き交う足音を自然に受け止めるその道は、このエリアの交流の流れを静かに支えています。南の核となる食堂や劇場は、誰か一人が中心に立つ場所というより、多くの人が同じ目線で集まれる、開かれた器です。扉は広く、席と席のあいだにも余白があり、そこには垣根のない、隔てのない雰囲気が流れています。その中心にある賑わい寄合所では、思いを表に出すことが、特別な才能ではなく、対等な集まりの中で自然に育っていきます。話す人、聞く人、うなずく人、それぞれの存在が表現の一部となり、ひとつの場を形づくっています。このエリアでの表現・伝達は、強く主張するためのものではなく、協和を生み、仲間とのつながりの中で安心感を育み、仲間の中で声を通わせていく力として働きます。日常では、自分の考えを一方的に押し出すよりも、人の声を拾いながら伝える姿勢が大切になります。ひとりで完成させようとせず、同じ場にいる人たちと歩調を合わせることで、言葉や行動に自然な広がりが生まれます。南エリアは、村に息づく表現を人と人のあいだへ運び、仲間の声を重ねながら、村全体にあたたかな賑わいをもたらす役割を担っています。",
+      "east": "東エリアには、なだらかな丘陵に沿って畑と農地が広がり、暮らしの手触りがそのまま景色になったような穏やかな風景があります。土はよく耕され、低い丘の起伏に合わせて区画が整えられ、日々の営みが少しずつ積み重ねられてきたことを感じさせます。その地形になじむ街並みは、木材の温かさ、石材の落ち着き、レンガの素朴さ、土漆喰のやわらかさが調和し、派手ではないけれど長く住み続けられる安心感を持っています。家々の壁は丈夫で、必要なものを内側に守りながら、外へ向かう道も静かに開いています。その中心にある旅立ち広場は、勢いよく飛び出すための場所というより、これまで蓄えてきたものを確認し、整然と積まれた準備を胸に、一歩を踏み出すための場です。生活蓄積庫には、身近な暮らしを守るための品々が安定して保管され、必要な時に必要なものを取り出せるよう、すみずみまで整えられています。このエリアの幸福は、大きな出来事によって突然訪れるものではなく、家庭的な温もりの中で、身近を守る力として働きます。現実では、日々の小さな管理、使ったものを戻すこと、約束を忘れないこと、暮らしの基盤を乱さないことが力になります。大きく変えようとするより、今あるものを丁寧に保ち、少しずつ積み上げる姿勢が安定を生みます。東エリアは、村の中で暮らしの土台を支え、安心して外へ向かえる幸福の根を育てる場所です。",
+      "west": "西エリアには、山と岩山が連なる、硬く静かな景色が広がっています。遠くに重なる山肌は、軽々しく動かない意志のように村を見守り、岩の稜線は、ここが名誉と責任を扱う場所であることを無言のうちに示しています。その地形になじむ街並みには、瓦葺きの屋根をもつ建物が整然と並びます。瓦の重なりは一枚一枚が役目を持って屋根を支えるようで、このエリア全体に、積み上げられた規律と落ち着いた秩序を感じさせます。\n\n街の奥には、役所と法務館が構えています。そこは声を荒らして物事を決める場ではなく、定められた手順を守り、必要な判断を静かに下すための器です。規律、秩序、統制が行き届いているため、誰か一人の感情に流されることなく、村全体の信頼を保つ役割を担っています。その中心にある名誉登録所では、責任を引き受けた人の働きや、まとめ役として果たした務めが丁寧に記録されます。ここで重んじられるのは、目立つ成果だけではありません。場を乱さず、必要なときに前へ出て、役目が終われば静かに引くこと。その引き際まで含めて、品位ある働きとして扱われます。\n\nこのエリアの力は、日常では、約束を守る姿勢、役割を途中で投げ出さない態度、そして自分の立場にふさわしい振る舞いとして表れます。何でも背負い込む必要はありませんが、任されたことには筋を通し、終えるべき時にはきちんと区切りをつけることが大切です。評価を求めすぎず、けれど責任から逃げない。その落ち着いた姿勢が、周囲からの信頼を育てていきます。西エリアは、村の中で名誉をただ飾るのではなく、責任を形にし、秩序と品位によって全体を引き締める役割を果たしています。"
+    },
+    "imagePrompts": "",
+    "release": {
+      "N": true,
+      "S": true,
+      "E": true,
+      "W": true,
+      "C": false
+    }
+  },
+  "exportedAt": "2026-06-09T01:48:42.579Z"
+}
