@@ -2150,13 +2150,13 @@ body[data-line-browser="1"] .bg {
 <body>
 <div id="app" aria-label="Fortune Village Trial Novel UI">
   <!-- コイン残高HUD -->
-  <div id="coinHud" style="display:none;position:absolute;top:54px;right:14px;z-index:26;
+  <div id="coinHud" onclick="openFVShop()" style="display:none;position:absolute;top:54px;right:14px;z-index:26;
     background:rgba(16,10,5,0.78);border:1px solid rgba(216,185,120,0.42);
     border-radius:999px;padding:5px 13px;font-size:12px;
     color:rgba(216,185,120,0.92);letter-spacing:.08em;
     backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
     font-family:'Hiragino Mincho ProN','Yu Mincho',Georgia,serif;
-    pointer-events:none;">
+    cursor:pointer;-webkit-tap-highlight-color:transparent;">
     🪙 <span id="coinHudValue">—</span>
   </div>
   <div id="bg" class="bg bg-dark"></div>
