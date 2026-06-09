@@ -1974,11 +1974,6 @@ body {
    min-height:740px がLINE(753px)で発火しロアンが大きくなる問題
    強いセレクタ（ID指定）で5点すべてを上書き                    */
 @media (max-width: 430px) and (min-height: 740px) {
-  /* 背景画像：縦基準→横幅基準に変更（上辺を画面上部に固定） */
-  .bg {
-    background-size: 100% auto !important;
-    background-position: top center !important;
-  }
   #startFlowOverlay #sf-char-sprite.char-sprite.bust {
     width: 440px !important;
     height: 430px !important;
@@ -1991,6 +1986,12 @@ body {
     max-height: none !important;
     transform: translate(4px, 25px) !important;
   }
+}
+
+/* LINEブラウザ：属性セレクタで背景画像を横幅基準に変更 */
+body[data-line-browser="1"] .bg {
+  background-size: 100% auto !important;
+  background-position: top center !important;
 }
 
 /* ── LINE/ブラウザUI高さ対応：fixed全画面要素を--real-vhに統一 ── */
@@ -2557,8 +2558,13 @@ function updateRealVH() {
     window.innerHeight ||
     document.documentElement.clientHeight
   );
-  // LINE（ツールバーなし）の余分な高さを画面幅×1.7で制限
   document.documentElement.style.setProperty('--real-vh', rawH + 'px');
+  // LINEブラウザ判定（高さ740px以上）→ body属性でCSS切り替え
+  if (rawH >= 740) {
+    document.body.setAttribute('data-line-browser', '1');
+  } else {
+    document.body.removeAttribute('data-line-browser');
+  }
 }
 updateRealVH();
 window.addEventListener('resize', updateRealVH);
