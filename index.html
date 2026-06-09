@@ -4365,6 +4365,7 @@ $("charCardClose").addEventListener("click", (e) => {
 
 function renderScene() {
   const s = currentSceneSet[sceneIndex];
+  updateCoinHud(); // 村長の家ハブ画面でもHUDを表示
 
   // 通常シーンに入るときはパネル表示モードを解除
   document.getElementById('app').classList.remove('panel-open');
@@ -5415,14 +5416,15 @@ function openStoresItem(url) {
 function updateCoinHud() {
   const hud = document.getElementById('coinHud');
   const val = document.getElementById('coinHudValue');
-  const bal = window._fvCoinBalance;
   if (!hud || !val) return;
-  if (bal !== null && bal !== undefined) {
-    val.textContent = bal;
-    hud.style.display = 'block';
-  } else {
+  const bal = window._fvCoinBalance;
+  // ホーム画面では非表示
+  if (currentScreen === 'home' || bal === null || bal === undefined) {
     hud.style.display = 'none';
+    return;
   }
+  val.textContent = bal;
+  hud.style.display = 'block';
 }
 
 // ── エリア解放申請ダイアログ ───────────────────────────────────
