@@ -2149,6 +2149,16 @@ body[data-line-browser="1"] .bg {
 </head>
 <body>
 <div id="app" aria-label="Fortune Village Trial Novel UI">
+  <!-- コイン残高HUD -->
+  <div id="coinHud" style="display:none;position:absolute;top:14px;right:14px;z-index:26;
+    background:rgba(16,10,5,0.78);border:1px solid rgba(216,185,120,0.42);
+    border-radius:999px;padding:5px 13px;font-size:12px;
+    color:rgba(216,185,120,0.92);letter-spacing:.08em;
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    font-family:'Hiragino Mincho ProN','Yu Mincho',Georgia,serif;
+    pointer-events:none;">
+    🪙 <span id="coinHudValue">—</span>
+  </div>
   <div id="bg" class="bg bg-dark"></div>
   <div class="parchment-glow"></div>
   <div class="compass-mark"></div>
@@ -2831,8 +2841,9 @@ fetch(`${clientBase}FV_data.json`)
     const release = fvData.fvData?.release || {};
     const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
-    // コイン残高をグローバルに保存
+    // コイン残高をグローバルに保存 + HUD更新
     window._fvCoinBalance = fvData.fvData?.coins?.balance ?? null;
+    updateCoinHud();
     // 初期設定未完了時はホームボタンを「スタート」に変更
     window._fvSetupDone = fvData.fvData?.setup?.done || false;
     if (!window._fvSetupDone) {
@@ -2930,6 +2941,22 @@ fetch(`${clientBase}FV_data.json`)
       const stArea = document.createElement('style');
       stArea.textContent = bgStyles.join('\n');
       document.head.appendChild(stArea);
+    }
+
+    // ── release=false のエリアを「準備中」→「🔒 5コイン」に変換
+    if (window._fvSetupDone) {
+      Object.entries(DIR_CONFIG).forEach(([dir, cfg]) => {
+        if (release[dir]) return; // 公開済みはスキップ
+        const btn = document.getElementById(cfg.btnId);
+        if (!btn) return;
+        btn.classList.remove('disabled');
+        btn.classList.add('locked');
+        btn.innerHTML = cfg.label + '<span class="area-tag">🔒 5コイン</span>';
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          showAreaRequest(cfg.key, cfg.label);
+        };
+      });
     }
   })
   .catch(() => {
@@ -4199,6 +4226,9 @@ function showHome() {
   $("charSelect").classList.remove("visible");
   $("facilitySelect").classList.remove("visible");
   $("paramPanel").classList.remove("visible");
+  // ホームではコインHUDを非表示
+  const hud = document.getElementById('coinHud');
+  if (hud) hud.style.display = 'none';
   currentSceneSet = introScenes;
   sceneIndex = 0;
   updateContinueBtn(); // 続きからボタンの表示を更新
@@ -5381,6 +5411,85 @@ function openStoresItem(url) {
   }
 }
 
+// ── コイン残高HUD ──────────────────────────────────────────────
+function updateCoinHud() {
+  const hud = document.getElementById('coinHud');
+  const val = document.getElementById('coinHudValue');
+  const bal = window._fvCoinBalance;
+  if (!hud || !val) return;
+  if (bal !== null && bal !== undefined) {
+    val.textContent = bal;
+    hud.style.display = 'block';
+  } else {
+    hud.style.display = 'none';
+  }
+}
+
+// ── エリア解放申請ダイアログ ───────────────────────────────────
+const AREA_REQUEST_COST = 5;
+
+function showAreaRequest(areaKey, areaLabel) {
+  const bal = window._fvCoinBalance ?? 0;
+  const overlay  = document.getElementById('areaRequestOverlay');
+  const nameEl   = document.getElementById('areaReqName');
+  const infoEl   = document.getElementById('areaReqInfo');
+  const actionBtn= document.getElementById('areaReqActionBtn');
+
+  nameEl.textContent = `🔒 ${areaLabel}`;
+
+  if (bal >= AREA_REQUEST_COST) {
+    infoEl.innerHTML =
+      `解放には <b style="color:rgba(230,200,140,0.95)">${AREA_REQUEST_COST}コイン</b> 必要です。<br>` +
+      `現在の残高：${bal}コイン`;
+    actionBtn.textContent = '✦ 解放申請を送る';
+    actionBtn.style.borderColor = 'rgba(201,168,76,0.7)';
+    actionBtn.onclick = () => submitAreaRequest(areaKey, areaLabel);
+  } else {
+    infoEl.innerHTML =
+      `解放には <b style="color:rgba(230,200,140,0.95)">${AREA_REQUEST_COST}コイン</b> 必要です。<br>` +
+      `現在の残高：<b style="color:rgba(220,100,100,0.9)">${bal}コイン</b>（不足）`;
+    actionBtn.textContent = '🪙 FVショップでコインを購入';
+    actionBtn.style.borderColor = 'rgba(201,168,76,0.5)';
+    actionBtn.onclick = () => { closeAreaRequest(); openFVShop(); };
+  }
+
+  overlay.style.display = 'flex';
+}
+
+function closeAreaRequest() {
+  document.getElementById('areaRequestOverlay').style.display = 'none';
+}
+
+async function submitAreaRequest(areaKey, areaLabel) {
+  closeAreaRequest();
+  try {
+    const AREA_NAMES_JP = { north:'北', south:'南', east:'東', west:'西', central:'中央' };
+    const dirJp = AREA_NAMES_JP[areaKey] || areaKey;
+    await fetch(GAS_REPLY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token: GAS_REPLY_TOKEN,
+        action: 'area_request',
+        cid: clientId,
+        area: dirJp + 'エリア',
+        coinBalance: window._fvCoinBalance ?? 0
+      })
+    });
+    // 送信完了メッセージ（簡易toast相当）
+    const msg = document.createElement('div');
+    msg.textContent = `✦ ${areaLabel}の解放申請を送りました`;
+    msg.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);' +
+      'background:rgba(20,12,4,0.92);border:1px solid rgba(201,168,76,0.5);' +
+      'color:rgba(216,185,120,0.9);padding:10px 20px;border-radius:8px;' +
+      'font-size:13px;z-index:9999;letter-spacing:.06em;white-space:nowrap;';
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 3000);
+  } catch(e) {
+    console.warn('area_request error:', e);
+  }
+}
+
 async function fvTsushinCheckNew() {
   try {
     const res  = await fetch(GAS_REPLY_URL + '?token=' + GAS_REPLY_TOKEN + '&action=chat&cid=' + encodeURIComponent(clientId));
@@ -5893,6 +6002,8 @@ $("btnHomeFixed").addEventListener("click", (e) => {
 $("btnGoHome").addEventListener("click", async (e) => {
   e.stopPropagation();
   $("navMenu").classList.remove("visible");
+  const hud = document.getElementById('coinHud');
+  if (hud) hud.style.display = 'none';
   clearNavStack();
   transitionScene(() => showHome());
 });
@@ -6053,6 +6164,27 @@ $("fvChatInput").addEventListener("keydown", (e) => {
 </script>
 
 <!-- 購入案内オーバーレイ -->
+<div id="areaRequestOverlay" style="display:none;position:fixed;inset:0;z-index:9100;
+  background:rgba(10,5,2,0.88);align-items:center;justify-content:center;">
+  <div style="background:linear-gradient(160deg,rgba(38,22,6,0.98),rgba(25,14,4,0.99));
+    border:1px solid rgba(201,168,76,0.45);border-radius:16px;padding:28px 24px 22px;
+    max-width:300px;width:90%;text-align:center;
+    box-shadow:0 0 40px rgba(201,168,76,0.12);">
+    <div id="areaReqName" style="font-size:16px;font-weight:700;color:rgba(230,200,140,0.95);
+      letter-spacing:.12em;margin-bottom:14px;"></div>
+    <div id="areaReqInfo" style="font-size:12px;color:rgba(200,180,140,0.72);
+      line-height:2;margin-bottom:20px;"></div>
+    <button id="areaReqActionBtn" style="width:100%;padding:13px;border-radius:8px;
+      border:1px solid rgba(201,168,76,0.7);
+      background:linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98));
+      color:rgba(230,200,140,0.95);font-size:13px;font-weight:700;cursor:pointer;
+      font-family:inherit;margin-bottom:10px;letter-spacing:.08em;"></button>
+    <button onclick="closeAreaRequest()"
+      style="background:transparent;border:none;color:rgba(180,150,100,0.5);
+      font-size:12px;cursor:pointer;font-family:inherit;padding:6px;">閉じる</button>
+  </div>
+</div>
+
 <div id="fvShopOverlay">
   <div class="fvshop-box">
     <div class="fvshop-header">
