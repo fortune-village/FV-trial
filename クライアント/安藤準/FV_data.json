@@ -337,12 +337,9 @@
       "N": true,
       "S": true,
       "E": true,
-      "W": false,
+      "W": true,
       "C": false
-    },
-    "setup": {
-      "done": true
     }
   },
-  "exportedAt": "2026-06-09T11:37:01.137Z"
+  "exportedAt": "2026-06-09T12:46:40.677Z"
 }
