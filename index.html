@@ -5321,6 +5321,8 @@ const FV_SHOP_ITEMS = [
 ];
 
 function openFVShop() {
+  // タイトル・ホーム画面では開かない
+  if (currentScreen === 'title' || currentScreen === 'home') return;
   // 残高表示
   const balEl = document.getElementById('fvShopBalance');
   if (balEl) {
