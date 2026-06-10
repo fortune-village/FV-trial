@@ -2844,6 +2844,12 @@ fetch(`${clientBase}FV_data.json`)
     // コイン残高をグローバルに保存 + HUD更新
     window._fvCoinBalance = fvData.fvData?.coins?.balance ?? 0;
     updateCoinHud();
+    // areaInfoをAREA_INFOに反映（Studio v1で編集した値を使用）
+    AREA_INFO = JSON.parse(JSON.stringify(AREA_INFO_DEFAULT));
+    const customAreaInfo = fvData.fvData?.areaInfo || {};
+    Object.keys(customAreaInfo).forEach(key => {
+      if (AREA_INFO[key]) AREA_INFO[key] = { ...AREA_INFO[key], ...customAreaInfo[key] };
+    });
     // 初期設定未完了時はホームボタンを「スタート」に変更
     window._fvSetupDone = fvData.fvData?.setup?.done || false;
     if (!window._fvSetupDone) {
@@ -4714,13 +4720,14 @@ async function playIntroVideos() {
 }
 
 // ── エリアタイトルカード ──
-const AREA_INFO = {
+const AREA_INFO_DEFAULT = {
   north:   { en: "NORTH",   ja: "北エリア",   sub: "知恵と記録の地" },
   east:    { en: "EAST",    ja: "東エリア",   sub: "成長と出発の地" },
   south:   { en: "SOUTH",   ja: "南エリア",   sub: "表現と伝達の地" },
   west:    { en: "WEST",    ja: "西エリア",   sub: "洗練と収穫の地" },
   central: { en: "CENTRAL", ja: "中央エリア", sub: "統合と安定の地" },
 };
+let AREA_INFO = JSON.parse(JSON.stringify(AREA_INFO_DEFAULT));
 
 function showAreaTitleCard(areaKey, onBeforeFadeOut) {
   return new Promise((resolve) => {
