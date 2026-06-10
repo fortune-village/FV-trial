@@ -4151,6 +4151,8 @@ function renderTitle() {
   document.getElementById("mainTextbox").classList.add("hidden");
   $("titleImage").classList.add("show");
   $("titleTap").classList.add("show");
+  const hud = document.getElementById('coinHud');
+  if (hud) hud.style.display = 'none';
 }
 
 function showHome() {
@@ -5300,10 +5302,6 @@ async function sfDoSubmit() {
   } catch(e) { console.warn('survey送信エラー:', e); }
 }
 
-function openFVShop() {
-  const el = document.getElementById('fvShopOverlay');
-  if (el) el.classList.add('visible');
-}
 function openStores() {
   // LIFF内（LINE）では liff.openWindow で外部ブラウザを開く
   if (typeof liff !== 'undefined' && liff.isInClient()) {
@@ -5370,10 +5368,10 @@ function updateCoinHud() {
   const val = document.getElementById('coinHudValue');
   if (!hud || !val) return;
   const bal = window._fvCoinBalance;
-  // ホーム画面・タイトル画面（ホームボタン非表示時）は非表示
+  // ホーム・タイトル画面、またはホームボタン非表示時は非表示
   const homeFixed = document.getElementById('btnHomeFixed');
   const homeVisible = homeFixed && homeFixed.classList.contains('visible');
-  if (currentScreen === 'home' || !homeVisible || bal === null || bal === undefined) {
+  if (currentScreen === 'home' || currentScreen === 'title' || !homeVisible || bal === null || bal === undefined) {
     hud.style.display = 'none';
     return;
   }
