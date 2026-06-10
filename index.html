@@ -4147,6 +4147,7 @@ function hideAllSceneElements() {
 function renderTitle() {
   currentScreen = 'title';
   setBg('bg-dark');
+  clearNavStack(); // 戻るスタックをクリア（パネル残留防止）
   $("home").classList.remove("visible");
   document.getElementById("mainTextbox").classList.add("hidden");
   $("titleImage").classList.add("show");
@@ -4157,6 +4158,7 @@ function renderTitle() {
   $("charSelect")?.classList.remove("visible");
   $("facilitySelect")?.classList.remove("visible");
   $("paramPanel")?.classList.remove("visible");
+  $("btnHomeFixed")?.classList.remove("visible");
   const hud = document.getElementById('coinHud');
   if (hud) hud.style.display = 'none';
 }
@@ -5636,6 +5638,8 @@ function next() {
   }
 
   if (currentScreen === 'title') {
+    clearNavStack(); // 残留パネル防止
+    document.querySelectorAll('.area-select-panel').forEach(el => el.classList.remove('visible'));
     unlockVideos();
     showHome();
     return;
