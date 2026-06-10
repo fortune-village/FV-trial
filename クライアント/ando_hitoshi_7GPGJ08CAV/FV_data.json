@@ -347,7 +347,12 @@
       "balance": 0,
       "history": []
     },
-    "name": "安藤 準"
+    "name": "安藤 準",
+    "areaInfo": {
+      "west": {
+        "sub": "行動と名誉の地"
+      }
+    }
   },
-  "exportedAt": "2026-06-10T03:18:13.917Z"
+  "exportedAt": "2026-06-10T04:08:28.804Z"
 }
