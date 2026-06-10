@@ -5623,6 +5623,17 @@ let _pendingTypeText = null;
 function next() {
   if (videoPlaying) return;
   if (isTransitioning) return;
+
+  // タイトル画面：最優先で処理（navStack等に関係なくホームへ）
+  if (currentScreen === 'title') {
+    clearNavStack();
+    document.querySelectorAll('.area-select-panel').forEach(el => el.classList.remove('visible'));
+    document.getElementById('app')?.classList.remove('panel-open');
+    unlockVideos();
+    showHome();
+    return;
+  }
+
   // ナビメニューが開いていたら閉じる
   if ($("navMenu").classList.contains("visible")) {
     $("navMenu").classList.remove("visible");
@@ -5634,14 +5645,6 @@ function next() {
   }
   if (currentScreen === 'params') {
     goBackToChoices();
-    return;
-  }
-
-  if (currentScreen === 'title') {
-    clearNavStack(); // 残留パネル防止
-    document.querySelectorAll('.area-select-panel').forEach(el => el.classList.remove('visible'));
-    unlockVideos();
-    showHome();
     return;
   }
 
