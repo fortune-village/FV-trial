@@ -1,7 +1,7 @@
 {
   "name": "ando_hitoshi",
   "birthday": "",
-  "dataVersion": 2,
+  "dataVersion": 3,
   "updateNote": "",
   "savedInp": {
     "initial": "",
@@ -346,7 +346,8 @@
     "coins": {
       "balance": 0,
       "history": []
-    }
+    },
+    "name": "安藤 準"
   },
-  "exportedAt": "2026-06-10T02:41:26.355Z"
+  "exportedAt": "2026-06-10T03:07:27.380Z"
 }
