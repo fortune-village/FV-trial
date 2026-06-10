@@ -4365,6 +4365,7 @@ $("charCardClose").addEventListener("click", (e) => {
 
 function renderScene() {
   const s = currentSceneSet[sceneIndex];
+  textboxWaitingForBgView = false; // 新シーンでリセット
   updateCoinHud(); // 村長の家ハブ画面でもHUDを表示
 
   // 通常シーンに入るときはパネル表示モードを解除
@@ -5656,6 +5657,8 @@ function fadeHideTextboxChar(callback) {
 let isTransitioning = false;
 // bgChange後のテキストボックス出現待ちフラグ（タップ1回でtextbox出現、シーンは進めない）
 let textboxWaitingForReveal = false;
+// テキスト終わり → 背景鑑賞モード待機フラグ（1回目タップでtextbox非表示、2回目タップで次へ）
+let textboxWaitingForBgView = false;
 // textbox非表示後・bgChange実行前の待機フラグ（タップ1回でbgChange開始）
 let textboxWaitingForTransition = false;
 // renderScene呼び出しがbgChange起因かを示す一時フラグ
@@ -5729,6 +5732,29 @@ function next() {
     typing = false;
     $("text").innerHTML = escapeHtml(fullText);
     return;
+  }
+
+  // 背景鑑賞モード：2回目タップで次へ進む
+  if (textboxWaitingForBgView) {
+    textboxWaitingForBgView = false;
+    // textboxを再表示してから次シーンへ進む通常フローに戻す
+    // （以降の処理は通常タップと同じ）
+  } else {
+    // 1回目タップ：テキストボックス・キャラを非表示にして背景鑑賞モードへ
+    const mainTb = document.getElementById('mainTextbox');
+    const charEl = document.getElementById('char');
+    if (mainTb && !mainTb.classList.contains('hidden')) {
+      const isStory = ['area','intro','council','guide'].includes(currentScreen);
+      if (isStory) {
+        mainTb.style.transition = 'opacity 0.3s';
+        mainTb.style.opacity = '0';
+        if (charEl) { charEl.style.transition = 'opacity 0.3s'; charEl.style.opacity = '0'; }
+        showRevealHint(); // 「TAP」ヒントを表示
+        textboxWaitingForBgView = true;
+        setTimeout(() => { mainTb.classList.add('hidden'); mainTb.style.opacity = ''; mainTb.style.transition = ''; if (charEl) { charEl.style.display = 'none'; charEl.style.opacity = ''; charEl.style.transition = ''; } }, 320);
+        return;
+      }
+    }
   }
 
   const s = currentSceneSet[sceneIndex];
