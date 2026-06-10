@@ -5744,7 +5744,7 @@ function next() {
     const mainTb = document.getElementById('mainTextbox');
     const charEl = document.getElementById('char');
     if (mainTb && !mainTb.classList.contains('hidden')) {
-      const isStory = ['area','intro','council','guide'].includes(currentScreen);
+      const isStory = currentScreen === 'area'; // エリア画面のみ背景鑑賞モード有効
       if (isStory) {
         mainTb.style.transition = 'opacity 0.3s';
         mainTb.style.opacity = '0';
