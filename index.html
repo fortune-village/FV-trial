@@ -2752,7 +2752,7 @@ fetch(`${clientBase}data.json`)
     // クライアント名をホーム画面に表示
     if (data.name) {
       const el = document.getElementById('home-client-name');
-      if (el) el.textContent = `${data.name} 様の Fortune Village`;
+      if (el) el.textContent = `${data.fvData?.name || data.name} 様の Fortune Village`;
     }
 
     // キャラ画像・名前
@@ -2801,7 +2801,7 @@ fetch(`${clientBase}FV_data.json`)
     // クライアント名
     if (fvData.name) {
       const el = document.getElementById('home-client-name');
-      if (el) el.textContent = `${fvData.name} 様の Fortune Village`;
+      if (el) el.textContent = `${fvData.fvData?.name || fvData.name} 様の Fortune Village`;
     }
     if (fvData.dataVersion) {
       const el = document.getElementById('home-data-version');
