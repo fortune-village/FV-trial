@@ -5634,6 +5634,9 @@ function next() {
     return;
   }
 
+  // ホーム画面：ボタン以外のタップは無視（タイトルからの2回目タップ等でシーンが進まないよう保護）
+  if (currentScreen === 'home') return;
+
   // ナビメニューが開いていたら閉じる
   if ($("navMenu").classList.contains("visible")) {
     $("navMenu").classList.remove("visible");
