@@ -5426,8 +5426,10 @@ function updateCoinHud() {
   const val = document.getElementById('coinHudValue');
   if (!hud || !val) return;
   const bal = window._fvCoinBalance;
-  // ホーム画面では非表示
-  if (currentScreen === 'home' || bal === null || bal === undefined) {
+  // ホーム画面・タイトル画面（ホームボタン非表示時）は非表示
+  const homeFixed = document.getElementById('btnHomeFixed');
+  const homeVisible = homeFixed && homeFixed.classList.contains('visible');
+  if (currentScreen === 'home' || !homeVisible || bal === null || bal === undefined) {
     hud.style.display = 'none';
     return;
   }
