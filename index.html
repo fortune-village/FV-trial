@@ -4366,6 +4366,9 @@ $("charCardClose").addEventListener("click", (e) => {
 function renderScene() {
   const s = currentSceneSet[sceneIndex];
   textboxWaitingForBgView = false; // 新シーンでリセット
+  // 背景鑑賞モードで非表示にしたキャラを復元
+  const charEl = document.getElementById('char');
+  if (charEl) { charEl.style.display = ''; charEl.style.opacity = ''; charEl.style.transition = ''; }
   updateCoinHud(); // 村長の家ハブ画面でもHUDを表示
 
   // 通常シーンに入るときはパネル表示モードを解除
