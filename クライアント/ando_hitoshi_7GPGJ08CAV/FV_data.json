@@ -1,7 +1,7 @@
 {
   "name": "ando_hitoshi",
   "birthday": "",
-  "dataVersion": 4,
+  "dataVersion": 5,
   "updateNote": "東エリア、西エリア、南エリア、リリースしました。",
   "savedInp": {
     "initial": "",
@@ -349,5 +349,5 @@
     },
     "name": "安藤 準"
   },
-  "exportedAt": "2026-06-10T03:14:39.321Z"
+  "exportedAt": "2026-06-10T03:18:13.917Z"
 }
