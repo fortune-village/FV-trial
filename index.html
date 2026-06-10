@@ -1626,73 +1626,6 @@ body {
 .area-btn.locked:active { transform: scale(0.97); }
 
 /* 購入案内オーバーレイ */
-#purchaseOverlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9000;
-  background: rgba(10,5,2,0.88);
-  align-items: center;
-  justify-content: center;
-}
-#purchaseOverlay.visible { display: flex; }
-.purchase-box {
-  background: linear-gradient(160deg,rgba(38,22,6,0.98),rgba(25,14,4,0.99));
-  border: 1px solid rgba(201,168,76,0.45);
-  border-radius: 16px;
-  padding: 36px 28px 28px;
-  max-width: 320px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 0 40px rgba(201,168,76,0.12);
-}
-.purchase-lock-icon {
-  font-size: 36px;
-  margin-bottom: 16px;
-  filter: drop-shadow(0 0 8px rgba(201,168,76,0.4));
-}
-.purchase-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: rgba(230,200,140,0.95);
-  letter-spacing: .12em;
-  margin-bottom: 12px;
-}
-.purchase-desc {
-  font-size: 12px;
-  color: rgba(200,180,140,0.75);
-  line-height: 1.9;
-  letter-spacing: .06em;
-  margin-bottom: 24px;
-}
-.purchase-btn {
-  display: block;
-  width: 100%;
-  padding: 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(201,168,76,0.7);
-  background: linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98));
-  color: rgba(230,200,140,0.95);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  cursor: pointer;
-  font-family: inherit;
-  margin-bottom: 10px;
-  transition: background .15s, opacity .15s;
-}
-.purchase-btn:active { opacity: 0.8; }
-.purchase-close-btn {
-  background: transparent;
-  border: none;
-  color: rgba(180,150,100,0.55);
-  font-size: 12px;
-  cursor: pointer;
-  font-family: inherit;
-  letter-spacing: .06em;
-  padding: 6px;
-}
-
 /* ── FVショップオーバーレイ ── */
 #fvShopOverlay {
   display: none;
@@ -2133,7 +2066,6 @@ body[data-line-browser="1"] .bg {
 /* ── LINE/ブラウザUI高さ対応：fixed全画面要素を--real-vhに統一 ── */
 .guide-board-overlay,
 .area-title-card,
-#purchaseOverlay,
 #sceneTransitionOverlay,
 #startFlowOverlay,
 .parchment-cover,
@@ -2418,6 +2350,8 @@ body[data-line-browser="1"] .bg {
   <div id="choices" class="choice-box"></div>
   <div class="progress"><span id="progressBar"></span></div>
   <div id="revealHint">TAP</div>
+  <!-- 背景鑑賞モード中のクリックブロッカー -->
+  <div id="bgViewBlocker" style="display:none;position:fixed;inset:0;z-index:24;" onclick="handleScreenTap(event)"></div>
   <div id="sceneTransitionOverlay"></div>
 
   <div class="textbox" id="mainTextbox">
@@ -2864,7 +2798,7 @@ fetch(`${clientBase}FV_data.json`)
         const label = btn.textContent.replace(/準備中|\s/g,'').replace('<span','').split('<')[0].trim();
         btn.innerHTML = btn.innerHTML.replace(/<span class="area-tag">.*?<\/span>/g, '')
           + '<span class="area-tag">🔒</span>';
-        btn.onclick = (e) => { e.stopPropagation(); showPurchaseOverlay(); };
+        btn.onclick = (e) => { e.stopPropagation(); openFVShop(); };
       });
     }
 
@@ -2981,7 +2915,7 @@ fetch(`${clientBase}FV_data.json`)
       btn.classList.add('locked');
       btn.innerHTML = btn.innerHTML.replace(/<span class="area-tag">.*?<\/span>/g, '')
         + '<span class="area-tag">🔒</span>';
-      btn.onclick = (e) => { e.stopPropagation(); showPurchaseOverlay(); };
+      btn.onclick = (e) => { e.stopPropagation(); openFVShop(); };
     });
   });
 
@@ -4372,6 +4306,9 @@ $("charCardClose").addEventListener("click", (e) => {
 function renderScene() {
   const s = currentSceneSet[sceneIndex];
   textboxWaitingForBgView = false; // 新シーンでリセット
+  hideRevealHint();
+  const _blocker = document.getElementById('bgViewBlocker');
+  if (_blocker) _blocker.style.display = 'none';
   // 背景鑑賞モードで非表示にしたキャラを復元
   const charEl = document.getElementById('char');
   if (charEl) { charEl.style.display = ''; charEl.style.opacity = ''; charEl.style.transition = ''; }
@@ -5363,13 +5300,9 @@ async function sfDoSubmit() {
   } catch(e) { console.warn('survey送信エラー:', e); }
 }
 
-function showPurchaseOverlay() {
-  const el = document.getElementById('purchaseOverlay');
+function openFVShop() {
+  const el = document.getElementById('fvShopOverlay');
   if (el) el.classList.add('visible');
-}
-function closePurchaseOverlay() {
-  const el = document.getElementById('purchaseOverlay');
-  if (el) el.classList.remove('visible');
 }
 function openStores() {
   // LIFF内（LINE）では liff.openWindow で外部ブラウザを開く
@@ -5747,8 +5680,10 @@ function next() {
   // 背景鑑賞モード：2回目タップで次へ進む
   if (textboxWaitingForBgView) {
     textboxWaitingForBgView = false;
-    // textboxを再表示してから次シーンへ進む通常フローに戻す
-    // （以降の処理は通常タップと同じ）
+    hideRevealHint();
+    const blocker = document.getElementById('bgViewBlocker');
+    if (blocker) blocker.style.display = 'none';
+    // 以降の処理は通常タップと同じ
   } else {
     // 1回目タップ：テキストボックス・キャラを非表示にして背景鑑賞モードへ
     const mainTb = document.getElementById('mainTextbox');
@@ -5760,6 +5695,9 @@ function next() {
         mainTb.style.opacity = '0';
         if (charEl) { charEl.style.transition = 'opacity 0.3s'; charEl.style.opacity = '0'; }
         showRevealHint(); // 「TAP」ヒントを表示
+        // クリックブロッカーを有効化
+        const blocker = document.getElementById('bgViewBlocker');
+        if (blocker) blocker.style.display = 'block';
         textboxWaitingForBgView = true;
         setTimeout(() => { mainTb.classList.add('hidden'); mainTb.style.opacity = ''; mainTb.style.transition = ''; if (charEl) { charEl.style.display = 'none'; charEl.style.opacity = ''; charEl.style.transition = ''; } }, 320);
         return;
@@ -6249,21 +6187,6 @@ $("fvChatInput").addEventListener("keydown", (e) => {
   </div>
 </div>
 
-<div id="purchaseOverlay">
-  <div class="purchase-box">
-    <div class="purchase-lock-icon">🔒</div>
-    <div class="purchase-title">村の扉は閉ざされています</div>
-    <div class="purchase-desc">
-      このエリアに足を踏み入れるには、<br>
-      フォーチュン・ヴィレッジへの<br>
-      入村申請が必要です。<br><br>
-      あなたの生年月日に刻まれた命式から<br>
-      生まれた、唯一の村があなたを<br>
-      待っています。
-    </div>
-    <button class="purchase-btn" onclick="openStores()">✦ 入村申請をする</button>
-    <button class="purchase-close-btn" onclick="closePurchaseOverlay()">閉じる</button>
-  </div>
 </div>
 </body>
 </html>
