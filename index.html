@@ -4168,6 +4168,9 @@ function showHome() {
   $("charSelect").classList.remove("visible");
   $("facilitySelect").classList.remove("visible");
   $("paramPanel").classList.remove("visible");
+  // 全パネルを閉じる
+  document.querySelectorAll('.area-select-panel').forEach(el => el.classList.remove('visible'));
+  document.getElementById('app')?.classList.remove('panel-open');
   // ホームではコインHUDを非表示
   const hud = document.getElementById('coinHud');
   if (hud) hud.style.display = 'none';
