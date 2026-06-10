@@ -5020,24 +5020,32 @@ function fvChatSendMsg() {
   const btn = $("fvChatSend");
   btn.disabled = true;
   btn.textContent = '送信中';
-  const data = new FormData();
-  data.append(ENTRY_FEEDBACK, '[FV通信への返信] ' + text);
-  data.append(ENTRY_CLIENT, clientId);
-  fetch(FORM_ACTION, { method: 'POST', mode: 'no-cors', body: data })
-    .finally(() => {
-      input.value = '';
-      btn.disabled = false;
-      btn.textContent = '送信';
-      // 楽観的に自分のメッセージを即時追加
-      const area = $("fvChatMessages");
-      const now  = new Date().toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
-      const div  = document.createElement('div');
-      div.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;max-width:82%;align-self:flex-end';
-      div.innerHTML = `<div style="font-size:9px;color:rgba(91,43,34,0.6);letter-spacing:.08em;margin-bottom:3px;padding-right:4px">${now} &nbsp; あなた</div>
-        <div style="background:linear-gradient(135deg,rgba(141,89,96,0.82),rgba(91,52,68,0.85));border-radius:14px 4px 14px 14px;padding:11px 14px;font-size:13.5px;color:rgba(255,241,218,0.96);line-height:1.85;letter-spacing:.04em;white-space:pre-wrap;box-shadow:0 2px 6px rgba(0,0,0,0.1)">${text}</div>`;
-      area.appendChild(div);
-      area.scrollTop = area.scrollHeight;
-    });
+
+  fetch(GAS_REPLY_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({
+      token:   GAS_REPLY_TOKEN,
+      action:  'fv_tsushin_from_client',
+      cid:     clientId,
+      message: text
+    })
+  })
+  .finally(() => {
+    input.value = '';
+    btn.disabled = false;
+    btn.textContent = '送信';
+    // 楽観的に自分のメッセージを即時追加
+    const area = $("fvChatMessages");
+    const now  = new Date().toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const div  = document.createElement('div');
+    div.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;max-width:82%;align-self:flex-end';
+    div.innerHTML = `<div style="font-size:9px;color:rgba(91,43,34,0.6);letter-spacing:.08em;margin-bottom:3px;padding-right:4px">${now} &nbsp; あなた</div>
+      <div style="background:linear-gradient(135deg,rgba(141,89,96,0.82),rgba(91,52,68,0.85));border-radius:14px 4px 14px 14px;padding:11px 14px;font-size:13.5px;color:rgba(255,241,218,0.96);line-height:1.85;letter-spacing:.04em;white-space:pre-wrap;box-shadow:0 2px 6px rgba(0,0,0,0.1)">${text}</div>`;
+    area.appendChild(div);
+    area.scrollTop = area.scrollHeight;
+  });
 }
 
 // ── スタートフロー（シーン形式） ─────────────────────────────
