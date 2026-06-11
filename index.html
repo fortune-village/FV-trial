@@ -2674,7 +2674,6 @@ const clientBase = `${appBase}クライアント/${clientId}/`;
 const CLIENT = {
   char: { name: "ロアン", central: "char_central.png" },
   params: { north: 0, east: 70, south: 42, west: 15, central: 69 },
-  stars: ["石門星", "司禄星", "牽牛星", "石門星", "禄存星"],
   meishiki: "戊午・乙卯・甲戌",  // サンプル命式（data.jsonで上書き）
   guidePersonal: null,
   achievements: null
@@ -2686,7 +2685,6 @@ fetch(`${clientBase}data.json`)
     Object.assign(CLIENT.char, data.char);
     Object.assign(CLIENT.params, data.params);
     if (data.meishiki) CLIENT.meishiki = data.meishiki;
-    if (data.stars) CLIENT.stars = data.stars;
     if (data.guidePersonal) CLIENT.guidePersonal = data.guidePersonal;
     if (data.achievements) CLIENT.achievements = data.achievements;
 
@@ -2785,6 +2783,8 @@ fetch(`${clientBase}FV_data.json`)
     // コイン残高をグローバルに保存 + HUD更新
     window._fvCoinBalance = fvData.fvData?.coins?.balance ?? 0;
     updateCoinHud();
+    // 方位ごとのスフィア名（スタジオが割り振った結果）をグローバルに保存
+    window._fvSpheres = fvData.fvData?.spheres || null;
     // areaInfoをAREA_INFOに反映（Studio v1で編集した値を使用）
     AREA_INFO = JSON.parse(JSON.stringify(AREA_INFO_DEFAULT));
     const customAreaInfo = fvData.fvData?.areaInfo || {};
@@ -3558,26 +3558,41 @@ function updateContinueBtn() {
 }
 
 // ── スフィアシステム ──
-const STAR_TO_SPHERE = {
-  "貫索星": { id: "anchor",   name: "アンカー・スフィア", color: "#4ecb71", dark: "#1a5c2e", glow: "rgba(78,203,113,0.55)" },
-  "石門星": { id: "link",     name: "リンク・スフィア",   color: "#a8ff4e", dark: "#3a6010", glow: "rgba(168,255,78,0.55)" },
-  "鳳閣星": { id: "sol",      name: "ソル・スフィア",     color: "#ffb830", dark: "#7a4800", glow: "rgba(255,184,48,0.6)"  },
-  "調舒星": { id: "noct",     name: "ノクト・スフィア",   color: "#9b6cff", dark: "#2e0a5c", glow: "rgba(155,108,255,0.55)"},
-  "禄存星": { id: "favour",   name: "フェイヴァー・スフィア", color: "#ffcc66", dark: "#6b4400", glow: "rgba(255,204,102,0.6)" },
-  "司禄星": { id: "reserve",  name: "リザーブ・スフィア", color: "#c49a6c", dark: "#5a3a18", glow: "rgba(196,154,108,0.5)" },
-  "車騎星": { id: "vanguard", name: "ヴァンガード・スフィア", color: "#ffd700", dark: "#7a5a00", glow: "rgba(255,215,0,0.65)"  },
-  "牽牛星": { id: "order",    name: "オーダー・スフィア", color: "#cc66ff", dark: "#44006b", glow: "rgba(204,102,255,0.55)"},
-  "龍高星": { id: "ether",    name: "エーテル・スフィア", color: "#4da6ff", dark: "#003a7a", glow: "rgba(77,166,255,0.6)"  },
-  "玉堂星": { id: "libris",   name: "リブリス・スフィア", color: "#b8eeff", dark: "#1a4a6b", glow: "rgba(184,238,255,0.55)"},
+// スフィア名 → 表示スタイル（色・グロー）。星名（算命学用語）は持たない。
+// 「どの星がどのスフィアか」の変換はスタジオ側で完結し、クライアントには
+// 方位ごとのスフィア名（fvData.spheres）だけが渡される。
+const SPHERE_STYLE = {
+  "アンカー・スフィア":     { id: "anchor",   color: "#4ecb71", dark: "#1a5c2e", glow: "rgba(78,203,113,0.55)" },
+  "リンク・スフィア":       { id: "link",     color: "#a8ff4e", dark: "#3a6010", glow: "rgba(168,255,78,0.55)" },
+  "ソル・スフィア":         { id: "sol",      color: "#ffb830", dark: "#7a4800", glow: "rgba(255,184,48,0.6)"  },
+  "ノクト・スフィア":       { id: "noct",     color: "#9b6cff", dark: "#2e0a5c", glow: "rgba(155,108,255,0.55)"},
+  "フェイヴァー・スフィア": { id: "favour",   color: "#ffcc66", dark: "#6b4400", glow: "rgba(255,204,102,0.6)" },
+  "リザーブ・スフィア":     { id: "reserve",  color: "#c49a6c", dark: "#5a3a18", glow: "rgba(196,154,108,0.5)" },
+  "ヴァンガード・スフィア": { id: "vanguard", color: "#ffd700", dark: "#7a5a00", glow: "rgba(255,215,0,0.65)"  },
+  "オーダー・スフィア":     { id: "order",    color: "#cc66ff", dark: "#44006b", glow: "rgba(204,102,255,0.55)"},
+  "エーテル・スフィア":     { id: "ether",    color: "#4da6ff", dark: "#003a7a", glow: "rgba(77,166,255,0.6)"  },
+  "リブリス・スフィア":     { id: "libris",   color: "#b8eeff", dark: "#1a4a6b", glow: "rgba(184,238,255,0.55)"},
 };
-const BODY_POSITIONS = ["頭", "胸", "右手", "左手", "腹"];
+const _SPHERE_FALLBACK = { id:"unknown", color:"#888", dark:"#333", glow:"rgba(150,150,150,0.3)" };
+function sphereStyle(name) { return SPHERE_STYLE[name] || _SPHERE_FALLBACK; }
+
+// 方位の並び順（スフィアパネル表示用）
+const SPHERE_DIRS = [
+  { key: "N", label: "北" },
+  { key: "C", label: "中央" },
+  { key: "E", label: "東" },
+  { key: "W", label: "西" },
+  { key: "S", label: "南" },
+];
 
 function initSphereSlots() {
   const save = loadProgress() || {};
   if (!save.sphereSlots) {
-    save.sphereSlots = BODY_POSITIONS.map((pos, i) => ({
-      position: pos,
-      star: CLIENT.stars?.[i] || "貫索星",
+    const spheres = window._fvSpheres || {};
+    save.sphereSlots = SPHERE_DIRS.map(dir => ({
+      dir: dir.key,
+      label: dir.label,
+      sphere: spheres[dir.key] || "",
       collected: false
     }));
     localStorage.setItem(SAVE_KEY, JSON.stringify(save));
@@ -3603,17 +3618,18 @@ function collectSphere(slotIndex) {
 }
 
 function showSphereAcquireFlash(slot, onClose) {
-  const sphere = STAR_TO_SPHERE[slot.star];
-  if (!sphere) return;
+  const sphereName = slot.sphere;
+  if (!sphereName) return;
+  const style = sphereStyle(sphereName);
   const flash = $("sphereAcquireFlash");
   const orb = $("sphereAcquireOrb");
-  orb.style.setProperty("--orb-color", sphere.color);
-  orb.style.setProperty("--orb-dark", sphere.dark);
-  orb.style.setProperty("--orb-glow", sphere.glow);
+  orb.style.setProperty("--orb-color", style.color);
+  orb.style.setProperty("--orb-dark", style.dark);
+  orb.style.setProperty("--orb-glow", style.glow);
   // 画像がある場合は表示（なければCSS球のまま）
-  const imgPath = `spheres/${sphere.id}.png`;
-  orb.innerHTML = `<img src="${imgPath}" onerror="this.style.display='none'" alt="${sphere.name}">`;
-  $("sphereAcquireName").textContent = sphere.name;
+  const imgPath = `spheres/${style.id}.png`;
+  orb.innerHTML = `<img src="${imgPath}" onerror="this.style.display='none'" alt="${sphereName}">`;
+  $("sphereAcquireName").textContent = sphereName;
   $("sphereAcquireStar").textContent = "";
   flash.classList.add("show");
   const close = () => {
@@ -3632,21 +3648,22 @@ function updateSpherePanel() {
   debugBtns.innerHTML = "";
 
   slots.forEach((slot, i) => {
-    const sphere = STAR_TO_SPHERE[slot.star] || { id:"unknown", name:"不明のスフィア", color:"#888", dark:"#333", glow:"rgba(150,150,150,0.3)" };
+    const sphereName = slot.sphere || "未割り当てのスフィア";
+    const style = sphereStyle(slot.sphere);
     // リストアイテム
     const item = document.createElement("div");
     item.className = "sphere-item" + (slot.collected ? " collected" : "");
     const orbEl = document.createElement("div");
     orbEl.className = "sphere-orb" + (slot.collected ? "" : " locked");
-    orbEl.style.setProperty("--orb-color", sphere.color);
-    orbEl.style.setProperty("--orb-dark", sphere.dark);
-    orbEl.style.setProperty("--orb-glow", sphere.glow);
+    orbEl.style.setProperty("--orb-color", style.color);
+    orbEl.style.setProperty("--orb-dark", style.dark);
+    orbEl.style.setProperty("--orb-glow", style.glow);
     // 画像があれば使用
-    orbEl.innerHTML = `<img src="spheres/${sphere.id}.png" onerror="this.style.display='none'" alt="${sphere.name}">`;
+    orbEl.innerHTML = `<img src="spheres/${style.id}.png" onerror="this.style.display='none'" alt="${sphereName}">`;
     const info = document.createElement("div");
     info.className = "sphere-info";
     info.innerHTML = `
-      <div class="sphere-name${slot.collected ? "" : " locked"}">${sphere.name}</div>
+      <div class="sphere-name${slot.collected ? "" : " locked"}">${slot.label}　${sphereName}</div>
       <div class="sphere-status ${slot.collected ? "got" : "not"}">${slot.collected ? "✦ 入手済み" : "◌ 未入手"}</div>
     `;
     item.appendChild(orbEl);
@@ -3657,7 +3674,7 @@ function updateSpherePanel() {
     if (SHOW_TEST_TOOLS && !slot.collected) {
       const btn = document.createElement("button");
       btn.className = "sphere-debug-btn";
-      btn.textContent = sphere.name.replace("・スフィア", "");
+      btn.textContent = slot.label;
       btn.addEventListener("click", (e) => { e.stopPropagation(); collectSphere(i); });
       debugBtns.appendChild(btn);
     }
@@ -3849,91 +3866,36 @@ function switchCollectionTab(tab) {
   if (tab === "visits")  updateVisitRecordPanel();
 }
 
-// ── しずくシステム（旧：かけら） ──
+// ── しずくシステム（旧：かけら）── 【将来構想用の箱／中身は未実装】
+// このシステムは「各エリアで何かを収集する」という構想だけがあり、
+// 中身のロジックは未確定。星名（算命学用語）をクライアントに出さない方針のため、
+// 旧実装（星名キーの収集ロジック）は撤去。タブ・セクションの箱だけ残す。
 const AREA_KEYS  = ["north","east","south","west","central"];
 const AREA_NAMES = { north:"北", east:"東", south:"南", west:"西", central:"中央" };
-const ALL_STARS  = ["貫索星","石門星","鳳閣星","調舒星","禄存星","司禄星","車騎星","牽牛星","龍高星","玉堂星"];
 
 function initShards() {
+  // 箱だけ用意（中身の収集データは持たない）
   const save = loadProgress() || {};
-  if (!save.shards) {
-    save.shards = {};
-    save.areaDoorsUnlocked = {};
-    AREA_KEYS.forEach(key => {
-      save.shards[key] = {};
-      ALL_STARS.forEach(star => { save.shards[key][star] = false; });
-      save.areaDoorsUnlocked[key] = false;
-    });
-    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
-  }
   return save;
 }
 
 function getShards() {
-  const save = loadProgress();
-  if (!save?.shards) return initShards();
-  return save;
+  return loadProgress() || {};
 }
 
-function collectShizuku(areaKey, starName, onClose) {
-  const save = getShards();
-  if (save.shards[areaKey][starName]) return;
-  save.shards[areaKey][starName] = true;
-  const allCollected = ALL_STARS.every(s => save.shards[areaKey][s]);
-  if (allCollected) save.areaDoorsUnlocked[areaKey] = true;
-  localStorage.setItem(SAVE_KEY, JSON.stringify(save));
-  showShizukuAcquireFlash(areaKey, starName, () => {
-    if (allCollected) showDoorUnlockedFlash(areaKey);
-    if (onClose) onClose();
-    renderShizukuSection(currentShizukuTab);
-  });
-}
-
-function showShizukuAcquireFlash(areaKey, starName, onClose) {
-  const sphere = STAR_TO_SPHERE[starName];
-  if (!sphere) return;
-  const flash = $("shizukuAcquireFlash");
-  const gem   = $("shizukuAcquireGem");
-  gem.style.setProperty("--shard-color", sphere.color);
-  gem.style.setProperty("--shard-dark",  sphere.dark);
-  gem.style.setProperty("--shard-glow",  sphere.glow);
-  $("shizukuAcquireName").textContent = sphere.name.replace("・スフィア","") + "のティア";
-  $("shizukuAcquireArea").textContent = AREA_NAMES[areaKey] + "エリア";
-  flash.classList.add("show");
-  const close = () => {
-    flash.classList.remove("show");
-    flash.removeEventListener("click", close);
-    if (onClose) onClose();
-  };
-  flash.addEventListener("click", close);
-}
-
-function showDoorUnlockedFlash(areaKey) {
-  const msg = document.createElement("div");
-  msg.style.cssText = `
-    position:fixed;bottom:230px;left:50%;transform:translateX(-50%);
-    z-index:60;padding:10px 20px;border-radius:999px;
-    background:rgba(216,185,120,0.18);border:1px solid rgba(216,185,120,0.55);
-    color:rgba(216,185,120,0.95);font-size:12px;letter-spacing:0.14em;
-    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
-    white-space:nowrap;opacity:0;transition:opacity 400ms;
-  `;
-  msg.textContent = `${AREA_NAMES[areaKey]}エリアの地下扉が解錠された`;
-  document.getElementById("app").appendChild(msg);
-  setTimeout(() => { msg.style.opacity = "1"; }, 30);
-  setTimeout(() => { msg.style.opacity = "0"; setTimeout(() => msg.remove(), 400); }, 2800);
-}
+// 旧収集ロジックは未実装。呼ばれても何もしない（将来差し替え）。
+function collectShizuku() { /* 未実装 */ }
+function showShizukuAcquireFlash() { /* 未実装 */ }
+function showDoorUnlockedFlash() { /* 未実装 */ }
 
 function buildShizukuTabs() {
-  const save = getShards();
   const tabsEl = $("shizukuAreaTabs");
+  if (!tabsEl) return;
   tabsEl.innerHTML = "";
   AREA_KEYS.forEach(key => {
     const btn = document.createElement("button");
-    const unlocked = save.areaDoorsUnlocked[key];
-    const count = ALL_STARS.filter(s => save.shards[key][s]).length;
-    btn.className = "shard-area-tab" + (key === currentShizukuTab ? " active" : "") + (unlocked ? " cleared" : "");
-    btn.innerHTML = AREA_NAMES[key] + "エリア" + (unlocked ? `<span class='tab-check'>✦</span>` : ` <span class='tab-check'>${count}/10</span>`);
+    btn.className = "shard-area-tab" + (key === currentShizukuTab ? " active" : "");
+    btn.textContent = AREA_NAMES[key] + "エリア";
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       currentShizukuTab = key;
@@ -3945,73 +3907,20 @@ function buildShizukuTabs() {
 }
 
 function renderShizukuSection(areaKey) {
-  const save = getShards();
-  const shards = save.shards[areaKey];
-  const unlocked = save.areaDoorsUnlocked[areaKey];
-  const count = ALL_STARS.filter(s => shards[s]).length;
   const content = $("shizukuContent");
+  if (!content) return;
   content.innerHTML = "";
 
-  // ヘッダー（エリア名のみ・禁止用語なし）
   const header = document.createElement("div");
   header.className = "shard-section-header";
-  header.innerHTML = `
-    <span class="shard-section-title">${AREA_NAMES[areaKey]}エリア</span>
-    <span class="shard-section-count">${count} / 10</span>
-  `;
+  header.innerHTML = `<span class="shard-section-title">${AREA_NAMES[areaKey]}エリア</span>`;
   content.appendChild(header);
 
-  // 地下扉ステータス
-  const door = document.createElement("div");
-  door.className = "shard-door-panel" + (unlocked ? " unlocked" : "");
-  door.innerHTML = `
-    <div class="shard-door-label">地下扉</div>
-    <div class="shard-door-bar"><div class="shard-door-fill" style="width:${count*10}%"></div></div>
-    <div class="shard-door-status ${unlocked ? "unlocked-txt" : "locked-txt"}">
-      ${unlocked ? "✦ 解錠済み" : `🔒 解錠まであと ${10 - count} 個`}
-    </div>
-  `;
-  content.appendChild(door);
-
-  // しずくグリッド（スフィアFV名のみ・星名なし）
-  const grid = document.createElement("div");
-  grid.className = "shard-grid";
-  ALL_STARS.forEach(star => {
-    const got = shards[star];
-    const sphere = STAR_TO_SPHERE[star] || { id:"unknown", name:"スフィア", color:"#888", dark:"#333", glow:"rgba(150,150,150,0.3)" };
-    const shortName = sphere.name.replace("・スフィア","");
-    const item = document.createElement("div");
-    item.className = "shard-item" + (got ? " collected" : "");
-    item.innerHTML = `
-      <div class="shard-gem ${got ? "" : "locked"}"
-           style="--shard-color:${sphere.color};--shard-dark:${sphere.dark};--shard-glow:${sphere.glow}"></div>
-      <div class="shard-item-info">
-        <div class="shard-item-star">${shortName}のティア</div>
-        <div class="shard-item-status ${got ? "got" : "not"}">${got ? "✦ 入手済み" : "◌ 未入手"}</div>
-      </div>
-    `;
-    grid.appendChild(item);
-  });
-  content.appendChild(grid);
-
-  // テスト用ボタン（スフィアFV名のみ・テスト用フラグで制御）
-  if (SHOW_TEST_TOOLS) {
-    const debug = document.createElement("div");
-    debug.className = "shard-debug";
-    debug.innerHTML = `<div class="shard-debug-title">🔧 テスト用 — ティア取得</div><div class="shard-debug-btns" id="shizukuDebugBtns_${areaKey}"></div>`;
-    content.appendChild(debug);
-    const btnsEl = debug.querySelector(`#shizukuDebugBtns_${areaKey}`);
-    ALL_STARS.forEach(star => {
-      if (shards[star]) return;
-      const btn = document.createElement("button");
-      btn.className = "shard-debug-btn";
-      const sp = STAR_TO_SPHERE[star];
-      btn.textContent = sp ? sp.name.replace("・スフィア","") : "ティア";
-      btn.addEventListener("click", (e) => { e.stopPropagation(); collectShizuku(areaKey, star); });
-      btnsEl.appendChild(btn);
-    });
-    if (ALL_STARS.every(s => shards[s])) debug.style.display = "none";
-  }
+  // 準備中プレースホルダー（中身は将来実装）
+  const placeholder = document.createElement("div");
+  placeholder.style.cssText = "padding:48px 20px;text-align:center;color:rgba(216,185,120,0.55);font-size:13px;letter-spacing:0.1em;line-height:2;font-family:'Hiragino Mincho ProN','Yu Mincho',serif;";
+  placeholder.innerHTML = "✦<br>このエリアの記録は<br>これから紡がれていきます";
+  content.appendChild(placeholder);
 }
 
 // ── 背景パンアニメーション（requestAnimationFrame） ──
@@ -4907,7 +4816,7 @@ $("aboutTextCloseBtn").addEventListener("click", (e) => {
 });
 $("aboutTextOverlay").addEventListener("click", (e) => e.stopPropagation());
 const GAS_REPLY_URL = 'https://script.google.com/macros/s/AKfycbwaxud5L3FK33181fC-GhhbEgsaaZavtw1oV0BIZQ6ycwfZaXeU2bi9mpjzdJ76WnpjHA/exec';
-const GAS_REPLY_TOKEN = 'fv_studio_2026';
+const GAS_REPLY_TOKEN = 'fvc_GWLqjFmJpFRxT7EW3w4W2vdVlkQjX4V4';
 const LIFF_ID = '2010325604-0QN7Bcqx';
 
 // ── LIFF初期化（LINEから開いた場合にuserIDを取得） ──
