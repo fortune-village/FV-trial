@@ -5408,9 +5408,7 @@ async function loadStudioMessages() {
   } catch(e) { /* 通信失敗は無視 */ }
 }
 
-const FORM_ACTION = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSfHQdpIdKQriBg52ZESwP0Q8ZdazM-nOH8e--dIXwS-C6ofIQ/formResponse';
-const ENTRY_FEEDBACK = 'entry.1102648532';
-const ENTRY_CLIENT   = 'entry.327917966';
+
 
 function showDevBanner() {
   $('devBanner').style.display = 'block';
@@ -5454,10 +5452,11 @@ function attachFeedbackEvents() {
     e.stopPropagation();
     const text = $('feedbackText').value.trim();
     if (!text) return;
-    const data = new FormData();
-    data.append(ENTRY_FEEDBACK, text);
-    data.append(ENTRY_CLIENT, clientId);
-    fetch(FORM_ACTION, { method: 'POST', mode: 'no-cors', body: data });
+    fetch(GAS_REPLY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: GAS_REPLY_TOKEN, action: 'feedback_submit', text: text, cid: clientId })
+    });
     $('feedbackInner').innerHTML = `
       <div class="feedback-sent">
         ありがとうございます。<br>
