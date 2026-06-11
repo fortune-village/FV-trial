@@ -1,7 +1,7 @@
 {
   "name": "安藤準",
   "birthday": "19780313",
-  "dataVersion": 7,
+  "dataVersion": 8,
   "updateNote": "東エリアを公開しました。 2026/6/6 ",
   "savedInp": {
     "initial": "",
@@ -343,6 +343,7 @@
     "setup": {
       "done": true
     },
+    "name": "テスト安藤準",
     "spheres": {
       "N": "フェイヴァー・スフィア",
       "W": "オーダー・スフィア",
@@ -351,5 +352,5 @@
       "S": "リンク・スフィア"
     }
   },
-  "exportedAt": "2026-06-11T06:09:45.893Z"
+  "exportedAt": "2026-06-11T06:11:41.618Z"
 }
