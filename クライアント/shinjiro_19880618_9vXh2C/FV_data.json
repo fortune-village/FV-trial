@@ -1,6 +1,8 @@
 {
   "name": "テスト3_19880618_9vXh2C",
   "birthday": "",
+  "dataVersion": 2,
+  "updateNote": "",
   "savedInp": {
     "initial": "",
     "gender": "男",
@@ -21,6 +23,9 @@
       "W": [],
       "C": []
     },
+    "setup": {
+      "done": true
+    },
     "spheres": {
       "N": "フェイヴァー・スフィア",
       "W": "フェイヴァー・スフィア",
@@ -29,5 +34,5 @@
       "S": "フェイヴァー・スフィア"
     }
   },
-  "exportedAt": "2026-06-24T09:44:56.195Z"
+  "exportedAt": "2026-06-24T09:49:53.699Z"
 }
