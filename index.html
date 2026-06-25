@@ -599,10 +599,19 @@
   color: rgba(116,62,70,0.88);
   letter-spacing: 0.08em;
 }
+.guide-personal-fac {
+  font-size: 11px;
+  color: rgba(80,50,40,0.62);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
 
 /* ── COMING SOON ── */
 .guide-personal-body {
   position: relative;
+  max-height: 46vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .guide-personal-body.blurred .guide-personal-item {
   filter: blur(3px);
@@ -2685,7 +2694,8 @@ fetch(`${clientBase}data.json`)
     Object.assign(CLIENT.char, data.char);
     Object.assign(CLIENT.params, data.params);
     if (data.meishiki) CLIENT.meishiki = data.meishiki;
-    if (data.guidePersonal) CLIENT.guidePersonal = data.guidePersonal;
+    // guidePersonal は FV_data.json (fvData.guidePersonal) に一本化したため data.json 側は無効化
+    // if (data.guidePersonal) CLIENT.guidePersonal = data.guidePersonal;
     if (data.achievements) CLIENT.achievements = data.achievements;
 
     // クライアント名をホーム画面に表示
@@ -2785,6 +2795,8 @@ fetch(`${clientBase}FV_data.json`)
     updateCoinHud();
     // 方位ごとのスフィア名（スタジオが割り振った結果）をグローバルに保存
     window._fvSpheres = fvData.fvData?.spheres || null;
+    // あなた専用ガイド（スタジオが生成した guidePersonal）を取り込む
+    if (fvData.fvData?.guidePersonal) CLIENT.guidePersonal = fvData.fvData.guidePersonal;
     // areaInfoをAREA_INFOに反映（Studio v1で編集した値を使用）
     AREA_INFO = JSON.parse(JSON.stringify(AREA_INFO_DEFAULT));
     const customAreaInfo = fvData.fvData?.areaInfo || {};
@@ -4691,7 +4703,7 @@ function showGuideBoardOverlay() {
   const personal = CLIENT.guidePersonal;
 
   if (personal?.clientName) {
-    title.textContent = personal.clientName + "様専用ガイド";
+    title.textContent = personal.clientName + " 様 専用ガイド";
   } else {
     title.textContent = "あなた専用ガイド";
   }
@@ -4704,10 +4716,14 @@ function showGuideBoardOverlay() {
     { label: "支えになる場所",               area: "中央エリア" }
   ];
   const guideItems = personal?.items || defaultItems;
-  guideItems.forEach(({ label, area }) => {
+  const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  guideItems.forEach(({ label, area, facility }) => {
     const div = document.createElement("div");
     div.className = "guide-personal-item";
-    div.innerHTML = `<span class="guide-personal-label">${label}</span><span class="guide-personal-arrow">→</span><span class="guide-personal-area">${area}</span>`;
+    const facHtml = facility
+      ? `<span class="guide-personal-fac">（${esc(facility)}）</span>`
+      : "";
+    div.innerHTML = `<span class="guide-personal-label">${esc(label)}</span><span class="guide-personal-arrow">→</span><span class="guide-personal-area">${esc(area)}</span>${facHtml}`;
     items.appendChild(div);
   });
 
