@@ -1,7 +1,7 @@
 {
   "name": "テスト3_19880618_9vXh2C",
   "birthday": "",
-  "dataVersion": 2,
+  "dataVersion": 3,
   "updateNote": "",
   "savedInp": {
     "initial": "",
@@ -32,7 +32,62 @@
       "C": "リザーブ・スフィア",
       "E": "フェイヴァー・スフィア",
       "S": "フェイヴァー・スフィア"
+    },
+    "guidePersonal": {
+      "clientName": "テスト3_19880618_9vXh2C",
+      "items": [
+        {
+          "label": "子どもを見るとき",
+          "area": "北・東・南・西エリア",
+          "facility": "採石場"
+        },
+        {
+          "label": "きょうだいを見るとき",
+          "area": "東・西エリア",
+          "facility": "牧場"
+        },
+        {
+          "label": "母を見るとき",
+          "area": "東・西エリア",
+          "facility": "水車小屋、漁場"
+        },
+        {
+          "label": "妻を見るとき",
+          "area": "中央エリア",
+          "facility": "農場"
+        },
+        {
+          "label": "配偶者の母を見るとき",
+          "area": "中央エリア",
+          "facility": "焼き場"
+        },
+        {
+          "label": "財運を見るとき",
+          "area": "北・東・南・西エリア",
+          "facility": "採石場"
+        },
+        {
+          "label": "協調運を見るとき",
+          "area": "東・西エリア",
+          "facility": "牧場"
+        },
+        {
+          "label": "知恵運を見るとき",
+          "area": "東・西エリア",
+          "facility": "水車小屋、漁場"
+        },
+        {
+          "label": "蓄財運を見るとき",
+          "area": "中央エリア",
+          "facility": "農場"
+        },
+        {
+          "label": "健康運を見るとき",
+          "area": "中央エリア",
+          "facility": "焼き場"
+        }
+      ]
     }
   },
-  "exportedAt": "2026-06-25T06:27:19.104Z"
+  "exportedAt": "2026-06-25T06:43:09.308Z"
 }
