@@ -2850,13 +2850,6 @@ fetch(`${clientBase}FV_data.json`)
       C: { btnId:'btnCentral', label:'中央エリア', key:'central', dirJp:'中央', cls:'center'  },
     };
 
-    // 北エリアはデフォルト無効に（リリース管理で制御）
-    const btnNorthEl = document.getElementById('btnNorth');
-    if (btnNorthEl) {
-      btnNorthEl.classList.add('disabled');
-      btnNorthEl.innerHTML = '北エリア<span class="area-tag">準備中</span>';
-    }
-
     const STEP_TO_SUFFIX = { s2:'', s4:'', s4L:'', s3:'-lmk', s3b:'-star', s5:'-street', s6:'-lmkcu', s7:'-starcu' };
 
     function buildAreaScenes(dir, cfg, dirScenes) {
@@ -5843,12 +5836,6 @@ function showCentralFacility() {
   $("centralFacilitySelect").classList.add("visible");
   $("btnHomeFixed").classList.add("visible");
 }
-
-$("btnNorth").addEventListener("click", (e) => {
-  e.stopPropagation();
-  pushBack(() => { $("areaSubSelect").classList.remove("visible"); $("areaSelect").classList.add("visible"); });
-  showAreaSub("north", "北エリア");
-});
 
 $("btnAreaSubBack").addEventListener("click", (e) => {
   e.stopPropagation();
