@@ -5932,6 +5932,10 @@ function pushBack(restoreFn) {
 function goBack() {
   if (navStack.length === 0) return;
   const restore = navStack.pop();
+  // ハブ等への復帰時にエリア選択系パネルが .visible のまま残り、
+  // 裏のボタンに当たる残留バグを防ぐ。再表示クロージャは自前で付け直す。
+  ["areaSelect","areaSubSelect","facilitySelect","charSelect","centralFacilitySelect"]
+    .forEach(id => $(id)?.classList.remove("visible"));
   $("navMenu").classList.remove("visible");
   document.getElementById('app').classList.remove('panel-open');
   transitionScene(() => restore());
