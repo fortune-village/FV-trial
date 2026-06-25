@@ -2225,7 +2225,6 @@ body[data-line-browser="1"] .bg {
     </div>
     <div class="char-list">
       <button class="char-btn" id="btnCentralCouncil">中央会議室へ行く</button>
-      <button class="char-btn" id="btnCentralGuide">村の読み方を確認する</button>
       <button class="char-btn" id="btnCentralParams">村のスフィアエネルギー</button>
       <button class="char-btn" id="btnCharList">エリア代表一覧</button>
       <button class="char-btn fv-shop-btn" id="btnFVShop">🪙 FVショップへ</button>
@@ -2987,7 +2986,7 @@ const introScenes = [
     name: "ロアン",
     text: "今日のご予定をお伺いします。",
     charMode: "bust",
-    choices: ["外へ出る", "村役場へ行く", "村の記録帳を見る", "今日の占い", "FV通信", "ロアンに話しかける"]
+    choices: ["外へ出る", "村役場へ行く", "村の記録帳を見る", "今日の占い", "FV通信", "村の読み方を確認する"]
   }
 ];
 
@@ -4411,7 +4410,13 @@ function renderChoices(choices) {
           pushBack(() => { $("centralFacilitySelect").classList.add("visible"); $("paramPanel").classList.remove("visible"); });
           await transitionScene(() => { box.style.display="none"; showParams(); });
         } else if (label === "村の読み方を確認する") {
-          pushBack(() => { $("centralFacilitySelect").classList.add("visible"); });
+          if (currentScreen === 'intro') {
+            // ハブから：戻るとハブ最終シーンへ
+            pushBack(() => { currentScreen='intro'; currentSceneSet=introScenes; sceneIndex=introScenes.length-1; hideAllSceneElements(); renderScene(); });
+          } else {
+            // 役場から：戻ると役場パネルへ
+            pushBack(() => { $("centralFacilitySelect").classList.add("visible"); });
+          }
           await transitionScene(() => { box.style.display="none"; showGuide(); });
         } else if (label === "中央会議室へ行く") {
           pushBack(() => { $("centralFacilitySelect").classList.add("visible"); $("btnHomeFixed").classList.add("visible"); });
@@ -5871,15 +5876,6 @@ $("btnCentralCouncil").addEventListener("click", async (e) => {
     currentSceneSet = councilScenes;
     sceneIndex = 0;
     renderScene();
-  });
-});
-
-$("btnCentralGuide").addEventListener("click", async (e) => {
-  e.stopPropagation();
-  pushBack(() => { hideChoices(); document.getElementById('app').classList.add('panel-open'); $("centralFacilitySelect").classList.add("visible"); $("btnHomeFixed").classList.add("visible"); });
-  transitionScene(() => {
-    $("centralFacilitySelect").classList.remove("visible");
-    showGuide();
   });
 });
 
