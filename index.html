@@ -2915,21 +2915,8 @@ fetch(`${clientBase}FV_data.json`)
       document.head.appendChild(stArea);
     }
 
-    // ── release=false のエリアを「準備中」→「🔒 5コイン」に変換
-    if (window._fvSetupDone) {
-      Object.entries(DIR_CONFIG).forEach(([dir, cfg]) => {
-        if (release[dir]) return; // 公開済みはスキップ
-        const btn = document.getElementById(cfg.btnId);
-        if (!btn) return;
-        btn.classList.remove('disabled');
-        btn.classList.add('locked');
-        btn.innerHTML = cfg.label + '<span class="area-tag">🔒 5コイン</span>';
-        btn.onclick = (e) => {
-          e.stopPropagation();
-          showAreaRequest(cfg.key, cfg.label);
-        };
-      });
-    }
+    // 未開放エリア(release=false)は初期HTMLの「準備中」(disabled)のまま据え置く。
+    // コイン購入・エリア開放は別途の購入画面/個別申請で扱う方針。
   })
   .catch(() => {
     // fvData.json が存在しない場合（sampleクライアント等）
