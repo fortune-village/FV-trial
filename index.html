@@ -1848,15 +1848,6 @@ body {
 #app.panel-open #choices { display: none !important; }
 .area-select-panel.visible { z-index: 22 !important; }
 
-/* 【暫定】コイン購入メニュー(areaSelect)を常時非表示・クリック不可に固定。
-   ハブ裏残留による誤発火の暫定封じ。原因究明後に解除する。 */
-#areaSelect,
-#areaSelect.visible {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
-}
-
 /* タイトル画面中は、どんな理由があっても選択パネルを出さない（残留・誤発火対策の結界） */
 #app.title-mode .area-select-panel {
   opacity: 0 !important;
@@ -5735,9 +5726,8 @@ function next() {
     }
   } else {
     // 最終シーン → エリア選択へ戻る
-    if (currentScreen === 'intro') {
-      showAreaSelect(false);
-    } else if (currentScreen === 'area') {
+    // intro(村長の家)は6ボタンのハブで停止。エリア選択へは「外へ出る」ボタン経由のみ。
+    if (currentScreen === 'area') {
       showAreaSelect(true);
     }
   }
