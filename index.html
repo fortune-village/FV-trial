@@ -1655,6 +1655,119 @@ body {
 }
 .area-btn.locked:active { transform: scale(0.97); }
 
+/* ── 鑑定書 専用ページ（羊皮紙・リッチ） ── */
+.kantei-page {
+  position: absolute;
+  inset: 8px;
+  background:
+    radial-gradient(circle at 84% 12%, rgba(216,185,120,0.12), transparent 32%),
+    radial-gradient(circle at 12% 92%, rgba(170,120,60,0.10), transparent 34%),
+    linear-gradient(180deg, rgba(246, 230, 196, 0.97), rgba(214, 186, 144, 0.97)),
+    url("common/parchment.png"),
+    linear-gradient(180deg, rgba(246, 230, 196, 0.98), rgba(214, 186, 144, 0.98));
+  background-size: cover, cover, cover, cover, cover;
+  border: 2px solid rgba(128, 76, 84, 0.9);
+  border-radius: 18px;
+  box-shadow: 0 22px 48px rgba(0,0,0,0.52), inset 0 0 0 1px rgba(255,255,255,0.34);
+  z-index: 13;
+  opacity: 0;
+  transform: translateY(18px) scale(0.99);
+  pointer-events: none;
+  transition: opacity 520ms ease, transform 520ms ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.kantei-page.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+/* 金の二重罫で囲った内枠 */
+.kantei-page-inner {
+  flex: 1;
+  margin: 12px;
+  border: 1px solid rgba(176, 134, 60, 0.55);
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 3px rgba(246,230,196,0.6), inset 0 0 0 4px rgba(176,134,60,0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.kantei-page-header {
+  padding: 18px 22px 14px;
+  text-align: center;
+  flex-shrink: 0;
+  position: relative;
+}
+.kantei-page-ribbon {
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  color: rgba(150, 110, 56, 0.78);
+  margin-bottom: 8px;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
+}
+.kantei-page-title {
+  font-size: 21px;
+  letter-spacing: 0.16em;
+  color: rgba(58, 36, 28, 0.95);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.kantei-page-rule {
+  width: 64%;
+  height: 0;
+  margin: 0 auto;
+  border-top: 1px solid rgba(176, 134, 60, 0.5);
+  position: relative;
+}
+.kantei-page-rule::before {
+  content: "✦";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(244, 228, 194, 1);
+  color: rgba(176, 134, 60, 0.8);
+  font-size: 11px;
+  padding: 0 8px;
+}
+.kantei-page-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 22px;
+}
+.kantei-page-placeholder {
+  text-align: center;
+  color: rgba(110, 80, 50, 0.6);
+  font-size: 13px;
+  padding: 40px 0;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
+}
+.kantei-page-footer {
+  flex-shrink: 0;
+  padding: 12px 16px 14px;
+}
+.kantei-page-back {
+  width: 100%;
+  background: rgba(60,40,20,0.5);
+  border: 1px solid rgba(176,134,60,0.5);
+  border-radius: 10px;
+  color: rgba(245, 230, 200, 0.95);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  padding: 11px 16px;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.kantei-page-back:active { transform: scale(0.99); }
+
 /* 購入案内オーバーレイ */
 /* ── FVショップオーバーレイ ── */
 #fvShopOverlay {
@@ -2260,6 +2373,21 @@ body[data-line-browser="1"] .bg {
       <button id="btnKanteiBackHome" style="width:100%;background:rgba(60,40,20,0.45);border:1px solid rgba(200,170,110,0.35);border-radius:10px;color:rgba(230,210,170,0.9);font-size:14px;letter-spacing:0.08em;cursor:pointer;padding:11px 16px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;">
         <span id="kanteiBackLabel">⌂ ホームに戻る</span>
       </button>
+    </div>
+  </div>
+
+  <!-- 鑑定書 専用ページ（宿命を見る 等） -->
+  <div id="kanteiPage" class="kantei-page">
+    <div class="kantei-page-inner">
+      <div class="kantei-page-header">
+        <div class="kantei-page-ribbon">FORTUNE VILLAGE</div>
+        <div class="kantei-page-title" id="kanteiPageTitle">宿命を見る</div>
+        <div class="kantei-page-rule"></div>
+      </div>
+      <div class="kantei-page-body" id="kanteiPageBody"></div>
+      <div class="kantei-page-footer">
+        <button class="kantei-page-back" id="btnKanteiPageBack">‹ 戻る</button>
+      </div>
     </div>
   </div>
 
@@ -4207,6 +4335,37 @@ function hideAreaSelect() {
 // _kanteiStack: 下った経路。空＝大項目階層。各要素 {node, label}。
 let _kanteiStack = [];
 
+// 専用ページ（鑑定書ビュー）で開く大項目キーの集合。
+// ここに入れた大項目はボックスメニューでなく専用ページを開く。
+// 後で運勢を見る等を足すならキーを追加するだけ。
+const KANTEI_PAGE_KEYS = new Set(["shukumei"]);
+
+// 専用ページを開く（段階1：器のみ。中身は段階2以降）
+function showKanteiPage(key, label) {
+  const titleEl = $("kanteiPageTitle");
+  const bodyEl = $("kanteiPageBody");
+  if (titleEl) titleEl.textContent = label;
+  if (bodyEl) {
+    bodyEl.innerHTML = '<div class="kantei-page-placeholder">（この項目の内容は準備中です）</div>';
+  }
+  // ボックスメニューを伏せて専用ページを前面に
+  $("kanteiSelect").classList.remove("visible");
+  const page = $("kanteiPage");
+  page.classList.add("visible");
+  _kanteiPageOpen = true;
+}
+
+let _kanteiPageOpen = false;
+
+function hideKanteiPage() {
+  return new Promise((resolve) => {
+    const page = $("kanteiPage");
+    page.classList.remove("visible");
+    _kanteiPageOpen = false;
+    setTimeout(resolve, 520);
+  });
+}
+
 // 現在いる階層の「子ノードの順序キー配列」と「子ノード辞書」を返す
 function kanteiCurrentLevel() {
   const kr = window._fvKantei;
@@ -4275,6 +4434,18 @@ function onKanteiItemTap(key) {
   if (childCount > 0) {
     const goDeeper = () => { _kanteiStack.push({ node, label }); };
     if (lvl.isTop) {
+      // 大項目が専用ページ対象なら、カード儀式 → 専用ページを開く
+      if (KANTEI_PAGE_KEYS.has(key)) {
+        const listEl0 = $("kanteiMenuList");
+        if (listEl0) { listEl0.style.transition = "none"; listEl0.style.opacity = "0"; }
+        showKanteiTitleCard(label, () => {
+          goDeeper();
+          showKanteiPage(key, label);
+        }).then(() => {
+          if (listEl0) { listEl0.style.transition = ""; listEl0.style.opacity = "1"; }
+        });
+        return;
+      }
       // 大項目→小項目：タイトルカードの儀式（画面全体が暗転）
       // カードの裏で次階層を用意するが、visibilityで瞬間表示せず opacity:0 で待機し、
       // カードが引いた後にふわっとフェードインさせる（パッと出る違和感を解消）。
@@ -4363,6 +4534,7 @@ function showKanteiSelect() {
   document.getElementById("mainTextbox").classList.add("hidden");
   $("choices").classList.remove("show"); $("choices").style.display = "none";
   _kanteiStack = []; // 入室時は大項目階層から
+  if (_kanteiPageOpen) { $("kanteiPage").classList.remove("visible"); _kanteiPageOpen = false; }
   renderKanteiMenu();
   const listEl = $("kanteiMenuList"); // 前回遷移のopacity:0残りをリセット
   if (listEl) { listEl.style.transition = "none"; listEl.style.opacity = "1"; }
@@ -6240,8 +6412,19 @@ $("btnKanteiBackHome").addEventListener("click", async (e) => {
   kanteiBack();
 });
 
+$("btnKanteiPageBack").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  // 専用ページ → 鑑定室トップ（大項目メニュー）へ戻る
+  await hideKanteiPage();
+  _kanteiStack = [];
+  renderKanteiMenu();
+  const listEl = $("kanteiMenuList");
+  if (listEl) { listEl.style.transition = "none"; listEl.style.opacity = "1"; }
+  $("kanteiSelect").classList.add("visible");
+});
+
 // パネル内タップは外に伝播させない
-["areaSelect", "facilitySelect", "charSelect", "paramPanel", "aboutPanel", "kanteiSelect"].forEach(id => {
+["areaSelect", "facilitySelect", "charSelect", "paramPanel", "aboutPanel", "kanteiSelect", "kanteiPage"].forEach(id => {
   $(id).addEventListener("click", (e) => e.stopPropagation());
 });
 
