@@ -2250,6 +2250,19 @@ body[data-line-browser="1"] .bg {
     </div>
   </div>
 
+  <!-- 鑑定室メニューパネル -->
+  <div id="kanteiSelect" class="area-select-panel">
+    <div class="panel-header">
+      <span class="panel-title" id="kanteiPanelTitle">鑑定室</span>
+    </div>
+    <div id="kanteiMenuList" style="padding:4px 12px;display:flex;flex-direction:column;gap:10px;"></div>
+    <div style="padding:10px 12px 4px;">
+      <button id="btnKanteiBackHome" style="width:100%;background:rgba(60,40,20,0.45);border:1px solid rgba(200,170,110,0.35);border-radius:10px;color:rgba(230,210,170,0.9);font-size:14px;letter-spacing:0.08em;cursor:pointer;padding:11px 16px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <span id="kanteiBackLabel">⌂ ホームに戻る</span>
+      </button>
+    </div>
+  </div>
+
   <!-- 施設選択パネル -->
   <div id="facilitySelect" class="area-select-panel">
     <div class="panel-header">
@@ -2493,6 +2506,7 @@ body[data-line-browser="1"] .bg {
 
       <button class="home-btn" id="btnAbout">フォーチュン・ヴィレッジについて</button>
       <button class="home-btn" id="btnVillage">村長の家へ</button>
+      <button class="home-btn" id="btnKantei">鑑定室へ</button>
       <div id="homeUpdateInfo" class="home-update-info">
         <div class="home-update-label">更新情報</div>
         <div class="home-update-text" id="home-update-text">中央の施設を「中央村役場」に、村のパラメータを「村のスフィアエネルギー」に改称しました</div>
@@ -2808,6 +2822,8 @@ fetch(`${clientBase}FV_data.json`)
 
     // ── エリアリリース管理 ─────────────────────────────────────
     const release = fvData.fvData?.release || {};
+    // 鑑定室の開放データ（村のreleaseとは独立）
+    window._fvKantei = fvData.fvData?.kanteiRelease || null;
     const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
     // コイン残高をグローバルに保存 + HUD更新
@@ -4181,6 +4197,131 @@ function showAreaSelect(fromArea = false) {
 function hideAreaSelect() {
   return new Promise((resolve) => {
     $("areaSelect").classList.remove("visible");
+    setTimeout(resolve, 500);
+  });
+}
+
+// ── 鑑定室メニュー（階層対応：見た目はB・内部は1パネル再帰） ──
+// 誰でも入れる。大→小→細と階層を下る。開放済みノードだけボタン化し、
+// 未開放は「鑑定をご依頼ください」のロック表示。
+// _kanteiStack: 下った経路。空＝大項目階層。各要素 {node, label}。
+let _kanteiStack = [];
+
+// 現在いる階層の「子ノードの順序キー配列」と「子ノード辞書」を返す
+function kanteiCurrentLevel() {
+  const kr = window._fvKantei;
+  if (_kanteiStack.length === 0) {
+    // 大項目階層
+    const order = kr?.order || ["gogyo","kanshi","meishiki","saikei","shukumei","unsei","mini"];
+    const items = kr?.items || {};
+    return { order, items, title: "鑑定室", isTop: true };
+  }
+  // 下層：スタック末尾ノードの sub を見る
+  const parent = _kanteiStack[_kanteiStack.length - 1];
+  const sub = parent.node?.sub || {};
+  return { order: Object.keys(sub), items: sub, title: parent.label, isTop: false };
+}
+
+function renderKanteiMenu() {
+  const listEl = $("kanteiMenuList");
+  if (!listEl) return;
+  const lvl = kanteiCurrentLevel();
+
+  // パネルタイトル更新
+  const titleEl = $("kanteiPanelTitle");
+  if (titleEl) titleEl.textContent = lvl.title;
+  // 戻るボタンのラベル更新（最上位＝ホーム、下層＝戻る）
+  const backLabel = $("kanteiBackLabel");
+  if (backLabel) backLabel.textContent = lvl.isTop ? "⌂ ホームに戻る" : "‹ 戻る";
+
+  const fallbackLabels = {
+    gogyo:"陰陽五行説", kanshi:"干支", meishiki:"命式を確認する",
+    saikei:"宿命彩景", shukumei:"宿命を見る", unsei:"運勢を見る", mini:"ミニ占い"
+  };
+
+  if (!lvl.order || lvl.order.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;color:rgba(230,210,170,0.6);font-size:13px;padding:24px 0;">準備中です</div>';
+    return;
+  }
+
+  listEl.innerHTML = lvl.order.map(key => {
+    const node = lvl.items[key];
+    const label = node?.label || fallbackLabels[key] || key;
+    const open = node?.open || false;
+    if (open) {
+      return `<button class="area-btn" data-kantei="${key}"
+        style="width:100%;justify-content:center;">${label}</button>`;
+    }
+    return `<button class="area-btn locked" disabled
+      style="width:100%;justify-content:center;">${label}<span class="area-tag">鑑定をご依頼ください</span></button>`;
+  }).join('');
+
+  listEl.querySelectorAll('button[data-kantei]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      onKanteiItemTap(btn.getAttribute('data-kantei'));
+    });
+  });
+}
+
+// ノードタップ：子があれば階層を下る／無ければ細目＝閲覧
+function onKanteiItemTap(key) {
+  const lvl = kanteiCurrentLevel();
+  const node = lvl.items[key];
+  if (!node) return;
+  const label = node.label || key;
+  const childCount = node.sub ? Object.keys(node.sub).length : 0;
+
+  if (childCount > 0) {
+    // 階層を下る
+    _kanteiStack.push({ node, label });
+    renderKanteiMenu();
+  } else {
+    // 細目：閲覧表示（本文・画像の表示は次フェーズ。今は仮）
+    showKanteiContent(node, label);
+  }
+}
+
+// 細目の閲覧表示（暫定：text/imgがあれば出す。無ければ準備中）
+function showKanteiContent(node, label) {
+  const text = node.text || '';
+  if (text) {
+    alert(`【${label}】\n\n${text}`);
+  } else {
+    alert(`「${label}」の内容は準備中です。`);
+  }
+}
+
+// 鑑定室内の「戻る」：下層なら1つ上へ、最上位ならホームへ
+async function kanteiBack() {
+  if (_kanteiStack.length > 0) {
+    _kanteiStack.pop();
+    renderKanteiMenu();
+  } else {
+    document.getElementById('app').classList.remove('panel-open');
+    await hideKanteiSelect();
+    showHome();
+  }
+}
+
+function showKanteiSelect() {
+  if (currentScreen === 'title') return;
+  textboxWaitingForReveal = false;
+  textboxWaitingForTransition = false;
+  hideRevealHint();
+  document.getElementById('app').classList.add('panel-open');
+  currentScreen = 'kantei_select';
+  document.getElementById("mainTextbox").classList.add("hidden");
+  $("choices").classList.remove("show"); $("choices").style.display = "none";
+  _kanteiStack = []; // 入室時は大項目階層から
+  renderKanteiMenu();
+  $("kanteiSelect").classList.add("visible");
+  $("btnHomeFixed").classList.add("visible");
+}
+
+function hideKanteiSelect() {
+  return new Promise((resolve) => {
+    $("kanteiSelect").classList.remove("visible");
     setTimeout(resolve, 500);
   });
 }
@@ -5797,6 +5938,13 @@ $("btnVillage").addEventListener("click", async (e) => {
   layer.style.opacity = "1";
 });
 
+$("btnKantei").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  document.getElementById('app')?.classList.remove('title-mode');
+  await hideHome();
+  showKanteiSelect();
+});
+
 // エリアサブ選択を表示
 let selectedAreaKey = null;
 const areaSceneMap = {
@@ -5976,8 +6124,13 @@ $("btnBackToHouse").addEventListener("click", (e) => {
   });
 });
 
+$("btnKanteiBackHome").addEventListener("click", async (e) => {
+  e.stopPropagation();
+  kanteiBack();
+});
+
 // パネル内タップは外に伝播させない
-["areaSelect", "facilitySelect", "charSelect", "paramPanel", "aboutPanel"].forEach(id => {
+["areaSelect", "facilitySelect", "charSelect", "paramPanel", "aboutPanel", "kanteiSelect"].forEach(id => {
   $(id).addEventListener("click", (e) => e.stopPropagation());
 });
 
