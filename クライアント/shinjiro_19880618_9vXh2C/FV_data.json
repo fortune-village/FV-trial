@@ -87,7 +87,73 @@
           "facility": "焼き場"
         }
       ]
+    },
+    "kanteiRelease": {
+      "order": [
+        "gogyo",
+        "kanshi",
+        "meishiki",
+        "saikei",
+        "shukumei",
+        "unsei",
+        "mini"
+      ],
+      "items": {
+        "gogyo": {
+          "open": false,
+          "label": "陰陽五行説",
+          "sub": {}
+        },
+        "kanshi": {
+          "open": false,
+          "label": "干支",
+          "sub": {}
+        },
+        "meishiki": {
+          "open": false,
+          "label": "命式を確認する",
+          "sub": {}
+        },
+        "saikei": {
+          "open": false,
+          "label": "宿命彩景",
+          "sub": {}
+        },
+        "shukumei": {
+          "open": true,
+          "label": "宿命を見る",
+          "sub": {
+            "seikaku": {
+              "open": true,
+              "label": "性格",
+              "sub": {
+                "kihon": {
+                  "open": true,
+                  "label": "基本性格",
+                  "sub": {},
+                  "text": "あなたは静かに物事を見つめる人です。"
+                }
+              }
+            },
+            "kachi": {
+              "open": false,
+              "label": "価値観",
+              "sub": {}
+            }
+          }
+        },
+        "unsei": {
+          "open": false,
+          "label": "運勢を見る",
+          "sub": {}
+        },
+        "mini": {
+          "open": false,
+          "label": "ミニ占い",
+          "sub": {}
+        }
+      }
     }
   },
-  "exportedAt": "2026-06-25T06:43:09.308Z"
+  "exportedAt": "2026-06-27T00:01:30.264Z"
 }
