@@ -1694,7 +1694,7 @@ body {
 .kantei-header-ribbon {
   font-size: 10px;
   letter-spacing: 0.42em;
-  padding-left: 0.42em;            /* 字間で右に寄るぶんを視覚的に中央へ */
+  text-indent: 0.42em;            /* 末尾字間ぶんを行頭に足して中央へ相殺 */
   color: rgba(150, 110, 56, 0.72);
   margin-bottom: 7px;
   font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
@@ -1705,12 +1705,12 @@ body {
   text-align: center;
   font-size: 23px !important;
   letter-spacing: 0.32em !important;
-  padding-left: 0.32em;            /* 字間ぶんの中央補正 */
+  text-indent: 0.32em;            /* 末尾字間ぶんを行頭に足して中央へ相殺 */
   font-weight: 600;
   margin: 0 !important;
   padding-bottom: 0 !important;
   border-bottom: none !important;
-  white-space: nowrap;             /* 折り返さない */
+  white-space: nowrap;
   /* 古金グラデの箔押し風 */
   background: linear-gradient(180deg,
     rgba(122, 86, 38, 0.96) 0%,
@@ -1740,7 +1740,8 @@ body {
   background: transparent;          /* 白箱が出ないよう透明に */
   color: rgba(176, 134, 60, 0.82);
   font-size: 11px;
-  padding: 0 9px;
+  line-height: 1;
+  padding: 0;
 }
 
 /* ── 鑑定書 専用ページ（羊皮紙・リッチ） ── */
@@ -1791,6 +1792,7 @@ body {
 .kantei-page-ribbon {
   font-size: 10px;
   letter-spacing: 0.34em;
+  text-indent: 0.34em;
   color: rgba(150, 110, 56, 0.78);
   margin-bottom: 8px;
   font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
@@ -1798,6 +1800,7 @@ body {
 .kantei-page-title {
   font-size: 21px;
   letter-spacing: 0.16em;
+  text-indent: 0.16em;
   color: rgba(58, 36, 28, 0.95);
   font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
   font-weight: 600;
@@ -1816,10 +1819,11 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(244, 228, 194, 1);
+  background: transparent;
   color: rgba(176, 134, 60, 0.8);
   font-size: 11px;
-  padding: 0 8px;
+  line-height: 1;
+  padding: 0;
 }
 .kantei-page-body {
   flex: 1;
