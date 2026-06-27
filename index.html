@@ -4273,19 +4273,44 @@ function onKanteiItemTap(key) {
   const childCount = node.sub ? Object.keys(node.sub).length : 0;
 
   if (childCount > 0) {
-    // タイトルカード演出 → フェードアウト直前に階層を下って次階層を裏で用意
-    const listEl = $("kanteiMenuList");
-    if (listEl) listEl.style.visibility = "hidden"; // カード中はメニューを伏せる
-    showKanteiTitleCard(label, () => {
-      _kanteiStack.push({ node, label });
-      renderKanteiMenu();
-    }).then(() => {
-      if (listEl) listEl.style.visibility = "";
-    });
+    const goDeeper = () => { _kanteiStack.push({ node, label }); };
+    if (lvl.isTop) {
+      // 大項目→小項目：タイトルカードの儀式（画面全体が暗転）
+      const listEl = $("kanteiMenuList");
+      if (listEl) listEl.style.visibility = "hidden";
+      showKanteiTitleCard(label, () => {
+        goDeeper();
+        renderKanteiMenu();
+      }).then(() => {
+        if (listEl) listEl.style.visibility = "";
+      });
+    } else {
+      // 小項目以降：メニューリストだけを軽くクロスフェード（暗転なし）
+      kanteiMenuCrossFade(() => {
+        goDeeper();
+        renderKanteiMenu();
+      });
+    }
   } else {
     // 細目：閲覧表示（本文・画像の表示は次フェーズ。今は仮）
     showKanteiContent(node, label);
   }
+}
+
+// 鑑定室メニューの軽量クロスフェード（リスト部分のみ・暗転なし）
+function kanteiMenuCrossFade(swap) {
+  const listEl = $("kanteiMenuList");
+  if (!listEl) { swap(); return; }
+  const DUR = 280;
+  listEl.style.transition = `opacity ${DUR}ms ease`;
+  listEl.style.opacity = "0";
+  setTimeout(() => {
+    swap();                 // 中身を次階層に差し替え
+    listEl.style.opacity = "0";
+    listEl.getBoundingClientRect(); // reflow
+    listEl.style.opacity = "1";
+    setTimeout(() => { listEl.style.transition = ""; }, DUR);
+  }, DUR);
 }
 
 // 細目の閲覧表示（暫定：text/imgがあれば出す。無ければ準備中）
@@ -4301,8 +4326,11 @@ function showKanteiContent(node, label) {
 // 鑑定室内の「戻る」：下層なら1つ上へ、最上位ならホームへ
 async function kanteiBack() {
   if (_kanteiStack.length > 0) {
-    _kanteiStack.pop();
-    renderKanteiMenu();
+    // メニュー内を1つ上へ：軽くクロスフェード（暗転なし）
+    kanteiMenuCrossFade(() => {
+      _kanteiStack.pop();
+      renderKanteiMenu();
+    });
   } else {
     document.getElementById('app').classList.remove('panel-open');
     await hideKanteiSelect();
