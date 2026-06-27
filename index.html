@@ -4313,13 +4313,17 @@ function kanteiMenuCrossFade(swap) {
   const listEl = $("kanteiMenuList");
   if (!listEl) { swap(); return; }
   const DUR = 280;
+  // 現在の表示状態を確定させてからフェード開始（直前のtransition:none残り等を打ち消す）
+  listEl.style.transition = "none";
+  listEl.style.opacity = "1";
+  listEl.getBoundingClientRect(); // reflow：opacity:1 を確定
+  // フェードアウト
   listEl.style.transition = `opacity ${DUR}ms ease`;
   listEl.style.opacity = "0";
   setTimeout(() => {
     swap();                 // 中身を次階層に差し替え
-    listEl.style.opacity = "0";
-    listEl.getBoundingClientRect(); // reflow
-    listEl.style.opacity = "1";
+    listEl.getBoundingClientRect(); // reflow（opacity:0 のまま確定）
+    listEl.style.opacity = "1"; // フェードイン
     setTimeout(() => { listEl.style.transition = ""; }, DUR);
   }, DUR);
 }
