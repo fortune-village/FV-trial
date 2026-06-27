@@ -4273,9 +4273,15 @@ function onKanteiItemTap(key) {
   const childCount = node.sub ? Object.keys(node.sub).length : 0;
 
   if (childCount > 0) {
-    // 階層を下る
-    _kanteiStack.push({ node, label });
-    renderKanteiMenu();
+    // タイトルカード演出 → フェードアウト直前に階層を下って次階層を裏で用意
+    const listEl = $("kanteiMenuList");
+    if (listEl) listEl.style.visibility = "hidden"; // カード中はメニューを伏せる
+    showKanteiTitleCard(label, () => {
+      _kanteiStack.push({ node, label });
+      renderKanteiMenu();
+    }).then(() => {
+      if (listEl) listEl.style.visibility = "";
+    });
   } else {
     // 細目：閲覧表示（本文・画像の表示は次フェーズ。今は仮）
     showKanteiContent(node, label);
@@ -4809,6 +4815,66 @@ function showAreaTitleCard(areaKey, onBeforeFadeOut) {
     // ④ 静止後：bg切り替え → フェードアウト
     setTimeout(() => {
       if (onBeforeFadeOut) onBeforeFadeOut(); // ← フェードアウト開始直前にbg変更
+      card.style.transition = `opacity ${CARD_FADE_OUT}ms ease`;
+      card.style.opacity    = "0";
+      setTimeout(() => {
+        card.classList.remove("show");
+        card.style.transition = "";
+        card.style.opacity    = "";
+        resolve();
+      }, CARD_FADE_OUT);
+    }, CARD_FADE_IN + CARD_STATIC);
+  });
+}
+
+// ── 鑑定室用タイトルカード（項目名1行・既存カードDOMを流用） ──
+// 村のshowAreaTitleCardと同じ演出構造。En/Subは空、Jaに項目名を据える。
+function showKanteiTitleCard(label, onBeforeFadeOut) {
+  return new Promise((resolve) => {
+    $("areaTitleCardEn").textContent  = "";
+    $("areaTitleCardJa").textContent  = label;
+    $("areaTitleCardSub").textContent = "";
+
+    const CARD_FADE_IN  = 1100;
+    const CARD_STATIC   = 1000;
+    const CARD_FADE_OUT = 1500;
+
+    const textItems = [
+      { id: "areaTitleCardRule",       delay: 140, dur: 780 },
+      { id: "areaTitleCardJa",         delay: 320, dur: 1020 },
+      { id: "areaTitleCardRuleBottom", delay: 480, dur: 820 },
+    ];
+
+    // ① リセット（En/Subも一応リセットして残像を防ぐ）
+    ["areaTitleCardRule","areaTitleCardEn","areaTitleCardJa","areaTitleCardSub","areaTitleCardRuleBottom"].forEach(id => {
+      const el = $(id);
+      if (!el) return;
+      el.style.transition = "none";
+      el.style.opacity    = "0";
+      el.style.transform  = "translateX(22px)";
+    });
+
+    // ② カード表示＋フェードイン
+    const card = $("areaTitleCard");
+    card.classList.add("show");
+    card.getBoundingClientRect();
+    card.style.transition = `opacity ${CARD_FADE_IN}ms ease`;
+    card.style.opacity    = "1";
+
+    // ③ テキストを時差で立ち上げ
+    textItems.forEach(({ id, delay, dur }) => {
+      setTimeout(() => {
+        const el = $(id);
+        if (!el) return;
+        el.style.transition = `opacity ${dur}ms ease, transform ${dur}ms ease`;
+        el.style.opacity    = "1";
+        el.style.transform  = "translateX(0)";
+      }, delay);
+    });
+
+    // ④ 静止後フェードアウト
+    setTimeout(() => {
+      if (onBeforeFadeOut) onBeforeFadeOut();
       card.style.transition = `opacity ${CARD_FADE_OUT}ms ease`;
       card.style.opacity    = "0";
       setTimeout(() => {
