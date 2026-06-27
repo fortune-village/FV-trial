@@ -4276,13 +4276,24 @@ function onKanteiItemTap(key) {
     const goDeeper = () => { _kanteiStack.push({ node, label }); };
     if (lvl.isTop) {
       // 大項目→小項目：タイトルカードの儀式（画面全体が暗転）
+      // カードの裏で次階層を用意するが、visibilityで瞬間表示せず opacity:0 で待機し、
+      // カードが引いた後にふわっとフェードインさせる（パッと出る違和感を解消）。
       const listEl = $("kanteiMenuList");
-      if (listEl) listEl.style.visibility = "hidden";
+      if (listEl) {
+        listEl.style.transition = "none";
+        listEl.style.opacity = "0";
+      }
       showKanteiTitleCard(label, () => {
         goDeeper();
-        renderKanteiMenu();
+        renderKanteiMenu(); // opacity:0 のまま中身を差し替え
       }).then(() => {
-        if (listEl) listEl.style.visibility = "";
+        // カードが完全に消えてから、小項目をフェードイン
+        if (listEl) {
+          listEl.style.transition = "opacity 360ms ease";
+          listEl.getBoundingClientRect(); // reflow
+          listEl.style.opacity = "1";
+          setTimeout(() => { listEl.style.transition = ""; }, 360);
+        }
       });
     } else {
       // 小項目以降：メニューリストだけを軽くクロスフェード（暗転なし）
@@ -4349,6 +4360,8 @@ function showKanteiSelect() {
   $("choices").classList.remove("show"); $("choices").style.display = "none";
   _kanteiStack = []; // 入室時は大項目階層から
   renderKanteiMenu();
+  const listEl = $("kanteiMenuList"); // 前回遷移のopacity:0残りをリセット
+  if (listEl) { listEl.style.transition = "none"; listEl.style.opacity = "1"; }
   $("kanteiSelect").classList.add("visible");
   $("btnHomeFixed").classList.add("visible");
 }
