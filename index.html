@@ -1657,14 +1657,84 @@ body {
 
 /* 鑑定室メニュー：項目名だけ大きく（サブの area-tag は据え置き） */
 #kanteiMenuList .area-btn {
-  font-size: 17px;
-  letter-spacing: 0.08em;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  padding-top: 11px;
+  padding-bottom: 11px;
 }
 #kanteiMenuList .area-btn .area-tag {
   font-size: 11px;
   letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+/* 鑑定室パネル：画面内に収め、リスト部分だけスクロール */
+#kanteiSelect {
+  top: 12px;                /* 上端も固定して縦の最大領域を確保 */
+  display: flex;
+  flex-direction: column;
+}
+#kanteiSelect .panel-header { flex-shrink: 0; }
+#kanteiSelect #kanteiMenuList {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;            /* flex内でスクロールを効かせるため */
+}
+#kanteiSelect > div:last-child { flex-shrink: 0; }  /* 戻るボタン行は固定 */
+
+/* ── 鑑定室 見出し（リボン＋古金グラデ＋✦罫） ── */
+.kantei-header {
+  text-align: center;
+  padding-bottom: 12px !important;
+  border-bottom: none !important;
+}
+.kantei-header-ribbon {
+  font-size: 10px;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;            /* 字間で右に寄るぶんを中央に補正 */
+  color: rgba(150, 110, 56, 0.72);
+  margin-bottom: 7px;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
+}
+.kantei-title {
+  display: block;
+  font-size: 23px !important;
+  letter-spacing: 0.36em !important;
+  text-indent: 0.36em;            /* 字間ぶんの中央補正 */
+  font-weight: 600;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+  /* 古金グラデの箔押し風 */
+  background: linear-gradient(180deg,
+    rgba(122, 86, 38, 0.96) 0%,
+    rgba(176, 134, 60, 0.98) 38%,
+    rgba(214, 178, 104, 1) 52%,
+    rgba(150, 110, 52, 0.98) 70%,
+    rgba(110, 76, 34, 0.96) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: rgba(122, 86, 38, 0.96);   /* clip非対応ブラウザのフォールバック */
+  text-shadow: 0 1px 0 rgba(255, 244, 214, 0.35);
+}
+.kantei-header-rule {
+  width: 58%;
+  height: 0;
+  margin: 11px auto 0;
+  border-top: 1px solid rgba(176, 134, 60, 0.5);
+  position: relative;
+}
+.kantei-header-rule::before {
+  content: "✦";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(244, 228, 194, 1);
+  color: rgba(176, 134, 60, 0.82);
+  font-size: 11px;
+  padding: 0 9px;
 }
 
 /* ── 鑑定書 専用ページ（羊皮紙・リッチ） ── */
@@ -2377,8 +2447,10 @@ body[data-line-browser="1"] .bg {
 
   <!-- 鑑定室メニューパネル -->
   <div id="kanteiSelect" class="area-select-panel">
-    <div class="panel-header">
-      <span class="panel-title" id="kanteiPanelTitle">鑑定室</span>
+    <div class="panel-header kantei-header">
+      <div class="kantei-header-ribbon" id="kanteiHeaderRibbon">DIVINATION</div>
+      <span class="panel-title kantei-title" id="kanteiPanelTitle">鑑定室</span>
+      <div class="kantei-header-rule"></div>
     </div>
     <div id="kanteiMenuList" style="padding:4px 12px;display:flex;flex-direction:column;gap:10px;"></div>
     <div style="padding:10px 12px 4px;">
