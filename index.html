@@ -2954,12 +2954,27 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0708-appstage';
+const INDEX_BUILD_ID = 'idx-0708-probe';
 {
   const _bb = document.createElement('div');
   _bb.textContent = INDEX_BUILD_ID;
   _bb.style.cssText = 'position:fixed;bottom:4px;left:4px;z-index:99999;background:rgba(0,0,0,.55);color:#7dffa0;font-size:9px;font-family:monospace;padding:2px 6px;border-radius:6px;pointer-events:none;letter-spacing:.05em';
   document.body.appendChild(_bb);
+  // 【実測用・確認後除去】垂直中央寄せ不発の原因プローブ（1回だけ計測）
+  setTimeout(() => {
+    try {
+      const appEl = document.getElementById('app');
+      const b = document.body.getBoundingClientRect();
+      const a = appEl.getBoundingClientRect();
+      _bb.textContent = INDEX_BUILD_ID
+        + ' | ai:' + getComputedStyle(document.body).alignItems
+        + ' | bodyH:' + b.height.toFixed(0)
+        + ' | appY:' + a.top.toFixed(0) + '/H:' + a.height.toFixed(0)
+        + ' | win:' + innerHeight;
+    } catch (e) {
+      _bb.textContent = INDEX_BUILD_ID + ' | PROBE ERR: ' + (e && e.message ? e.message : String(e));
+    }
+  }, 300);
 }
 // ── 連動プレビュー（?sync=1・スタジオ全機種モード専用。通常アクセスでは一切起動しない）──
 // 同一オリジンの複数フレーム間でBroadcastChannelにより「クリックされた要素」を同期する。
