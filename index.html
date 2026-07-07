@@ -2936,12 +2936,35 @@ if (isTestView) {
   document.body.appendChild(_tb);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0707-measure2';
+const INDEX_BUILD_ID = 'idx-0707-monitor';
 {
   const _bb = document.createElement('div');
   _bb.textContent = INDEX_BUILD_ID;
   _bb.style.cssText = 'position:fixed;bottom:4px;left:4px;z-index:99999;background:rgba(0,0,0,.55);color:#7dffa0;font-size:9px;font-family:monospace;padding:2px 6px;border-radius:6px;pointer-events:none;letter-spacing:.05em';
   document.body.appendChild(_bb);
+  // 【実測用・確認後除去】バッジを計測モニタ化（sfOpen非依存・500ms間隔）
+  setInterval(() => {
+    try {
+      const ov = document.getElementById('startFlowOverlay');
+      const st = ov ? ov.querySelector('.sf-stage') : null;
+      const wr = ov ? ov.querySelector('.sf-stage-wrap') : null;
+      const m  = document.getElementById('sfMeasure') ? 'yes' : 'no';
+      const rv = getComputedStyle(document.documentElement).getPropertyValue('--real-vh').trim();
+      let dims = '';
+      if (st && wr) {
+        const s = st.getBoundingClientRect(), w = wr.getBoundingClientRect();
+        dims = ' | stage ' + s.width.toFixed(0) + 'x' + s.height.toFixed(0)
+             + ' / wrap ' + w.width.toFixed(0) + 'x' + w.height.toFixed(0);
+      } else {
+        dims = ' | st=' + (st ? 'ok' : 'null') + ' wr=' + (wr ? 'ok' : 'null');
+      }
+      _bb.textContent = INDEX_BUILD_ID
+        + ' | ov:' + (ov ? getComputedStyle(ov).display : 'none')
+        + ' | M:' + m + dims + ' | rvh ' + rv;
+    } catch (e) {
+      _bb.textContent = INDEX_BUILD_ID + ' | MON ERR: ' + (e && e.message ? e.message : String(e));
+    }
+  }, 500);
 }
 // ── 連動プレビュー（?sync=1・スタジオ全機種モード専用。通常アクセスでは一切起動しない）──
 // 同一オリジンの複数フレーム間でBroadcastChannelにより「クリックされた要素」を同期する。
