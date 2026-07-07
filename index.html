@@ -2306,11 +2306,9 @@ body[data-line-browser="1"] .bg {
 }
 .sf-stage {
   position: relative;
-  height: 100%;
-  width: min(100%, calc(var(--real-vh, 100dvh) * 9 / 16));
+  width:  min(100%, calc(var(--real-vh, 100dvh) * 9 / 16));
+  height: min(100%, calc(100vw * 16 / 9));
   overflow: hidden;
-  outline: 3px solid red;   /* 【確認用・後で除去】ステージの実占有範囲を可視化 */
-  outline-offset: -3px;
 }
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" async></script>
