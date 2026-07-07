@@ -2907,6 +2907,52 @@ if (isTestView) {
   _tb.style.cssText = 'position:fixed;top:8px;left:8px;z-index:9999;background:rgba(106,58,170,.9);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.08em;pointer-events:none';
   document.body.appendChild(_tb);
 }
+// ── 連動プレビュー（?sync=1・スタジオ全機種モード専用。通常アクセスでは一切起動しない）──
+// 同一オリジンの複数フレーム間でBroadcastChannelにより「クリックされた要素」を同期する。
+// 座標でなく要素パスで同期（機種ごとの画面サイズ差に影響されない）。
+// 合成クリックはisTrusted=falseのため再放送されず、無限ループしない。
+const isSyncView = urlParams.get('sync') === '1';
+if (isSyncView) {
+  const _sc = new BroadcastChannel('fv_preview_sync');
+  const _elPath = (el) => {
+    if (el.id) return '#' + el.id;
+    const parts = [];
+    let n = el;
+    while (n && n !== document.body && parts.length < 10) {
+      const p = n.parentElement;
+      if (!p) break;
+      const idx = Array.prototype.indexOf.call(p.children, n);
+      parts.unshift(n.tagName + ':' + idx);
+      if (p.id) { parts.unshift('#' + p.id); break; }
+      n = p;
+    }
+    return parts.join('>');
+  };
+  const _elFind = (path) => {
+    if (path.startsWith('#') && !path.includes('>')) return document.getElementById(path.slice(1));
+    const parts = path.split('>');
+    let n = document.body, i = 0;
+    if (parts[0].startsWith('#')) { n = document.getElementById(parts[0].slice(1)); i = 1; }
+    for (; i < parts.length && n; i++) {
+      const seg = parts[i].split(':');
+      n = n.children[parseInt(seg[1])];
+      if (n && n.tagName !== seg[0]) return null;  // 構造ズレ検知→無反応（安全側）
+    }
+    return n;
+  };
+  document.addEventListener('click', (e) => {
+    if (!e.isTrusted) return;
+    const path = _elPath(e.target);
+    if (path) _sc.postMessage({ t: 'click', path });
+  }, true);
+  _sc.onmessage = (ev) => {
+    const m = ev.data;
+    if (m && m.t === 'click') {
+      const el = _elFind(m.path);
+      if (el) el.click();
+    }
+  };
+}
 
 // ── STORESの入村申請URL（STORESショップ開設後に更新） ──
 const STORES_PURCHASE_URL = 'https://fortune-village.stores.jp/';
