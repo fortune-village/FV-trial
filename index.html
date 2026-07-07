@@ -2936,7 +2936,7 @@ if (isTestView) {
   document.body.appendChild(_tb);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0707-2230-aspectratio';
+const INDEX_BUILD_ID = 'idx-0707-measure';
 {
   const _bb = document.createElement('div');
   _bb.textContent = INDEX_BUILD_ID;
@@ -5634,6 +5634,24 @@ async function sfOpen() {
     sfEl.style.opacity = '1';
   });
   setTimeout(() => { _sfReady = true; }, 700);
+  // 【実測用・確認後除去】stage/wrap 実寸を左下に表示
+  requestAnimationFrame(() => {
+    const st = sfEl.querySelector('.sf-stage');
+    const wr = sfEl.querySelector('.sf-stage-wrap');
+    if (!st || !wr) return;
+    const rv = getComputedStyle(document.documentElement).getPropertyValue('--real-vh').trim();
+    let el = document.getElementById('sfMeasure');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'sfMeasure';
+      el.style.cssText = 'position:fixed;left:4px;bottom:22px;z-index:99999;font:10px monospace;color:#0f0;background:rgba(0,0,0,.7);padding:2px 4px;pointer-events:none;';
+      document.body.appendChild(el);
+    }
+    const s = st.getBoundingClientRect(), w = wr.getBoundingClientRect();
+    el.textContent = 'stage ' + s.width.toFixed(0) + 'x' + s.height.toFixed(0)
+      + ' / wrap ' + w.width.toFixed(0) + 'x' + w.height.toFixed(0)
+      + ' / win ' + innerWidth + 'x' + innerHeight + ' / rvh ' + rv;
+  });
 }
 
 let _sfTextShown = false;
