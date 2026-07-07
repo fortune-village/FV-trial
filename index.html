@@ -2323,12 +2323,12 @@ body[data-line-browser="1"] .bg {
    #app内の子要素（sceneLayer/home/bg/スプライト/textbox）は全て#app相対の
    絶対配置のため、座標系はそのまま活きる。bodyの既存背景が暗幕になる。
    fixed全画面オーバーレイ群は本変更の対象外（必要なら次ステップで個別対応）。 */
-body { align-items: center; }
 #app {
   aspect-ratio: 9 / 16;
   width: min(100vw, 430px, calc(var(--real-vh, 100dvh) * 9 / 16));
   height: auto;
   min-height: unset;
+  margin: auto;   /* position:fixed + inset:0 + 確定寸法 + margin:auto = 上下左右中央 */
 }
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" async></script>
@@ -2954,7 +2954,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0708-probe';
+const INDEX_BUILD_ID = 'idx-0708-center';
 {
   const _bb = document.createElement('div');
   _bb.textContent = INDEX_BUILD_ID;
