@@ -2709,7 +2709,7 @@ body[data-line-browser="1"] .bg {
       </div>
     </div>
 
-    <div class="home-version" id="app-version">α ver. 0.2.47</div>
+    <div class="home-version" id="app-version">α ver. 0.2.48</div>
   </div>
 
   <!-- FVについて テキストページオーバーレイ -->
@@ -3078,13 +3078,31 @@ fetch(`${clientBase}FV_data.json`)
         name:charName, text:`こちらが、${cfg.dirJp}エリアです。\nどうぞ、ゆっくりとご覧ください。`, charMode:'bust' });
       dirScenes.forEach(s => {
         const suffix = s.imgStep ? (STEP_TO_SUFFIX[s.imgStep] ?? '') : '';
-        const bg = `bg-${cfg.cls}${suffix}`;
+        const bg = (s.imgFile && fileBgClass.has(s.imgFile)) ? fileBgClass.get(s.imgFile) : `bg-${cfg.cls}${suffix}`;
         scenes.push({ bg, char:false, monitor:false, name:charName, text:s.text || '' });
       });
       return scenes;
     }
 
     const bgStyles = [];
+
+    // ── 画像マニフェスト方式（Studio v1.102.85+）────────────────────
+    // Studioが各シーンに正規ファイル名 imgFile を同梱する。ここで imgFile → bgクラスを
+    // 動的生成するため、今後スロット種が増えてもこの共通HTMLは無改修で対応できる。
+    // imgFile が無い旧データは従来の STEP_TO_SUFFIX 経路にフォールバック（後方互換）。
+    const fileBgClass = new Map();
+    {
+      const allFiles = [];
+      Object.values(scenesData).forEach(arr => (arr || []).forEach(s => {
+        if (s && s.imgFile && !allFiles.includes(s.imgFile)) allFiles.push(s.imgFile);
+      }));
+      allFiles.forEach((f, i) => {
+        const cls = `bg-jf-${i}`;
+        fileBgClass.set(f, cls);
+        bgStyles.push(`.bg.${cls} { mix-blend-mode:normal !important; background:#1e1c28 url("${clientBase}${f}?v=${fvData.dataVersion||1}") center 30% / cover no-repeat !important; }`);
+      });
+    }
+
     Object.entries(DIR_CONFIG).forEach(([dir, cfg]) => {
       if (!release[dir]) return;
 
