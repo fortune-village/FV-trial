@@ -2899,6 +2899,14 @@ window.addEventListener('resize', updateRealVH);
 if (window.visualViewport) window.visualViewport.addEventListener('resize', updateRealVH);
 
 const clientId = urlParams.get('c') || 'sample';
+// ── テスト表示（v: テストプッシュ対応）：?test=1 で FV_data_test.json を読む（フォルダ共有・伝票分岐方式）──
+const isTestView = urlParams.get('test') === '1';
+if (isTestView) {
+  const _tb = document.createElement('div');
+  _tb.textContent = '🧪 TEST';
+  _tb.style.cssText = 'position:fixed;top:8px;left:8px;z-index:9999;background:rgba(106,58,170,.9);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.08em;pointer-events:none';
+  document.body.appendChild(_tb);
+}
 
 // ── STORESの入村申請URL（STORESショップ開設後に更新） ──
 const STORES_PURCHASE_URL = 'https://fortune-village.stores.jp/';
@@ -2974,7 +2982,7 @@ fetch(`${clientBase}data.json`)
   .catch(() => console.warn('クライアントデータ読み込み失敗'));
 
 // ── FV_data.json から name / release / scenes を取得 ──────────
-fetch(`${clientBase}FV_data.json`)
+fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientBase}FV_data.json`)
   .then(r => r.json())
   .then(fvData => {
     // クライアント名
