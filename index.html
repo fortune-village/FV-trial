@@ -2934,9 +2934,15 @@ if (isTestView) {
   _tb.textContent = '🧪 TEST';
   _tb.style.cssText = 'position:fixed;top:8px;left:8px;z-index:9999;background:rgba(106,58,170,.9);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.08em;pointer-events:none';
   document.body.appendChild(_tb);
+  // 【実測用・確認後除去】テスト表示限定：スタートフロー強制起動ボタン
+  const _sfBtn = document.createElement('div');
+  _sfBtn.textContent = 'SF';
+  _sfBtn.style.cssText = 'position:fixed;bottom:4px;right:4px;z-index:2147483647;background:rgba(106,58,170,.9);color:#fff;font-size:10px;font-weight:700;font-family:monospace;padding:3px 8px;border-radius:10px;cursor:pointer;';
+  _sfBtn.onclick = (e) => { e.stopPropagation(); sfOpen(); };
+  document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0707-monitor';
+const INDEX_BUILD_ID = 'idx-0708-sfbtn';
 {
   const _bb = document.createElement('div');
   _bb.textContent = INDEX_BUILD_ID;
