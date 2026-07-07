@@ -2306,9 +2306,17 @@ body[data-line-browser="1"] .bg {
 }
 .sf-stage {
   position: relative;
-  width:  min(100%, calc(var(--real-vh, 100dvh) * 9 / 16));
-  height: min(100%, calc(100vw * 16 / 9));
+  aspect-ratio: 9 / 16;
+  width: 100%;
+  height: auto;
   overflow: hidden;
+}
+/* 画面が9:16より横長のときだけ高さ基準に切替（縦長端末では上記の幅基準） */
+@media (min-aspect-ratio: 9/16) {
+  .sf-stage {
+    width: auto;
+    height: 100%;
+  }
 }
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" async></script>
@@ -2928,7 +2936,7 @@ if (isTestView) {
   document.body.appendChild(_tb);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0707-2210-stage9x16';
+const INDEX_BUILD_ID = 'idx-0707-2230-aspectratio';
 {
   const _bb = document.createElement('div');
   _bb.textContent = INDEX_BUILD_ID;
