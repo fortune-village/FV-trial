@@ -3251,8 +3251,8 @@ function toggleTextbox(e) {
   if (btn) btn.textContent = minimized ? '▲' : '▼';
 }
 
-// ── アプリバージョンを version.json から取得 ──────────────────
-fetch(`${appBase}version.json`)
+// ── アプリバージョンを version.json から取得（?t=でキャッシュ回避：プレビュー内版数の遅れ防止）──
+fetch(`${appBase}version.json?t=${Date.now()}`)
   .then(r => r.json())
   .then(d => {
     if (d.appVersion) {
