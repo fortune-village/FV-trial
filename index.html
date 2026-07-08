@@ -930,6 +930,20 @@
 html, body {
   background: #000 !important;
 }
+/* ── フロステッド暗幕：表示中の背景をぼかして上下の黒帯をシームレスに埋める ── */
+#backdropBlur {
+  position: fixed;
+  inset: 0;
+  z-index: 0;               /* #app(通常z-index)より背面、bodyの黒より前面 */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: blur(28px) brightness(0.72) saturate(1.05);
+  transform: scale(1.15);   /* blurの縁のにじみを画面外に追い出す */
+  pointer-events: none;
+  transition: background-image 0.4s ease;
+  will-change: background-image;
+}
 /* 背景画像の未ロード時にグレーが見えないよう黒フォールバック */
 #bg {
   background-color: #000 !important;
@@ -2334,6 +2348,7 @@ body[data-line-browser="1"] .bg {
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" async></script>
 </head>
 <body>
+<div id="backdropBlur"></div>
 <div id="app" aria-label="Fortune Village Trial Novel UI">
   <!-- コイン残高HUD -->
   <div id="coinHud" onclick="openFVShop()" style="display:none;position:absolute;top:54px;right:14px;z-index:26;
@@ -2954,7 +2969,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0708-interiorbg';
+const INDEX_BUILD_ID = 'idx-0708-frostbg2';
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -4362,6 +4377,35 @@ function setBg(className) {
   } else {
     stopBgPan();
   }
+  syncBackdropBlur();
+}
+
+// フロステッド暗幕：表示中の背景画像を暗幕に同期（ぼかし拡大はCSS側）
+function syncBackdropBlur() {
+  const bd = document.getElementById('backdropBlur');
+  if (!bd) return;
+  requestAnimationFrame(() => {
+    try {
+      // 優先順位：タイトル画像 > ホーム画面 > #bg（表示中のものを暗幕に反映）
+      const titleEl = document.getElementById('titleImage');
+      const homeEl = document.getElementById('home');
+      let srcEl;
+      if (titleEl && titleEl.classList.contains('show')) {
+        srcEl = titleEl;
+      } else if (homeEl && homeEl.classList.contains('visible')) {
+        srcEl = homeEl;
+      } else {
+        srcEl = document.getElementById('bg');
+      }
+      if (!srcEl) return;
+      const img = getComputedStyle(srcEl).backgroundImage;
+      if (img && img !== 'none' && img.indexOf('url(') !== -1) {
+        bd.style.backgroundImage = img;
+      } else {
+        bd.style.backgroundImage = 'none';
+      }
+    } catch (e) { /* 失敗時は黒暗幕のまま */ }
+  });
 }
 
 function setMonitor(type) {
@@ -4450,6 +4494,7 @@ function renderTitle() {
   document.getElementById("mainTextbox").classList.add("hidden");
   $("titleImage").classList.add("show");
   $("titleTap").classList.add("show");
+  syncBackdropBlur();  // タイトル画像を暗幕にも反映
   // 全パネルを閉じる
   document.querySelectorAll('.area-select-panel').forEach(el => el.classList.remove('visible'));
   document.getElementById('app')?.classList.remove('panel-open');
@@ -4471,6 +4516,7 @@ function showHome() {
   hideAllSceneElements();
   setBg('bg-dark');
   $("home").classList.add("visible");
+  syncBackdropBlur();  // ホーム背景（home_bg）を暗幕にも反映
   $("btnHomeFixed").classList.remove("visible");
   $("charSelect").classList.remove("visible");
   $("facilitySelect").classList.remove("visible");
