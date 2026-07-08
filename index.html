@@ -2954,7 +2954,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0708-mayorbg';
+const INDEX_BUILD_ID = 'idx-0708-interiorbg';
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3086,21 +3086,28 @@ fetch(`${clientBase}data.json`)
     ).join('\n');
     document.head.appendChild(st);
 
-    // ── 村長の家の背景：クライアント個別対応（v: 器を作る）──────────────
-    // クライアントフォルダに「村長の家.png」があればそれを使い、無ければ common/bg_room.png（従来の共通背景）にフォールバック。
-    // 既存クライアントは画像が無いので自動的に従来表示のまま。設定したクライアントだけ個別背景になる。
-    (function applyMayorRoomBg() {
+    // ── 室内シーンの背景：クライアント個別の内観画像で差し替え（一本化）──────────────
+    // 村長の家（bg-room）＝執務室の内観、中央会議室（bg-council）＝会議室の内観。
+    // クライアントフォルダに内観画像があればそれを使い、無ければ従来の common 背景にフォールバック。
+    // 既存クライアントは内観画像が無いので自動的に従来表示のまま。
+    (function applyInteriorBg() {
       const ver = (typeof fvData !== 'undefined' && fvData && fvData.dataVersion) ? fvData.dataVersion : Date.now();
-      const url = `${clientBase}村長の家.png?v=${ver}`;
-      const probe = new Image();
-      probe.onload = () => {
-        // 画像が存在 → bg-room をクライアント個別背景で上書き
-        const s = document.createElement('style');
-        s.textContent = `.bg.bg-room { background: url("${url}") center top / cover no-repeat !important; }`;
-        document.head.appendChild(s);
-      };
-      // onerror（404等）は何もしない＝common/bg_room.png のまま
-      probe.src = url;
+      const interiors = [
+        { cls: 'bg-room',    file: '中央_村長の家_執務室.png' },
+        { cls: 'bg-council', file: '中央_役場_会議室.png' },
+      ];
+      interiors.forEach(({ cls, file }) => {
+        const url = `${clientBase}${file}?v=${ver}`;
+        const probe = new Image();
+        probe.onload = () => {
+          // 画像が存在 → 該当背景をクライアント個別の内観画像で上書き
+          const s = document.createElement('style');
+          s.textContent = `.bg.${cls} { background: url("${url}") center top / cover no-repeat !important; }`;
+          document.head.appendChild(s);
+        };
+        // onerror（404等）は何もしない＝従来の common 背景のまま
+        probe.src = url;
+      });
     })();
   })
   .catch(() => console.warn('クライアントデータ読み込み失敗'));
