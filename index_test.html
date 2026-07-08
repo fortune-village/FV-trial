@@ -2969,7 +2969,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0708-frostbg [TEST]';
+const INDEX_BUILD_ID = 'idx-0708-frostbg2 [TEST]';
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -4386,10 +4386,17 @@ function syncBackdropBlur() {
   if (!bd) return;
   requestAnimationFrame(() => {
     try {
-      // タイトル画面表示中は titleImage（タイトル画像）を優先、それ以外は #bg
+      // 優先順位：タイトル画像 > ホーム画面 > #bg（表示中のものを暗幕に反映）
       const titleEl = document.getElementById('titleImage');
-      const titleShown = titleEl && titleEl.classList.contains('show');
-      const srcEl = titleShown ? titleEl : document.getElementById('bg');
+      const homeEl = document.getElementById('home');
+      let srcEl;
+      if (titleEl && titleEl.classList.contains('show')) {
+        srcEl = titleEl;
+      } else if (homeEl && homeEl.classList.contains('visible')) {
+        srcEl = homeEl;
+      } else {
+        srcEl = document.getElementById('bg');
+      }
       if (!srcEl) return;
       const img = getComputedStyle(srcEl).backgroundImage;
       if (img && img !== 'none' && img.indexOf('url(') !== -1) {
@@ -4509,6 +4516,7 @@ function showHome() {
   hideAllSceneElements();
   setBg('bg-dark');
   $("home").classList.add("visible");
+  syncBackdropBlur();  // ホーム背景（home_bg）を暗幕にも反映
   $("btnHomeFixed").classList.remove("visible");
   $("charSelect").classList.remove("visible");
   $("facilitySelect").classList.remove("visible");
