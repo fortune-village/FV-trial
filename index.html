@@ -2954,7 +2954,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0708-cssbadge';
+const INDEX_BUILD_ID = 'idx-0708-mayorbg';
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3085,6 +3085,23 @@ fetch(`${clientBase}data.json`)
       `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}?v=${fvData.dataVersion||1}") ${pos} / cover no-repeat !important; }`
     ).join('\n');
     document.head.appendChild(st);
+
+    // ── 村長の家の背景：クライアント個別対応（v: 器を作る）──────────────
+    // クライアントフォルダに「村長の家.png」があればそれを使い、無ければ common/bg_room.png（従来の共通背景）にフォールバック。
+    // 既存クライアントは画像が無いので自動的に従来表示のまま。設定したクライアントだけ個別背景になる。
+    (function applyMayorRoomBg() {
+      const ver = (typeof fvData !== 'undefined' && fvData && fvData.dataVersion) ? fvData.dataVersion : Date.now();
+      const url = `${clientBase}村長の家.png?v=${ver}`;
+      const probe = new Image();
+      probe.onload = () => {
+        // 画像が存在 → bg-room をクライアント個別背景で上書き
+        const s = document.createElement('style');
+        s.textContent = `.bg.bg-room { background: url("${url}") center top / cover no-repeat !important; }`;
+        document.head.appendChild(s);
+      };
+      // onerror（404等）は何もしない＝common/bg_room.png のまま
+      probe.src = url;
+    })();
   })
   .catch(() => console.warn('クライアントデータ読み込み失敗'));
 
