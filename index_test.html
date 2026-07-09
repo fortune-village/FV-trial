@@ -2969,7 +2969,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0709-intdiag [TEST]';
+const INDEX_BUILD_ID = 'idx-0709-bgmigrate [TEST]';
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3088,48 +3088,6 @@ fetch(`${clientBase}data.json`)
     st2.textContent = `.char-sprite.bust img { transform: translate(${bustX}px, ${bustY}px) !important; }`;
     document.head.appendChild(st2);
 
-    // 北エリア背景を動的に設定（命式由来素材のため clientBase から参照）
-    const northBgs = [
-      { cls: 'bg-north',         file: '北エリア.png',  pos: 'center 30%' },
-      { cls: 'bg-north-street',  file: '北_街並み.png', pos: 'center 30%' },
-      { cls: 'bg-north-library', file: '北_図書館.png', pos: 'center 40%' },
-      { cls: 'bg-north-market',  file: '北_交易所.png', pos: 'center 25%' },
-    ];
-    const st = document.createElement('style');
-    st.textContent = northBgs.map(({ cls, file, pos }) =>
-      `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}?v=${fvData.dataVersion||1}") ${pos} / cover no-repeat !important; }`
-    ).join('\n');
-    document.head.appendChild(st);
-
-    // ── 室内シーンの背景：クライアント個別の内観画像で差し替え（一本化）──────────────
-    // 村長の家（bg-room）＝執務室の内観、中央会議室（bg-council）＝会議室の内観。
-    // クライアントフォルダに内観画像があればそれを使い、無ければ従来の common 背景にフォールバック。
-    // 既存クライアントは内観画像が無いので自動的に従来表示のまま。
-    (function applyInteriorBg() {
-      const ver = (typeof fvData !== 'undefined' && fvData && fvData.dataVersion) ? fvData.dataVersion : Date.now();
-      const interiors = [
-        { cls: 'bg-room',    file: '中央_村長の家_執務室.png' },
-        { cls: 'bg-council', file: '中央_役場_会議室.png' },
-      ];
-      console.log('[interiorBg] ver=', ver, 'clientBase=', clientBase);
-      interiors.forEach(({ cls, file }) => {
-        const url = `${clientBase}${file}?v=${ver}`;
-        console.log('[interiorBg] probe start', cls, '→', url);
-        const probe = new Image();
-        probe.onload = () => {
-          console.log('[interiorBg] ✅ onload OK', cls, url);
-          // 画像が存在 → 該当背景をクライアント個別の内観画像で上書き
-          const s = document.createElement('style');
-          s.textContent = `.bg.${cls} { background: url("${url}") center top / cover no-repeat !important; }`;
-          document.head.appendChild(s);
-          console.log('[interiorBg] 📌 style injected for', cls);
-        };
-        probe.onerror = () => {
-          console.warn('[interiorBg] ❌ onerror (404?)', cls, url);
-        };
-        probe.src = url;
-      });
-    })();
   })
   .catch(() => console.warn('クライアントデータ読み込み失敗'));
 
@@ -3303,6 +3261,44 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
       const stArea = document.createElement('style');
       stArea.textContent = bgStyles.join('\n');
       document.head.appendChild(stArea);
+    }
+
+    // ── 北エリア背景を動的注入（命式由来素材・clientBase参照）────────────────
+    // data.json（旧経路）は Studio が出力しないため、実在する FV_data.json 側に一本化。
+    {
+      const northBgs = [
+        { cls: 'bg-north',         file: '北エリア.png',  pos: 'center 30%' },
+        { cls: 'bg-north-street',  file: '北_街並み.png', pos: 'center 30%' },
+        { cls: 'bg-north-library', file: '北_図書館.png', pos: 'center 40%' },
+        { cls: 'bg-north-market',  file: '北_交易所.png', pos: 'center 25%' },
+      ];
+      const stNorth = document.createElement('style');
+      stNorth.textContent = northBgs.map(({ cls, file, pos }) =>
+        `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}?v=${fvData.dataVersion||1}") ${pos} / cover no-repeat !important; }`
+      ).join('\n');
+      document.head.appendChild(stNorth);
+    }
+
+    // ── 室内シーンの背景：クライアント個別の内観画像で差し替え（一本化）──────────
+    // 村長の家（bg-room）＝執務室、中央会議室（bg-council）＝会議室。
+    // クライアントフォルダに内観画像があればそれを使い、無ければ従来の common 背景にフォールバック。
+    {
+      const ver = fvData.dataVersion || Date.now();
+      const interiors = [
+        { cls: 'bg-room',    file: '中央_村長の家_執務室.png' },
+        { cls: 'bg-council', file: '中央_役場_会議室.png' },
+      ];
+      interiors.forEach(({ cls, file }) => {
+        const url = `${clientBase}${file}?v=${ver}`;
+        const probe = new Image();
+        probe.onload = () => {
+          const s = document.createElement('style');
+          s.textContent = `.bg.${cls} { background: url("${url}") center top / cover no-repeat !important; }`;
+          document.head.appendChild(s);
+        };
+        // onerror（404等）は何もしない＝従来の common 背景のまま
+        probe.src = url;
+      });
     }
 
     // 未開放エリア(release=false)は初期HTMLの「準備中」(disabled)のまま据え置く。
