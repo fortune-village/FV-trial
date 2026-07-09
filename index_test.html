@@ -2969,7 +2969,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0708-frostbg2 [TEST]';
+const INDEX_BUILD_ID = 'idx-0709-intdiag [TEST]';
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3111,16 +3111,22 @@ fetch(`${clientBase}data.json`)
         { cls: 'bg-room',    file: '中央_村長の家_執務室.png' },
         { cls: 'bg-council', file: '中央_役場_会議室.png' },
       ];
+      console.log('[interiorBg] ver=', ver, 'clientBase=', clientBase);
       interiors.forEach(({ cls, file }) => {
         const url = `${clientBase}${file}?v=${ver}`;
+        console.log('[interiorBg] probe start', cls, '→', url);
         const probe = new Image();
         probe.onload = () => {
+          console.log('[interiorBg] ✅ onload OK', cls, url);
           // 画像が存在 → 該当背景をクライアント個別の内観画像で上書き
           const s = document.createElement('style');
           s.textContent = `.bg.${cls} { background: url("${url}") center top / cover no-repeat !important; }`;
           document.head.appendChild(s);
+          console.log('[interiorBg] 📌 style injected for', cls);
         };
-        // onerror（404等）は何もしない＝従来の common 背景のまま
+        probe.onerror = () => {
+          console.warn('[interiorBg] ❌ onerror (404?)', cls, url);
+        };
         probe.src = url;
       });
     })();
