@@ -1,5 +1,5 @@
 :root {
-  --css-build-id: "css-0709-charfit [TEST]";  /* CSS配信版ID。style.cssを更新するたびに手で更新（バッジに表示される） */
+  --css-build-id: "css-0709-charvpos [TEST]";  /* CSS配信版ID。style.cssを更新するたびに手で更新（バッジに表示される） */
   --bg: #06040e;
   --panel: rgba(12, 8, 22, 0.92);
   --panel-2: rgba(26, 16, 34, 0.96);
@@ -342,7 +342,7 @@ body {
 /* ロアンの寄り表示：説明シーンでは腰から上を見せる */
 .char-sprite.bust {
   width: 110%;           /* ステージ(#app)相対。バストの寄り感を保ちつつ左右見切れを抑える出発値。実機で微調整可 */
-  height: 540px;
+  height: min(540px, calc(100% - 248px));  /* bottom188+上部余白60を確保し、低い画面では自動で縮む＝顔切れ防止。100%は#app高基準 */
   left: 58%;
   bottom: 188px;
   overflow: hidden;
