@@ -2955,7 +2955,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0709-sfdiag [TEST]';
+const INDEX_BUILD_ID = 'idx-0709-appdiag [TEST]';
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -4366,6 +4366,21 @@ function setBg(className) {
     stopBgPan();
   }
   syncBackdropBlur();
+  // ── 診断: #app と #char の実測（本編ステージ機種差の切り分け）──
+  try {
+    const app = document.getElementById('app');
+    const ch = document.getElementById('char');
+    if (app) console.log('[appDiag] window=', window.innerWidth+'x'+window.innerHeight,
+      '#app offsetW=', app.offsetWidth, 'offsetH=', app.offsetHeight,
+      'computedW=', getComputedStyle(app).width);
+    if (ch && !ch.classList.contains('hidden')) {
+      const cs = getComputedStyle(ch);
+      const chImg = ch.querySelector('img');
+      console.log('[appDiag] #char offsetW=', ch.offsetWidth, 'computedW=', cs.width,
+        'bust=', ch.classList.contains('bust'),
+        'img offsetW=', chImg ? chImg.offsetWidth : 'n/a');
+    }
+  } catch(e) { console.warn('[appDiag] err', e); }
 }
 
 // フロステッド暗幕：表示中の背景画像を暗幕に同期（ぼかし拡大はCSS側）
