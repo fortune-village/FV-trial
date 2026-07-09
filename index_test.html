@@ -2955,7 +2955,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0709-appdiag [TEST]';
+const INDEX_BUILD_ID = 'idx-0709-charfit [TEST]';
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -4366,21 +4366,6 @@ function setBg(className) {
     stopBgPan();
   }
   syncBackdropBlur();
-  // ── 診断: #app と #char の実測（本編ステージ機種差の切り分け）──
-  try {
-    const app = document.getElementById('app');
-    const ch = document.getElementById('char');
-    if (app) console.log('[appDiag] window=', window.innerWidth+'x'+window.innerHeight,
-      '#app offsetW=', app.offsetWidth, 'offsetH=', app.offsetHeight,
-      'computedW=', getComputedStyle(app).width);
-    if (ch && !ch.classList.contains('hidden')) {
-      const cs = getComputedStyle(ch);
-      const chImg = ch.querySelector('img');
-      console.log('[appDiag] #char offsetW=', ch.offsetWidth, 'computedW=', cs.width,
-        'bust=', ch.classList.contains('bust'),
-        'img offsetW=', chImg ? chImg.offsetWidth : 'n/a');
-    }
-  } catch(e) { console.warn('[appDiag] err', e); }
 }
 
 // フロステッド暗幕：表示中の背景画像を暗幕に同期（ぼかし拡大はCSS側）
@@ -5730,19 +5715,6 @@ async function sfOpen() {
   requestAnimationFrame(() => {
     sfEl.style.transition = 'opacity 3600ms ease';
     sfEl.style.opacity = '1';
-    // ── 診断: sf-stage と sf-char-sprite の実測寸法（機種差の原因切り分け）──
-    try {
-      const stage = document.querySelector('#startFlowOverlay .sf-stage');
-      const sprite = document.getElementById('sf-char-sprite');
-      const img = document.getElementById('sf-roan-img');
-      const ar = (window.innerWidth / window.innerHeight);
-      console.log('[sfDiag] window=', window.innerWidth + 'x' + window.innerHeight,
-        'aspect=', ar.toFixed(4), '(9/16=0.5625)',
-        'min-aspect-ratio(9/16)発火=', ar >= (9/16));
-      if (stage)  console.log('[sfDiag] .sf-stage  offsetW=', stage.offsetWidth, 'offsetH=', stage.offsetHeight);
-      if (sprite) console.log('[sfDiag] #sf-char-sprite offsetW=', sprite.offsetWidth, 'offsetH=', sprite.offsetHeight);
-      if (img)    console.log('[sfDiag] #sf-roan-img offsetW=', img.offsetWidth, 'natural=', img.naturalWidth + 'x' + img.naturalHeight);
-    } catch(e) { console.warn('[sfDiag] err', e); }
   });
   setTimeout(() => { _sfReady = true; }, 700);
 }
