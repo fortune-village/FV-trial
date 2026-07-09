@@ -1,5 +1,5 @@
 :root {
-  --css-build-id: "css-0709-charpct [TEST]";  /* CSS配信版ID。style.cssを更新するたびに手で更新（バッジに表示される） */
+  --css-build-id: "css-0709-sfchar [TEST]";  /* CSS配信版ID。style.cssを更新するたびに手で更新（バッジに表示される） */
   --bg: #06040e;
   --panel: rgba(12, 8, 22, 0.92);
   --panel-2: rgba(26, 16, 34, 0.96);
@@ -557,20 +557,6 @@ body {
 }
 
 
-/* ── LINEブラウザ対策（2026-06-08）──────────────────────────
-   min-height:740px のメディアクエリがLINE(753px)だけで発火し
-   ロアンが大きくなる問題を、強いセレクタで上書きする          */
-@media (max-width: 430px) and (min-height: 740px) {
-  #startFlowOverlay #sf-char-sprite.char-sprite.bust {
-    width: 440px !important;
-    height: 430px !important;
-    left: 58% !important;
-    bottom: 180px !important;
-  }
-  #startFlowOverlay #sf-char-sprite.char-sprite.bust img {
-    width: 470px !important;
-    max-width: none !important;
-    max-height: none !important;
-    transform: translate(4px, 25px) !important;
-  }
-}
+/* sf-char-sprite の px固定@media上書きは廃止（2026-07-09）。
+   基本定義 .char-sprite.bust のステージ相対%を全機種で継承＝機種差なし。
+   旧LINE対策(min-height:740発火でロアン肥大)は%化により不要化。 */
