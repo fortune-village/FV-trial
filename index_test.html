@@ -985,7 +985,7 @@ html, body {
 }
 /* ── textbox半透過 ── */
 .textbox {
-  background: linear-gradient(175deg, rgba(248,232,196,0.72), rgba(210,180,136,0.72)) !important;
+  background: linear-gradient(175deg, rgba(248,232,196,0.92), rgba(210,180,136,0.92)) !important;
   backdrop-filter: blur(6px) !important;
   -webkit-backdrop-filter: blur(6px) !important;
 }
@@ -2955,7 +2955,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0709-bgwidth [TEST]';
+const INDEX_BUILD_ID = 'idx-0709-txtbox92 [TEST]';
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3279,7 +3279,7 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
         const probe = new Image();
         probe.onload = () => {
           const s = document.createElement('style');
-          s.textContent = `.bg.${cls} { background: url("${url}") top center / 100% auto no-repeat !important; }`;
+          s.textContent = `.bg.${cls} { mix-blend-mode: normal !important; background: url("${url}") top center / 100% auto no-repeat !important; }`;
           document.head.appendChild(s);
         };
         // onerror（404等）は何もしない＝従来の common 背景のまま
