@@ -2851,7 +2851,7 @@ body[data-line-browser="1"] .bg {
       <button class="char-btn" id="btnAboutWhat">フォーチュン・ヴィレッジとは</button>
       <button class="char-btn" id="btnAboutChars">キャラクターについて</button>
       <button class="char-btn" id="btnAboutIndustry">村の産業について</button>
-      <button class="char-btn" id="btnAboutGuideBoard">村の読み方のガイド</button>
+      <button class="char-btn" id="btnAboutGuideBoard" style="display:none;">村の読み方のガイド</button>
       <button class="char-btn" id="btnAboutVideo">動画を見る</button>
     </div>
   </div>
@@ -2961,7 +2961,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0717-trial2 [TEST]';  // 未リリース時の村長の家侵入を遮断＝ナビの「村長の家へ戻る」非表示＋ハンドラ防御（ショップ案内）／_zenkeiFrom残留対策（他ページ開時・鑑定室入室時にクリア）
+const INDEX_BUILD_ID = 'idx-0717-trial3 [TEST]';  // trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
