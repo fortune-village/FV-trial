@@ -2350,6 +2350,12 @@ body[data-line-browser="1"] .bg {
   <div class="parchment-glow"></div>
   <div class="compass-mark"></div>
   <div id="titleImage" class="title-screen-image"></div>
+  <div id="trialBadge" style="display:none;position:absolute;top:12%;right:7%;z-index:5;
+    padding:5px 14px;background:linear-gradient(180deg,rgba(62,38,14,0.92),rgba(38,22,6,0.95));
+    border:1px solid rgba(216,185,120,0.85);border-radius:4px;
+    color:rgba(240,218,160,0.95);font-size:12px;letter-spacing:0.28em;font-weight:600;
+    font-family:'Hiragino Mincho ProN','Yu Mincho',Georgia,serif;
+    box-shadow:0 2px 8px rgba(0,0,0,0.45);pointer-events:none;">お試し版</div>
   <div id="titleTap" class="title-tap">TAP / CLICK</div>
 
   <video id="sceneVideoA" class="scene-video" playsinline preload="auto" muted></video>
@@ -2955,7 +2961,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0717-kani3 [TEST]';  // 鑑定室メニューの「村のすがた」を先頭に移動（insertAdjacentHTML afterbegin）
+const INDEX_BUILD_ID = 'idx-0717-trial [TEST]';  // お試し版表示＝表紙バッジ（setup.doneで自動解除・タイトル表示に追随）＋鑑定室ボタン名（村のすがた（お試し版））
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3145,6 +3151,9 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
     });
     // 初期設定未完了時はホームボタンを「スタート」に変更
     window._fvSetupDone = fvData.fvData?.setup?.done || false;
+    // お試し版バッジ：初期設定リリース（setup.done）で自動的に外れる
+    const _tb = document.getElementById('trialBadge');
+    if (_tb) _tb.style.display = window._fvSetupDone ? 'none' : 'block';
     if (!window._fvSetupDone) {
       const vBtn = document.getElementById('btnVillage');
       if (vBtn) { vBtn.textContent = 'スタート ✦ 村づくりをはじめる'; vBtn.style.borderColor='rgba(216,185,120,0.9)'; vBtn.style.background='linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98))'; }
@@ -4461,6 +4470,7 @@ function hideAllSceneElements() {
   typing = false;
   $("titleImage").classList.remove("show");
   $("titleTap").classList.remove("show");
+  { const _tb=$("trialBadge"); if(_tb) _tb.style.display='none'; }
   document.getElementById("mainTextbox").classList.add("hidden");
   $("logo").classList.remove("show");
   $("char").classList.add("hidden");
@@ -4486,6 +4496,7 @@ function renderTitle() {
   document.getElementById("mainTextbox").classList.add("hidden");
   $("titleImage").classList.add("show");
   $("titleTap").classList.add("show");
+  { const _tb=$("trialBadge"); if(_tb) _tb.style.display = window._fvSetupDone ? 'none' : 'block'; }
   syncBackdropBlur();  // タイトル画像を暗幕にも反映
   // 全パネルを閉じる
   document.querySelectorAll('.area-select-panel').forEach(el => el.classList.remove('visible'));
@@ -4740,8 +4751,9 @@ function renderKanteiMenu() {
 
   // 村のすがた（全景）：納品がある時のみトップ階層の先頭に固定表示
   if (lvl.isTop && window._fvZenkei) {
+    const _zLabel = window._fvSetupDone ? '村のすがた' : '村のすがた（お試し版）';
     listEl.insertAdjacentHTML('afterbegin', `<button class="area-btn" data-zenkei="1"
-      style="width:100%;justify-content:center;">村のすがた</button>`);
+      style="width:100%;justify-content:center;">${_zLabel}</button>`);
   }
 
   listEl.querySelectorAll('button[data-kantei]').forEach(btn => {
@@ -4988,6 +5000,7 @@ function renderScene() {
   setBg(s.bg);
   $("titleImage").classList.remove("show");
   $("titleTap").classList.remove("show");
+  { const _tb=$("trialBadge"); if(_tb) _tb.style.display='none'; }
   $("areaSelect").classList.remove("visible");
   // bgChange起因のrenderScene → textboxとcharを隠したまま、タップ待ち状態にセット
   if (_bgChangeInProgress && !s.hideTextbox) {
