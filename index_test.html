@@ -2961,7 +2961,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0717-trial [TEST]';  // お試し版表示＝表紙バッジ（setup.doneで自動解除・タイトル表示に追随）＋鑑定室ボタン名（村のすがた（お試し版））
+const INDEX_BUILD_ID = 'idx-0717-trial2 [TEST]';  // 未リリース時の村長の家侵入を遮断＝ナビの「村長の家へ戻る」非表示＋ハンドラ防御（ショップ案内）／_zenkeiFrom残留対策（他ページ開時・鑑定室入室時にクリア）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -4676,6 +4676,7 @@ function showZenkeiPage(from) {
 
 // 専用ページを開く（段階1：器のみ。中身は段階2以降）
 function showKanteiPage(key, label) {
+  _zenkeiFrom = null;  // 村のすがた以外の専用ページでは戻り先分岐を無効化（残留対策）
   const titleEl = $("kanteiPageTitle");
   const bodyEl = $("kanteiPageBody");
   if (titleEl) titleEl.textContent = label;
@@ -4880,6 +4881,7 @@ function showKanteiSelect() {
   document.getElementById("mainTextbox").classList.add("hidden");
   $("choices").classList.remove("show"); $("choices").style.display = "none";
   _kanteiStack = []; // 入室時は大項目階層から
+  _zenkeiFrom = null; // 村のすがたの戻り先記憶をリセット（残留対策）
   if (_kanteiPageOpen) { $("kanteiPage").classList.remove("visible"); _kanteiPageOpen = false; }
   renderKanteiMenu();
   const listEl = $("kanteiMenuList"); // 前回遷移のopacity:0残りをリセット
@@ -6717,6 +6719,8 @@ $("btnHomeFixed").addEventListener("click", (e) => {
   if (navStack.length > 0) {
     goBack();
   } else {
+    const _gh = $("btnGoHouse");
+    if (_gh) _gh.style.display = window._fvSetupDone ? '' : 'none';
     $("navMenu").classList.toggle("visible");
   }
 });
@@ -6733,6 +6737,7 @@ $("btnGoHome").addEventListener("click", async (e) => {
 $("btnGoHouse").addEventListener("click", async (e) => {
   e.stopPropagation();
   $("navMenu").classList.remove("visible");
+  if (!window._fvSetupDone) { openFVShop(); return; }  // 未リリース時は村に入れない
   clearNavStack();
   transitionScene(() => {
     currentScreen = 'intro';
