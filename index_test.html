@@ -3124,6 +3124,9 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
     const release = fvData.fvData?.release || {};
     // 鑑定室の開放データ（村のreleaseとは独立）
     window._fvKantei = fvData.fvData?.kanteiRelease || null;
+    // 村全景（v1.156.0系・Studio側でZ枠画像がある時のみ納品される）
+    window._fvZenkei = fvData.fvData?.zenkei || null;
+    window._fvDataVer = fvData.dataVersion || 1;
     const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
     // コイン残高をグローバルに保存 + HUD更新
@@ -4599,6 +4602,30 @@ let _kanteiStack = [];
 // 後で運勢を見る等を足すならキーを追加するだけ。
 const KANTEI_PAGE_KEYS = new Set(["shukumei"]);
 
+// ── 村のすがた（全景）ページ ─────────────────────────────
+// 2ルート（鑑定室／村長の家）から同一ページへ。戻り先は _zenkeiFrom で分岐。
+let _zenkeiFrom = null;   // 'kantei' | 'home' | null
+
+function showZenkeiPage(from) {
+  _zenkeiFrom = from;
+  const titleEl = $("kanteiPageTitle");
+  const bodyEl = $("kanteiPageBody");
+  if (titleEl) titleEl.textContent = "村のすがた";
+  if (bodyEl) {
+    const url = `${clientBase}村全景.png?v=${window._fvDataVer || 1}`;
+    bodyEl.innerHTML = `<img src="${url}" alt="村のすがた"
+      style="display:block;width:100%;border-radius:10px;border:1px solid rgba(200,170,110,0.35);"
+      onerror="this.outerHTML='<div class=\'kantei-page-placeholder\'>（全景は準備中です）</div>'">`;
+  }
+  document.getElementById('app').classList.add('panel-open');
+  document.getElementById("mainTextbox").classList.add("hidden");
+  $("kanteiSelect").classList.remove("visible");
+  const page = $("kanteiPage");
+  page.classList.add("visible");
+  _kanteiPageOpen = true;
+  $("btnHomeFixed").classList.add("visible");
+}
+
 // 専用ページを開く（段階1：器のみ。中身は段階2以降）
 function showKanteiPage(key, label) {
   const titleEl = $("kanteiPageTitle");
@@ -4674,11 +4701,22 @@ function renderKanteiMenu() {
       style="width:100%;justify-content:center;">${label}<span class="area-tag">鑑定をご依頼ください</span></button>`;
   }).join('');
 
+  // 村のすがた（全景）：納品がある時のみトップ階層末尾に固定表示
+  if (lvl.isTop && window._fvZenkei) {
+    listEl.innerHTML += `<button class="area-btn" data-zenkei="1"
+      style="width:100%;justify-content:center;">村のすがた</button>`;
+  }
+
   listEl.querySelectorAll('button[data-kantei]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       onKanteiItemTap(btn.getAttribute('data-kantei'));
     });
+  });
+  const zbtn = listEl.querySelector('button[data-zenkei]');
+  if (zbtn) zbtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showZenkeiPage('kantei');
   });
 }
 
@@ -4956,6 +4994,10 @@ function renderScene() {
   if (currentScreen === 'house' && sceneIndex === 0 && loadProgress()) {
     dynamicChoices = ['続きから ▶', ...dynamicChoices];
   }
+  // 村長の家ハブ：全景の納品がある時のみ「村のすがたを見る」を追加
+  if (currentScreen === 'intro' && s.choices && window._fvZenkei) {
+    dynamicChoices = [...dynamicChoices, '村のすがたを見る'];
+  }
   renderChoices(dynamicChoices);
   $("btnHomeFixed").classList.add("visible");
   // 村長の家の最初のシーンのみ占いボタンを表示
@@ -5019,6 +5061,8 @@ function renderChoices(choices) {
         } else if (label === "村のスフィアエネルギー") {
           pushBack(() => { $("centralFacilitySelect").classList.add("visible"); $("paramPanel").classList.remove("visible"); });
           await transitionScene(() => { box.style.display="none"; showParams(); });
+        } else if (label === "村のすがたを見る") {
+          await transitionScene(() => { box.style.display="none"; showZenkeiPage('home'); });
         } else if (label === "村の読み方を確認する") {
           if (currentScreen === 'intro') {
             // ハブから：戻るとハブ最終シーンへ
@@ -6673,6 +6717,19 @@ $("btnKanteiBackHome").addEventListener("click", async (e) => {
 
 $("btnKanteiPageBack").addEventListener("click", async (e) => {
   e.stopPropagation();
+  // 村のすがた（全景）から：遷移元へ戻す（v: 2ルート分岐）
+  if (_zenkeiFrom === 'home') {
+    _zenkeiFrom = null;
+    await hideKanteiPage();
+    document.getElementById('app').classList.remove('panel-open');
+    transitionScene(() => {
+      currentScreen = 'intro'; currentSceneSet = introScenes;
+      sceneIndex = introScenes.length - 1;
+      hideAllSceneElements(); renderScene();
+    });
+    return;
+  }
+  if (_zenkeiFrom === 'kantei') { _zenkeiFrom = null; }  // 以降は既存の鑑定室トップ復帰
   // 専用ページ → 鑑定室トップ（大項目メニュー）へ戻る
   await hideKanteiPage();
   _kanteiStack = [];
