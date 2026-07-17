@@ -2955,7 +2955,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0717-kani2 [TEST]';  // 三層の配色を明背景向けに修正（紙色カード＋焦げ茶文字・信念は濃色太字）＝視認性改善
+const INDEX_BUILD_ID = 'idx-0717-kani3 [TEST]';  // 鑑定室メニューの「村のすがた」を先頭に移動（insertAdjacentHTML afterbegin）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -4738,10 +4738,10 @@ function renderKanteiMenu() {
       style="width:100%;justify-content:center;">${label}<span class="area-tag">鑑定をご依頼ください</span></button>`;
   }).join('');
 
-  // 村のすがた（全景）：納品がある時のみトップ階層末尾に固定表示
+  // 村のすがた（全景）：納品がある時のみトップ階層の先頭に固定表示
   if (lvl.isTop && window._fvZenkei) {
-    listEl.innerHTML += `<button class="area-btn" data-zenkei="1"
-      style="width:100%;justify-content:center;">村のすがた</button>`;
+    listEl.insertAdjacentHTML('afterbegin', `<button class="area-btn" data-zenkei="1"
+      style="width:100%;justify-content:center;">村のすがた</button>`);
   }
 
   listEl.querySelectorAll('button[data-kantei]').forEach(btn => {
