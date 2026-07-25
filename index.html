@@ -2965,7 +2965,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0725-titlecard';  // 次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
+const INDEX_BUILD_ID = 'idx-0725-tsushinfix';  // openFvTsushin()内の window._fvSetupDone=false を削除（起動時初期化4行の写し込み事故）。FV通信を開くと初期設定フラグが落ち、ホーム→村長の家で初期設定シーン（ロアン）が開いていた。updateSurveyBtn()呼び出しは残置（フラグが真なら何もしないため無害）。旧 idx-0725-titlecard＝次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -5698,9 +5698,11 @@ function openFvTsushin() {
   overlay.style.display = 'flex';
   fvChatLoad();
   // 既読処理
-  window._fvSetupDone = false;
-updateSurveyBtn();
-window._fvTsushinBadge = false;
+  // ※ここにあった window._fvSetupDone = false; は起動時初期化ブロックからの写し込み（誤り）。
+  //   FV通信を開くたびに初期設定フラグが落ち、以後ホーム→村長の家で初期設定シーン（ロアン）が開いていた。
+  //   フラグを戻す処理はどこにも無いため、開いた瞬間からリロードまで壊れ続けていた。idx-0725-tsushinfix で削除。
+  updateSurveyBtn();
+  window._fvTsushinBadge = false;
   localStorage.setItem('fv_tsushin_read_ts', Date.now().toString());
 }
 
