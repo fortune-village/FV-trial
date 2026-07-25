@@ -2965,7 +2965,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0725-charquote';  // キャラカードの引用欄（一言）を納品データ charQuote.C から描画。納品が無ければHTMLの既定文をそのまま残すため既存クライアントは壊れない。Studio v1.264.0 以降が charQuote:{C:'「…」',…} を納品する。旧 idx-0725-tsushinfix＝openFvTsushin()内の window._fvSetupDone=false を削除（起動時初期化4行の写し込み事故）。FV通信を開くと初期設定フラグが落ち、ホーム→村長の家で初期設定シーン（ロアン）が開いていた。updateSurveyBtn()呼び出しは残置（フラグが真なら何もしないため無害）。旧 idx-0725-titlecard＝次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
+const INDEX_BUILD_ID = 'idx-0726-areatap';  // エリア導入の余分な二手を削除。症状＝タイトルカード→背景A（キャラ「こちらが、◆エリアです」）のあと、背景Aだけの画面→フェード→同じ背景A＋テキスト、と何も変わらない二段階が挿さる（タップ3回）。原因は二つ。①背景鑑賞モード＝エリア画面のタップ1回目で textbox とキャラを消してTAP待ちに入る。idx-0725-titlecard で「次がタイトルカードなら入らない」条件を足したが、キャラの口上シーンの次は通常シーンのため対象外だった。→修正＝現在のシーンにキャラが立っているときは鑑賞モードに入らない（!_curSc?.char）。風景シーン（char:false）での鑑賞モードは従来どおり残す。②背景切替の誤検出＝判定がクラス名の比較だった。エリア主画像は bg-{cls}、dirScenes は imgFile 経由の bg-jf-N で、クラス名は違うがどちらも同じ ◆エリア.png を指すため、無変化のoverlayフェードが走っていた。→修正＝背景クラス→実ファイル名の逆引き表 window._fvBgFileByClass を作り、実ファイル名で比較する。③付随＝①②を外すと背景無変化の進行経路が即時になりキャラがフェードなしで消えるため、キャラが立っていて次シーンに居ないときは fadeHideTextboxChar で消してから進む（タップは1回）。結果＝キャラ「こちらが…」→タップ1回→背景A＋本文。影響範囲＝①はエリア画面の char:true シーン（導入・準備中）、②はエリア画面の全背景遷移（同じ画像ならフェードが消える・異なる画像なら従来どおり）。bgChanges の使用箇所は1つのみで他の画面に波及しない。旧 idx-0725-charquote＝キャラカードの引用欄（一言）を納品データ charQuote.C から描画。納品が無ければHTMLの既定文をそのまま残すため既存クライアントは壊れない。Studio v1.264.0 以降が charQuote:{C:'「…」',…} を納品する。旧 idx-0725-tsushinfix＝openFvTsushin()内の window._fvSetupDone=false を削除（起動時初期化4行の写し込み事故）。FV通信を開くと初期設定フラグが落ち、ホーム→村長の家で初期設定シーン（ロアン）が開いていた。updateSurveyBtn()呼び出しは残置（フラグが真なら何もしないため無害）。旧 idx-0725-titlecard＝次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3223,6 +3223,9 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
     // 動的生成するため、今後スロット種が増えてもこの共通HTMLは無改修で対応できる。
     // imgFile が無い旧データは従来の STEP_TO_SUFFIX 経路にフォールバック（後方互換）。
     const fileBgClass = new Map();
+    // ★idx-0726-areatap 背景クラス→実ファイル名の逆引き表。
+    // クラス名が違っても同じ画像なら「背景が変わった」と判定しないために使う。
+    window._fvBgFileByClass = {};
     {
       const allFiles = [];
       Object.values(scenesData).forEach(arr => (arr || []).forEach(s => {
@@ -3231,6 +3234,7 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
       allFiles.forEach((f, i) => {
         const cls = `bg-jf-${i}`;
         fileBgClass.set(f, cls);
+        window._fvBgFileByClass[cls] = f;
         bgStyles.push(`.bg.${cls} { mix-blend-mode:normal !important; background:#1e1c28 url("${clientBase}${f}?v=${fvData.dataVersion||1}") center 30% / cover no-repeat !important; }`);
       });
     }
@@ -3248,6 +3252,7 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
         { suffix:'-starcu',file:`${dirJp}_星施設CU.png`,     pos:'center 35%' },
       ];
       stepFiles.forEach(({ suffix, file, pos }) => {
+        window._fvBgFileByClass[`bg-${cfg.cls}${suffix}`] = file;
         bgStyles.push(
           `.bg.bg-${cfg.cls}${suffix} { mix-blend-mode:normal !important; background:#1e1c28 url("${clientBase}${file}?v=${fvData.dataVersion||1}") ${pos} / cover no-repeat !important; }`
         );
@@ -6489,7 +6494,11 @@ function next() {
       // タップ1回で textbox/char が消え、そのままタイトルカードへ自動で進む（下の titleCard 分岐へ落ちる）。
       // 背景鑑賞モード自体は残す＝エリアの風景をゆっくり見せる役割は変えない。
       const _nextSc = currentSceneSet[sceneIndex + 1];
-      const isStory = currentScreen === 'area' && _nextSc?.type !== 'titleCard';
+      // ★idx-0726-areatap キャラが立っている場面では鑑賞モードに入らない。
+      // 「こちらが、◆エリアです」の直後に、人物の消えた同じ背景をもう一画面挿まないため。
+      // 風景シーン（char:false）での鑑賞モードは従来どおり残す。
+      const _curSc = currentSceneSet[sceneIndex];
+      const isStory = currentScreen === 'area' && _nextSc?.type !== 'titleCard' && !_curSc?.char;
       if (isStory) {
         mainTb.style.transition = 'opacity 0.3s';
         mainTb.style.opacity = '0';
@@ -6512,7 +6521,11 @@ function next() {
   if (sceneIndex < currentSceneSet.length - 1) {
     const curBg    = currentSceneSet[sceneIndex].bg;
     const nextBg   = currentSceneSet[sceneIndex + 1]?.bg;
-    const bgChanges = curBg !== nextBg;
+    // ★idx-0726-areatap クラス名ではなく実ファイル名で比較する。
+    // エリア主画像は bg-{cls}、dirScenes は imgFile 経由の bg-jf-N と別クラスになるが
+    // 同じ ◆エリア.png を指すため、従来は「変化あり」と誤検出して無変化のフェードが走っていた。
+    const _bgFile = cl => (window._fvBgFileByClass || {})[cl] || cl;
+    const bgChanges = _bgFile(curBg) !== _bgFile(nextBg);
 
     const isStory = ['area','intro','council','guide'].includes(currentScreen);
     if (bgChanges && isStory) {
@@ -6545,8 +6558,15 @@ function next() {
         });
       }
     } else {
-      sceneIndex++;
-      renderScene();
+      // ★idx-0726-areatap 背景が変わらない場合でも、キャラが立っていて次シーンに居ないときは
+      // フェードで消してから進む（従来は鑑賞モードのフェードがその役を担っていた）。タップは1回のまま。
+      const _cur = currentSceneSet[sceneIndex], _nxt = currentSceneSet[sceneIndex + 1];
+      if (currentScreen === 'area' && _cur?.char && !_nxt?.char) {
+        fadeHideTextboxChar(() => { sceneIndex++; renderScene(); });
+      } else {
+        sceneIndex++;
+        renderScene();
+      }
     }
   } else {
     // 最終シーン → エリア選択へ戻る
