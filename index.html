@@ -985,7 +985,7 @@ html, body {
 }
 /* ── textbox半透過 ── */
 .textbox {
-  background: linear-gradient(175deg, rgba(248,232,196,0.72), rgba(210,180,136,0.72)) !important;
+  background: linear-gradient(175deg, rgba(248,232,196,0.92), rgba(210,180,136,0.92)) !important;
   backdrop-filter: blur(6px) !important;
   -webkit-backdrop-filter: blur(6px) !important;
 }
@@ -2269,23 +2269,9 @@ body {
 
 
 
-/* ── LINEブラウザ対策：メディアクエリ上書き ──────────────────
-   min-height:740px がLINE(753px)で発火しロアンが大きくなる問題
-   強いセレクタ（ID指定）で5点すべてを上書き                    */
-@media (max-width: 430px) and (min-height: 740px) {
-  #startFlowOverlay #sf-char-sprite.char-sprite.bust {
-    width: 440px !important;
-    height: 430px !important;
-    left: 58% !important;
-    bottom: 180px !important;
-  }
-  #startFlowOverlay #sf-char-sprite.char-sprite.bust img {
-    width: 470px !important;
-    max-width: none !important;
-    max-height: none !important;
-    transform: translate(4px, 25px) !important;
-  }
-}
+/* sf-char-sprite の px固定@media上書きは廃止（2026-07-09）。
+   基本定義 .char-sprite.bust のステージ相対%を全機種で継承。
+   旧LINE対策(min-height:740発火でロアン肥大)は%化により不要化。 */
 
 /* LINEブラウザ：属性セレクタで背景画像を横幅基準に変更 */
 body[data-line-browser="1"] .bg {
@@ -2364,6 +2350,12 @@ body[data-line-browser="1"] .bg {
   <div class="parchment-glow"></div>
   <div class="compass-mark"></div>
   <div id="titleImage" class="title-screen-image"></div>
+  <div id="trialBadge" style="display:none;position:absolute;top:12%;right:7%;z-index:5;
+    padding:5px 14px;background:linear-gradient(180deg,rgba(62,38,14,0.92),rgba(38,22,6,0.95));
+    border:1px solid rgba(216,185,120,0.85);border-radius:4px;
+    color:rgba(240,218,160,0.95);font-size:12px;letter-spacing:0.28em;font-weight:600;
+    font-family:'Hiragino Mincho ProN','Yu Mincho',Georgia,serif;
+    box-shadow:0 2px 8px rgba(0,0,0,0.45);pointer-events:none;">お試し版</div>
   <div id="titleTap" class="title-tap">TAP / CLICK</div>
 
   <video id="sceneVideoA" class="scene-video" playsinline preload="auto" muted></video>
@@ -2859,7 +2851,7 @@ body[data-line-browser="1"] .bg {
       <button class="char-btn" id="btnAboutWhat">フォーチュン・ヴィレッジとは</button>
       <button class="char-btn" id="btnAboutChars">キャラクターについて</button>
       <button class="char-btn" id="btnAboutIndustry">村の産業について</button>
-      <button class="char-btn" id="btnAboutGuideBoard">村の読み方のガイド</button>
+      <button class="char-btn" id="btnAboutGuideBoard" style="display:none;">村の読み方のガイド</button>
       <button class="char-btn" id="btnAboutVideo">動画を見る</button>
     </div>
   </div>
@@ -2969,7 +2961,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0708-frostbg2';
+const INDEX_BUILD_ID = 'idx-0717-trial3';  // trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3088,42 +3080,6 @@ fetch(`${clientBase}data.json`)
     st2.textContent = `.char-sprite.bust img { transform: translate(${bustX}px, ${bustY}px) !important; }`;
     document.head.appendChild(st2);
 
-    // 北エリア背景を動的に設定（命式由来素材のため clientBase から参照）
-    const northBgs = [
-      { cls: 'bg-north',         file: '北エリア.png',  pos: 'center 30%' },
-      { cls: 'bg-north-street',  file: '北_街並み.png', pos: 'center 30%' },
-      { cls: 'bg-north-library', file: '北_図書館.png', pos: 'center 40%' },
-      { cls: 'bg-north-market',  file: '北_交易所.png', pos: 'center 25%' },
-    ];
-    const st = document.createElement('style');
-    st.textContent = northBgs.map(({ cls, file, pos }) =>
-      `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}?v=${fvData.dataVersion||1}") ${pos} / cover no-repeat !important; }`
-    ).join('\n');
-    document.head.appendChild(st);
-
-    // ── 室内シーンの背景：クライアント個別の内観画像で差し替え（一本化）──────────────
-    // 村長の家（bg-room）＝執務室の内観、中央会議室（bg-council）＝会議室の内観。
-    // クライアントフォルダに内観画像があればそれを使い、無ければ従来の common 背景にフォールバック。
-    // 既存クライアントは内観画像が無いので自動的に従来表示のまま。
-    (function applyInteriorBg() {
-      const ver = (typeof fvData !== 'undefined' && fvData && fvData.dataVersion) ? fvData.dataVersion : Date.now();
-      const interiors = [
-        { cls: 'bg-room',    file: '中央_村長の家_執務室.png' },
-        { cls: 'bg-council', file: '中央_役場_会議室.png' },
-      ];
-      interiors.forEach(({ cls, file }) => {
-        const url = `${clientBase}${file}?v=${ver}`;
-        const probe = new Image();
-        probe.onload = () => {
-          // 画像が存在 → 該当背景をクライアント個別の内観画像で上書き
-          const s = document.createElement('style');
-          s.textContent = `.bg.${cls} { background: url("${url}") center top / cover no-repeat !important; }`;
-          document.head.appendChild(s);
-        };
-        // onerror（404等）は何もしない＝従来の common 背景のまま
-        probe.src = url;
-      });
-    })();
   })
   .catch(() => console.warn('クライアントデータ読み込み失敗'));
 
@@ -3174,6 +3130,10 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
     const release = fvData.fvData?.release || {};
     // 鑑定室の開放データ（村のreleaseとは独立）
     window._fvKantei = fvData.fvData?.kanteiRelease || null;
+    // 村全景（v1.156.0系・Studio側でZ枠画像がある時のみ納品される）
+    window._fvZenkei = fvData.fvData?.zenkei || null;
+    window._fvKani = fvData.fvData?.kaniKantei || null;
+    window._fvDataVer = fvData.dataVersion || 1;
     const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
     // コイン残高をグローバルに保存 + HUD更新
@@ -3191,6 +3151,9 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
     });
     // 初期設定未完了時はホームボタンを「スタート」に変更
     window._fvSetupDone = fvData.fvData?.setup?.done || false;
+    // お試し版バッジ：初期設定リリース（setup.done）で自動的に外れる
+    const _tb = document.getElementById('trialBadge');
+    if (_tb) _tb.style.display = window._fvSetupDone ? 'none' : 'block';
     if (!window._fvSetupDone) {
       const vBtn = document.getElementById('btnVillage');
       if (vBtn) { vBtn.textContent = 'スタート ✦ 村づくりをはじめる'; vBtn.style.borderColor='rgba(216,185,120,0.9)'; vBtn.style.background='linear-gradient(180deg,rgba(62,38,14,0.96),rgba(38,22,6,0.98))'; }
@@ -3297,6 +3260,44 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
       const stArea = document.createElement('style');
       stArea.textContent = bgStyles.join('\n');
       document.head.appendChild(stArea);
+    }
+
+    // ── 北エリア背景を動的注入（命式由来素材・clientBase参照）────────────────
+    // data.json（旧経路）は Studio が出力しないため、実在する FV_data.json 側に一本化。
+    {
+      const northBgs = [
+        { cls: 'bg-north',         file: '北エリア.png',  pos: 'center 30%' },
+        { cls: 'bg-north-street',  file: '北_街並み.png', pos: 'center 30%' },
+        { cls: 'bg-north-library', file: '北_図書館.png', pos: 'center 40%' },
+        { cls: 'bg-north-market',  file: '北_交易所.png', pos: 'center 25%' },
+      ];
+      const stNorth = document.createElement('style');
+      stNorth.textContent = northBgs.map(({ cls, file, pos }) =>
+        `.bg.${cls} { mix-blend-mode: normal !important; background: url("${clientBase}${file}?v=${fvData.dataVersion||1}") ${pos} / cover no-repeat !important; }`
+      ).join('\n');
+      document.head.appendChild(stNorth);
+    }
+
+    // ── 室内シーンの背景：クライアント個別の内観画像で差し替え（一本化）──────────
+    // 村長の家（bg-room）＝執務室、中央会議室（bg-council）＝会議室。
+    // クライアントフォルダに内観画像があればそれを使い、無ければ従来の common 背景にフォールバック。
+    {
+      const ver = fvData.dataVersion || Date.now();
+      const interiors = [
+        { cls: 'bg-room',    file: '中央_村長の家_執務室.png' },
+        { cls: 'bg-council', file: '中央_役場_会議室.png' },
+      ];
+      interiors.forEach(({ cls, file }) => {
+        const url = `${clientBase}${file}?v=${ver}`;
+        const probe = new Image();
+        probe.onload = () => {
+          const s = document.createElement('style');
+          s.textContent = `.bg.${cls} { mix-blend-mode: normal !important; background: url("${url}") top center / 100% auto no-repeat !important; }`;
+          document.head.appendChild(s);
+        };
+        // onerror（404等）は何もしない＝従来の common 背景のまま
+        probe.src = url;
+      });
     }
 
     // 未開放エリア(release=false)は初期HTMLの「準備中」(disabled)のまま据え置く。
@@ -4469,6 +4470,7 @@ function hideAllSceneElements() {
   typing = false;
   $("titleImage").classList.remove("show");
   $("titleTap").classList.remove("show");
+  { const _tb=$("trialBadge"); if(_tb) _tb.style.display='none'; }
   document.getElementById("mainTextbox").classList.add("hidden");
   $("logo").classList.remove("show");
   $("char").classList.add("hidden");
@@ -4494,6 +4496,7 @@ function renderTitle() {
   document.getElementById("mainTextbox").classList.add("hidden");
   $("titleImage").classList.add("show");
   $("titleTap").classList.add("show");
+  { const _tb=$("trialBadge"); if(_tb) _tb.style.display = window._fvSetupDone ? 'none' : 'block'; }
   syncBackdropBlur();  // タイトル画像を暗幕にも反映
   // 全パネルを閉じる
   document.querySelectorAll('.area-select-panel').forEach(el => el.classList.remove('visible'));
@@ -4611,8 +4614,69 @@ let _kanteiStack = [];
 // 後で運勢を見る等を足すならキーを追加するだけ。
 const KANTEI_PAGE_KEYS = new Set(["shukumei"]);
 
+// ── 村のすがた（全景）ページ ─────────────────────────────
+// 2ルート（鑑定室／村長の家）から同一ページへ。戻り先は _zenkeiFrom で分岐。
+let _zenkeiFrom = null;   // 'kantei' | 'home' | null
+
+function showZenkeiPage(from) {
+  _zenkeiFrom = from;
+  const titleEl = $("kanteiPageTitle");
+  const bodyEl = $("kanteiPageBody");
+  if (titleEl) titleEl.textContent = "村のすがた";
+  if (bodyEl) {
+    const url = `${clientBase}村全景.png?v=${window._fvDataVer || 1}`;
+    let html = `<img src="${url}" alt="村のすがた"
+      style="display:block;width:100%;border-radius:10px;border:1px solid rgba(200,170,110,0.35);"
+      onerror="this.outerHTML='<div class=\'kantei-page-placeholder\'>（全景は準備中です）</div>'">`;
+    // ── FV簡易鑑定 三層（風土・価値観・信念）──
+    const kk = window._fvKani;
+    if (kk) {
+      const H = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      const head = t => `<div style="font-size:11px;letter-spacing:0.22em;color:#8a6a2a;margin:18px 0 8px;text-align:center;">— ${t} —</div>`;
+      // 風土：あるものだけの要素カード
+      if (kk.fudo && kk.fudo.length) {
+        html += head('風土');
+        html += kk.fudo.map(f => `
+          <div style="background:rgba(255,252,244,0.75);border:1px solid rgba(150,115,60,0.35);border-radius:10px;padding:10px 14px;margin-bottom:8px;">
+            <div style="font-size:12px;font-weight:700;color:#4a3418;letter-spacing:0.06em;">${H((f.chikei||[]).join('・'))}<span style="font-weight:400;font-size:10px;color:#9a7a48;margin-left:8px;">${H((f.dirs||[]).join('・'))}</span></div>
+            <div style="font-size:12px;color:#5a4630;line-height:1.8;margin-top:4px;">${H(f.line)}</div>
+          </div>`).join('');
+      }
+      // 価値観：中央象徴
+      if (kk.kachikan && kk.kachikan.line) {
+        html += head('価値観');
+        html += `
+          <div style="background:rgba(255,252,244,0.75);border:1px solid rgba(150,115,60,0.35);border-radius:10px;padding:10px 14px;">
+            ${kk.kachikan.symbol?`<div style="font-size:12px;font-weight:700;color:#4a3418;letter-spacing:0.06em;">${H(kk.kachikan.symbol)}</div>`:''}
+            <div style="font-size:12px;color:#5a4630;line-height:1.8;margin-top:4px;">${H(kk.kachikan.line)}</div>
+          </div>`;
+      }
+      // 信念：一拍おいて、静かに現れる別枠
+      if (kk.shinnen && kk.shinnen.line) {
+        html += `
+          <div id="zenkeiShinnen" style="opacity:0;transform:translateY(8px);transition:opacity 1.6s ease, transform 1.6s ease;margin-top:22px;padding-top:16px;border-top:1px solid rgba(150,115,60,0.4);">
+            <div style="font-size:11px;letter-spacing:0.22em;color:#8a6a2a;margin-bottom:8px;text-align:center;">— 村の信念 —</div>
+            <div style="font-size:13px;color:#3e2f1a;line-height:2.0;text-align:center;letter-spacing:0.04em;font-weight:600;">${H(kk.shinnen.line)}</div>
+          </div>`;
+      }
+    }
+    bodyEl.innerHTML = html;
+    // 信念の遅延出現（ページを開いた一拍あと）
+    const sh = bodyEl.querySelector('#zenkeiShinnen');
+    if (sh) setTimeout(() => { sh.style.opacity = '1'; sh.style.transform = 'translateY(0)'; }, 1100);
+  }
+  document.getElementById('app').classList.add('panel-open');
+  document.getElementById("mainTextbox").classList.add("hidden");
+  $("kanteiSelect").classList.remove("visible");
+  const page = $("kanteiPage");
+  page.classList.add("visible");
+  _kanteiPageOpen = true;
+  $("btnHomeFixed").classList.add("visible");
+}
+
 // 専用ページを開く（段階1：器のみ。中身は段階2以降）
 function showKanteiPage(key, label) {
+  _zenkeiFrom = null;  // 村のすがた以外の専用ページでは戻り先分岐を無効化（残留対策）
   const titleEl = $("kanteiPageTitle");
   const bodyEl = $("kanteiPageBody");
   if (titleEl) titleEl.textContent = label;
@@ -4686,11 +4750,23 @@ function renderKanteiMenu() {
       style="width:100%;justify-content:center;">${label}<span class="area-tag">鑑定をご依頼ください</span></button>`;
   }).join('');
 
+  // 村のすがた（全景）：納品がある時のみトップ階層の先頭に固定表示
+  if (lvl.isTop && window._fvZenkei) {
+    const _zLabel = window._fvSetupDone ? '村のすがた' : '村のすがた（お試し版）';
+    listEl.insertAdjacentHTML('afterbegin', `<button class="area-btn" data-zenkei="1"
+      style="width:100%;justify-content:center;">${_zLabel}</button>`);
+  }
+
   listEl.querySelectorAll('button[data-kantei]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       onKanteiItemTap(btn.getAttribute('data-kantei'));
     });
+  });
+  const zbtn = listEl.querySelector('button[data-zenkei]');
+  if (zbtn) zbtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showZenkeiPage('kantei');
   });
 }
 
@@ -4805,6 +4881,7 @@ function showKanteiSelect() {
   document.getElementById("mainTextbox").classList.add("hidden");
   $("choices").classList.remove("show"); $("choices").style.display = "none";
   _kanteiStack = []; // 入室時は大項目階層から
+  _zenkeiFrom = null; // 村のすがたの戻り先記憶をリセット（残留対策）
   if (_kanteiPageOpen) { $("kanteiPage").classList.remove("visible"); _kanteiPageOpen = false; }
   renderKanteiMenu();
   const listEl = $("kanteiMenuList"); // 前回遷移のopacity:0残りをリセット
@@ -4925,6 +5002,7 @@ function renderScene() {
   setBg(s.bg);
   $("titleImage").classList.remove("show");
   $("titleTap").classList.remove("show");
+  { const _tb=$("trialBadge"); if(_tb) _tb.style.display='none'; }
   $("areaSelect").classList.remove("visible");
   // bgChange起因のrenderScene → textboxとcharを隠したまま、タップ待ち状態にセット
   if (_bgChangeInProgress && !s.hideTextbox) {
@@ -4967,6 +5045,10 @@ function renderScene() {
   let dynamicChoices = s.choices ? [...s.choices] : [];
   if (currentScreen === 'house' && sceneIndex === 0 && loadProgress()) {
     dynamicChoices = ['続きから ▶', ...dynamicChoices];
+  }
+  // 村長の家ハブ：全景の納品がある時のみ「村のすがたを見る」を追加
+  if (currentScreen === 'intro' && s.choices && window._fvZenkei) {
+    dynamicChoices = [...dynamicChoices, '村のすがたを見る'];
   }
   renderChoices(dynamicChoices);
   $("btnHomeFixed").classList.add("visible");
@@ -5031,6 +5113,8 @@ function renderChoices(choices) {
         } else if (label === "村のスフィアエネルギー") {
           pushBack(() => { $("centralFacilitySelect").classList.add("visible"); $("paramPanel").classList.remove("visible"); });
           await transitionScene(() => { box.style.display="none"; showParams(); });
+        } else if (label === "村のすがたを見る") {
+          await transitionScene(() => { box.style.display="none"; showZenkeiPage('home'); });
         } else if (label === "村の読み方を確認する") {
           if (currentScreen === 'intro') {
             // ハブから：戻るとハブ最終シーンへ
@@ -6635,6 +6719,8 @@ $("btnHomeFixed").addEventListener("click", (e) => {
   if (navStack.length > 0) {
     goBack();
   } else {
+    const _gh = $("btnGoHouse");
+    if (_gh) _gh.style.display = window._fvSetupDone ? '' : 'none';
     $("navMenu").classList.toggle("visible");
   }
 });
@@ -6651,6 +6737,7 @@ $("btnGoHome").addEventListener("click", async (e) => {
 $("btnGoHouse").addEventListener("click", async (e) => {
   e.stopPropagation();
   $("navMenu").classList.remove("visible");
+  if (!window._fvSetupDone) { openFVShop(); return; }  // 未リリース時は村に入れない
   clearNavStack();
   transitionScene(() => {
     currentScreen = 'intro';
@@ -6685,6 +6772,19 @@ $("btnKanteiBackHome").addEventListener("click", async (e) => {
 
 $("btnKanteiPageBack").addEventListener("click", async (e) => {
   e.stopPropagation();
+  // 村のすがた（全景）から：遷移元へ戻す（v: 2ルート分岐）
+  if (_zenkeiFrom === 'home') {
+    _zenkeiFrom = null;
+    await hideKanteiPage();
+    document.getElementById('app').classList.remove('panel-open');
+    transitionScene(() => {
+      currentScreen = 'intro'; currentSceneSet = introScenes;
+      sceneIndex = introScenes.length - 1;
+      hideAllSceneElements(); renderScene();
+    });
+    return;
+  }
+  if (_zenkeiFrom === 'kantei') { _zenkeiFrom = null; }  // 以降は既存の鑑定室トップ復帰
   // 専用ページ → 鑑定室トップ（大項目メニュー）へ戻る
   await hideKanteiPage();
   _kanteiStack = [];
