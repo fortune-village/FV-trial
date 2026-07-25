@@ -335,7 +335,12 @@
 .choice-box.grid-2col {
   display: grid !important;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  /* 左右の余白と中央の間隔を広げてボタン幅を詰める（背後のキャラクターを見せるため）。
+     基底 .choice-box は left/right:26px・gap:10px。ここは2クラス指定で上書きする。
+     選択肢が3つ以下の画面には .grid-2col が付かないため影響しない。 */
+  left: 40px;
+  right: 40px;
+  gap: 24px;
 }
 .choice-box.grid-2col .choice {
   font-size: 11px;
@@ -346,7 +351,9 @@
 }
 /* 3行以上：詰める */
 .choice-box.grid-2col.dense {
-  gap: 8px;
+  /* 行間だけ詰め、中央の間隔（列間）は保つ */
+  row-gap: 8px;
+  column-gap: 24px;
 }
 .choice-box.grid-2col.dense .choice {
   font-size: 10px;
@@ -2946,7 +2953,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0725-choicegrid';  // 選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
+const INDEX_BUILD_ID = 'idx-0725-choicewidth';  // 2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3108,6 +3115,12 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
       // 名前タグをすべて更新
       document.querySelectorAll('.char-name').forEach(el => {
         el.textContent = charNameFromData;
+      });
+      // 静的に定義されたシーン配列は name:"ロアン" のべた書きのため、ここで上書きする。
+      // 同じ処理が旧 data.json 経路にもあるが、Studio が data.json を出力しないため
+      // 404→.catch に落ちて一度も実行されず、村長の家だけ既定名のまま残っていた。
+      [introScenes, guideScenes, councilScenes, northAreaScenes].forEach(arr => {
+        if (Array.isArray(arr)) arr.forEach(s => { if (s.name) s.name = charNameFromData; });
       });
     }
 
