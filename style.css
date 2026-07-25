@@ -1,5 +1,5 @@
 :root {
-  --css-build-id: "css-0708-a";  /* CSS配信版ID。style.cssを更新するたびに手で更新（バッジに表示される） */
+  --css-build-id: "css-0709-charvpos";  /* CSS配信版ID。style.cssを更新するたびに手で更新（バッジに表示される） */
   --bg: #06040e;
   --panel: rgba(12, 8, 22, 0.92);
   --panel-2: rgba(26, 16, 34, 0.96);
@@ -318,7 +318,7 @@ body {
   position: absolute;
   bottom: 168px;
   left: 54%;
-  width: 310px;
+  width: 79%;            /* ステージ相対（iPhone15幅393基準 310px→79%）。全機種で占有率を統一 */
   height: min(480px, calc(100svh - 285px));
   transform: translateX(-50%);
   display: flex;
@@ -341,8 +341,8 @@ body {
 
 /* ロアンの寄り表示：説明シーンでは腰から上を見せる */
 .char-sprite.bust {
-  width: 520px;
-  height: 540px;
+  width: 110%;           /* ステージ(#app)相対。バストの寄り感を保ちつつ左右見切れを抑える出発値。実機で微調整可 */
+  height: min(540px, calc(100% - 248px));  /* bottom188+上部余白60を確保し、低い画面では自動で縮む＝顔切れ防止。100%は#app高基準 */
   left: 58%;
   bottom: 188px;
   overflow: hidden;
@@ -351,7 +351,7 @@ body {
 .char-sprite.bust img {
   max-width: none;
   max-height: none;
-  width: 560px;
+  width: 108%;           /* コンテナ相対（元 560/520=107.7%）。コンテナが既にステージ132%のため二重換算を避ける */
   height: auto;
   transform: translate(8px, 30px);
 }
@@ -541,64 +541,13 @@ body {
 }
 
 @media (max-height: 720px) {
-  .char-sprite {
-    width: 285px;
-    height: min(430px, calc(100svh - 260px));
-    left: 54%;
-    bottom: 152px;
-  }
-  .char-sprite.bust {
-    width: 440px;
-    height: 430px;
-    left: 58%;
-    bottom: 180px;
-  }
-  .char-sprite.bust img {
-    width: 470px;
-    transform: translate(4px, 25px);
-  }
+  /* char-sprite の機種別上書きは廃止（基本定義のステージ相対%に一本化）。以下は非char要素のみ */
   .textbox { min-height: 175px; }
   .text-body { font-size: 13.5px; line-height: 1.85; min-height: 92px; }
   .progress { bottom: 198px; }
 }
 
-@media (max-width: 430px) and (min-height: 740px) {
-  .char-sprite {
-    width: 315px;
-    height: 480px;
-    left: 55%;
-    bottom: 158px;
-  }
-  .char-sprite.bust {
-    width: 520px;
-    height: 540px;
-    left: 58%;
-    bottom: 190px;
-  }
-  .char-sprite.bust img {
-    width: 560px;
-    transform: translate(8px, 30px);
-  }
-}
 
-@media (min-width: 431px) and (max-height: 760px) {
-  .char-sprite {
-    width: 275px;
-    height: 415px;
-    left: 54%;
-    bottom: 150px;
-  }
-  .char-sprite.bust {
-    width: 430px;
-    height: 390px;
-    left: 58%;
-    bottom: 190px;
-  }
-  .char-sprite.bust img {
-    width: 440px;
-    transform: translate(4px, 20px);
-  }
-}
 
 @media (max-width: 600px) {
   .scene-video {
@@ -608,20 +557,6 @@ body {
 }
 
 
-/* ── LINEブラウザ対策（2026-06-08）──────────────────────────
-   min-height:740px のメディアクエリがLINE(753px)だけで発火し
-   ロアンが大きくなる問題を、強いセレクタで上書きする          */
-@media (max-width: 430px) and (min-height: 740px) {
-  #startFlowOverlay #sf-char-sprite.char-sprite.bust {
-    width: 440px !important;
-    height: 430px !important;
-    left: 58% !important;
-    bottom: 180px !important;
-  }
-  #startFlowOverlay #sf-char-sprite.char-sprite.bust img {
-    width: 470px !important;
-    max-width: none !important;
-    max-height: none !important;
-    transform: translate(4px, 25px) !important;
-  }
-}
+/* sf-char-sprite の px固定@media上書きは廃止（2026-07-09）。
+   基本定義 .char-sprite.bust のステージ相対%を全機種で継承＝機種差なし。
+   旧LINE対策(min-height:740発火でロアン肥大)は%化により不要化。 */
