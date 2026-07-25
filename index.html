@@ -1520,6 +1520,18 @@ body {
 .char-card-section:nth-child(2) .char-card-section-title::before { content: "VALUE"; }
 .char-card-section:nth-child(3) .char-card-section-title::before { content: "THINKING"; }
 .char-card-section:nth-child(4) .char-card-section-title::before { content: "WEAKNESS"; }
+/* データ駆動で描画したときは nth-child による英字見出しを止め、納品された en をそのまま出す。
+   項目が欠けても位置がずれない。idx-0725-charintro */
+.char-card-text.from-data .char-card-section-title::before { content: none !important; }
+.char-card-kicker {
+  margin-left: 10px;
+  margin-bottom: 2px;
+  color: rgba(128, 76, 84, 0.48);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  font-family: "Palatino Linotype", Palatino, serif;
+}
 .char-card-section:nth-child(5) .char-card-section-title::before { content: "ROLE"; }
 .char-card-section-body {
   margin-left: 10px;
@@ -2953,7 +2965,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0725-choicewidth';  // 2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
+const INDEX_BUILD_ID = 'idx-0725-charintro';  // キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3131,6 +3143,10 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
     // 村全景（v1.156.0系・Studio側でZ枠画像がある時のみ納品される）
     window._fvZenkei = fvData.fvData?.zenkei || null;
     window._fvKani = fvData.fvData?.kaniKantei || null;
+    // キャラクターカード用（v idx-0725-charintro）：Studio が分解済みで納品する紹介文と名前。
+    // charIntro は {C:[{label,en,body}…],N,S,E,W}。並び順・見出しの読み替えは Studio 側で確定済み。
+    window._fvCharIntro = fvData.fvData?.charIntro || null;
+    window._fvCharNames = fvData.fvData?.charNames || null;
     window._fvDataVer = fvData.dataVersion || 1;
     const scenesData = fvData.fvData?.scenes || {};
     const charName = CLIENT.char.name || 'ロアン';
@@ -4934,6 +4950,33 @@ function hideCharSelect() {
 }
 
 // ── キャラクターカード ──
+// ── キャラクターカードの中身を納品データで差し替える（v idx-0725-charintro）──
+// charIntro が無い／空のクライアントでは何もせず、HTMLに書かれた既定の文章をそのまま残す。
+// esc はこの関数の中で定義する（グローバルには存在しないため）。
+function applyCharCardData(dir) {
+  const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // 名前
+  const nm = ((window._fvCharNames || {}).central) || CLIENT.char.name || '';
+  if (nm) {
+    const nameEl = document.querySelector('#charCard .char-card-name');
+    if (nameEl) nameEl.textContent = nm;
+    const imgEl = document.getElementById('charCardImage');
+    if (imgEl) imgEl.alt = nm;
+  }
+  // 紹介文
+  const items = (window._fvCharIntro || {})[dir];
+  if (!Array.isArray(items) || !items.length) return;
+  const box = document.querySelector('#charCard .char-card-text');
+  if (!box) return;
+  box.classList.add('from-data');
+  box.innerHTML = items.map(it => (
+    '<div class="char-card-section">' +
+      (it && it.en ? '<div class="char-card-kicker">' + esc(it.en) + '</div>' : '') +
+      '<div class="char-card-section-title">' + esc(it && it.label) + '</div>' +
+      '<div class="char-card-section-body">' + esc(it && it.body) + '</div>' +
+    '</div>'
+  )).join('');
+}
 function showCharCard() {
   $("charSelect").classList.remove("visible");
   // カード画像：char.card が明示設定されていれば使用、なければ central から _card.png を導出
@@ -4942,6 +4985,7 @@ function showCharCard() {
   const cardImage    = CLIENT.char.card || derivedCard;
   const src = clientBase + cardImage;
   $("charCardImage").src = src;
+  applyCharCardData('C');   // 中央のカード。北南東西のカードは未実装（エリア代表は準備中）
   $("charCard").classList.add("show");
   $("btnHomeFixed").classList.add("visible");
 }
