@@ -328,7 +328,10 @@
 .bg.bg-north-library { mix-blend-mode: normal !important; background: url("北_図書館.png") center 40% / cover no-repeat !important; }
 .bg.bg-north-market  { mix-blend-mode: normal !important; background: url("北_交易所.png") center 25% / cover no-repeat !important; }
 
-/* 選択肢4つの場合は2×2グリッド */
+/* 選択肢のレイアウト（idx-0725-choicegrid で一般化）
+   4つ以上は常に2列。奇数なら最後の1つを全幅。行数が3以上になったら文字と余白を詰める。
+   従来は 4/5/6 個にのみ型を割り当てていたため、全景(zenkei)の納品でハブが7個になった際に
+   「列指定のない grid」＝全幅1列へ落ち、背後のキャラクターを覆っていた。 */
 .choice-box.grid-2col {
   display: grid !important;
   grid-template-columns: 1fr 1fr;
@@ -341,38 +344,20 @@
   line-height: 1.4;
   letter-spacing: 0.02em;
 }
-
-/* 選択肢5つの場合：2×2 + フル幅1つ */
-.choice-box.grid-2col-plus1 {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+/* 3行以上：詰める */
+.choice-box.grid-2col.dense {
+  gap: 8px;
 }
-.choice-box.grid-2col-plus1 .choice {
-  font-size: 11px;
-  padding: 18px 8px;
-  text-align: center;
-  line-height: 1.4;
-  letter-spacing: 0.02em;
+.choice-box.grid-2col.dense .choice {
+  font-size: 10px;
+  padding: 14px 6px;
+  letter-spacing: 0.01em;
 }
-.choice-box.grid-2col-plus1 .choice:last-child {
+/* 奇数個：最後の1つだけ全幅 */
+.choice-box.grid-2col.odd-last .choice:last-child {
   grid-column: 1 / -1;
   background: rgba(20, 12, 30, 0.65);
   border-color: rgba(216, 185, 120, 0.30);
-}
-
-/* 選択肢6つの場合は2×3グリッド */
-.choice-box.grid-2col-3row {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.choice-box.grid-2col-3row .choice {
-  font-size: 10px;
-  padding: 14px 6px;
-  text-align: center;
-  line-height: 1.4;
-  letter-spacing: 0.01em;
 }
 
 /* compass-markを非表示（bg_room.pngに不要） */
@@ -2961,7 +2946,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0717-trial3';  // trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
+const INDEX_BUILD_ID = 'idx-0725-choicegrid';  // 選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -4461,7 +4446,7 @@ function getVideo(slot) {
 function hideChoices() {
   const box = $("choices");
   if (!box) return;
-  box.classList.remove("show", "grid-2col", "grid-2col-plus1", "grid-2col-3row");
+  box.classList.remove("show", "grid-2col", "dense", "odd-last");
   box.style.setProperty("display", "none", "important");
 }
 
@@ -5065,7 +5050,7 @@ function renderChoices(choices) {
   box.style.removeProperty("display");
 
   // 表示クラスとグリッドをリセット
-  box.classList.remove("show", "grid-2col", "grid-2col-plus1", "grid-2col-3row");
+  box.classList.remove("show", "grid-2col", "dense", "odd-last");
 
   if (!Array.isArray(choices) || choices.length === 0) {
     hideChoices();
@@ -5073,9 +5058,13 @@ function renderChoices(choices) {
   }
 
   // グリッドレイアウト設定
-  if (choices.length === 4) box.classList.add("grid-2col");
-  else if (choices.length === 5) box.classList.add("grid-2col-plus1");
-  else if (choices.length === 6) box.classList.add("grid-2col-3row");
+  // 4つ以上は常に2列。奇数は最後の1つを全幅。3行以上になったら詰める。
+  // 個数を列挙せず行数で決めるため、選択肢が7つ・8つに増えても崩れない。
+  if (choices.length >= 4) {
+    box.classList.add("grid-2col");
+    if (choices.length % 2 === 1) box.classList.add("odd-last");
+    if (Math.ceil(choices.length / 2) >= 3) box.classList.add("dense");
+  }
 
   // 強制表示
   box.classList.add("show");
