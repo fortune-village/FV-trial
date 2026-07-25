@@ -315,8 +315,15 @@
         "line": "折れずに、形を変えてでも生き延びようとします。"
       }
     },
+    "release": {
+      "N": true,
+      "S": true,
+      "E": true,
+      "W": true,
+      "C": true
+    },
     "setup": {
-      "done": false
+      "done": true
     },
     "spheres": {
       "N": "アンカー・スフィア",
@@ -381,5 +388,5 @@
       ]
     }
   },
-  "exportedAt": "2026-07-25T04:07:24.407Z"
+  "exportedAt": "2026-07-25T04:14:10.678Z"
 }
