@@ -575,6 +575,8 @@
   font-family: "Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
 }
 .guide-personal-item:last-child { border-bottom: none; }
+    #bgFacLabel.tap::after { content:' ›'; opacity:0.75; font-weight:700; }
+    #bgFacPanel .guide-personal-item { border-bottom:1px solid rgba(120,90,50,0.14); }
 .guide-personal-label {
   font-size: 12px;
   color: rgba(52,26,26,0.82);
@@ -2348,7 +2350,16 @@ body[data-line-browser="1"] .bg {
 <div id="app" aria-label="Fortune Village Trial Novel UI">
   <!-- コイン残高HUD -->
   <!-- ★idx-0726-facname 背景の施設名ラベル。z-index は bgViewBlocker(24) より上＝鑑賞モードでも残る。第3段bでタップを載せるまでは pointer-events:none。 -->
-  <div id="bgFacLabel" style="display:none;position:absolute;top:54px;left:14px;z-index:25;padding:5px 11px;border-radius:6px;background:rgba(20,12,30,0.62);border:1px solid rgba(191,167,106,0.32);color:rgba(230,200,140,0.95);font-size:12px;font-weight:700;letter-spacing:0.04em;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.6);"></div>
+  <div id="bgFacLabel" onclick="event.stopPropagation();openBgFacPanel()" style="display:none;position:absolute;top:54px;left:14px;z-index:25;padding:5px 11px;border-radius:6px;background:rgba(20,12,30,0.62);border:1px solid rgba(191,167,106,0.32);color:rgba(230,200,140,0.95);font-size:12px;font-weight:700;letter-spacing:0.04em;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.6);"></div>
+  <!-- ★idx-0726-factap エリアの運勢パネル。行は案内板と同じ guide-personal-* を再利用。 -->
+  <div id="bgFacPanel" onclick="closeBgFacPanel(event)" style="display:none;position:fixed;inset:0;z-index:40;align-items:center;justify-content:center;padding:22px;background:rgba(12,8,18,0.55)">
+    <div onclick="event.stopPropagation()" style="position:relative;width:100%;max-width:340px;max-height:78vh;overflow:auto;padding:18px 18px 14px;border-radius:12px;background:#f7f1e3;border:1px solid rgba(120,90,50,0.28);box-shadow:0 10px 34px rgba(0,0,0,0.45)">
+      <button onclick="closeBgFacPanel(event)" style="position:absolute;top:8px;right:10px;width:26px;height:26px;border:none;border-radius:50%;background:rgba(120,90,50,0.12);color:#6a533a;font-size:15px;line-height:1;cursor:pointer;font-family:inherit">×</button>
+      <div id="bgFacPanelTitle" style="font-size:15px;font-weight:700;color:#4a3722;letter-spacing:0.06em"></div>
+      <div id="bgFacPanelSub" style="font-size:10.5px;color:#8a7350;margin-top:3px;margin-bottom:10px"></div>
+      <div id="bgFacPanelItems"></div>
+    </div>
+  </div>
   <div id="coinHud" onclick="openFVShop()" style="display:none;position:absolute;top:54px;right:14px;z-index:26;
     background:rgba(16,10,5,0.78);border:1px solid rgba(216,185,120,0.42);
     border-radius:999px;padding:5px 13px;font-size:12px;
@@ -2973,7 +2984,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0726-facname';  // 背景の施設名ラベルを新設＝第3段a（表示のみ）。Studio v1.284.0 が納品する fvData.bgFacLabels（{納品ファイル名:施設名}のフラット形・三状態を解決済み）を読み、背景の実ファイル名で引いて画面左上に出す。★フック＝setBg(className) の一箇所のみ＝全ての背景切替がここを通るため、シーン単位でなく【背景が実際に変わったとき】だけラベルが差し替わる（エリアの語りは7ブロックあり背景据え置きが多いのでちらつかない）。★クラス名でなく実ファイル名で引く＝エリア主画像 bg-{cls} と dirScenes の bg-jf-N は別クラスでも同じ画像を指すため。idx-0726-areatap で作った window._fvBgFileByClass をそのまま再利用（新設なし）。★該当する施設名が無い背景では自動的に消える＝画面ごとの出し分け条件は書いていない。納品されるのは村の背景だけなのでタイトル・ホームでは自然に出ない。★位置＝左上（top:54px left:14px）＝coinHud（top:54px right:14px）と左右対称。下部はテキスト欄と衝突するため避けた。★z-index:25＝bgViewBlocker(24) より上＝背景鑑賞モードでテキスト欄とキャラが消えてもラベルは残る（背景だけになった瞬間こそ『これは何か』が効くため）。第3段bでタップを載せる下地でもある。★pointer-events:none＝現時点では表示のみ。タップは第3段bで解禁する（押しても何も起きない状態を作らないため）。★影響範囲＝CLIENT に bgFacLabels の受け皿／FV_data.json からの取り込み1行／ラベルのDOM1つ／setBg への1行フック／updateBgFacLabel の新設。既存のシーン進行・鑑賞モード・背景切替・逆引き表・引用欄・エリア導入は無改修。⚠実機検品事項＝★エリアの背景ごとに左上へ施設名が出るか（南エリア→南エリア街並み→文化資料館→劇場）＝本版最大の判定点／★背景が変わらないシーン送りでちらつかないか／★鑑賞モードでテキストが消えてもラベルが残るか／★タイトル・ホームで出ないか／⚠★ホームやタイトルへ戻ったときラベルが残らないか＝setBg を通らない画面遷移があると消え残る可能性がある（残るようなら画面遷移側にも hide を足す）／★キャラや coinHud と重ならないか／★中央・内観でも出るか（村長の家／中央役場／執務室／中央会議室）。★★次段＝第3段b＝pointer-events を auto にしてタップ→そのエリアの運勢パネル（guidePersonal を area の方位文字で絞り込む・既に納品済みのため新規データ不要）。  旧 キャラカードの引用欄の折り返しを改善。症状＝「隣で一緒に、答えを探していきたいのです」（20字）で最後の「す」一字だけが次行に落ちる。原因＝幅が数ピクセル足りない（left/right 20px＋padding 16px＋letter-spacing 0.07em）。修正＝①left/right 20→14px・padding 16→12px②letter-spacing 0.07→0.03em（①②で約35pxの余裕＝20字前後は一行に収まる）③text-wrap: balance を追加＝台詞は依頼文の仕様上15〜25字の幅があり、幅を稼ぐだけでは長い台詞で必ず再発するため、溢れたときは19字＋1字ではなく均等に割る。iOS Safari 17.4 以降で有効で、未対応環境では従来の折り返しに戻るだけで害はない。影響範囲＝.char-card-quote と .char-card-quote-inner の二クラスのみ。引用欄は人物画像に重なるため、可読性を落とすフォント縮小（12→11px）は採らなかった。旧 idx-0726-areatap＝エリア導入の余分な二手を削除。症状＝タイトルカード→背景A（キャラ「こちらが、◆エリアです」）のあと、背景Aだけの画面→フェード→同じ背景A＋テキスト、と何も変わらない二段階が挿さる（タップ3回）。原因は二つ。①背景鑑賞モード＝エリア画面のタップ1回目で textbox とキャラを消してTAP待ちに入る。idx-0725-titlecard で「次がタイトルカードなら入らない」条件を足したが、キャラの口上シーンの次は通常シーンのため対象外だった。→修正＝現在のシーンにキャラが立っているときは鑑賞モードに入らない（!_curSc?.char）。風景シーン（char:false）での鑑賞モードは従来どおり残す。②背景切替の誤検出＝判定がクラス名の比較だった。エリア主画像は bg-{cls}、dirScenes は imgFile 経由の bg-jf-N で、クラス名は違うがどちらも同じ ◆エリア.png を指すため、無変化のoverlayフェードが走っていた。→修正＝背景クラス→実ファイル名の逆引き表 window._fvBgFileByClass を作り、実ファイル名で比較する。③付随＝①②を外すと背景無変化の進行経路が即時になりキャラがフェードなしで消えるため、キャラが立っていて次シーンに居ないときは fadeHideTextboxChar で消してから進む（タップは1回）。結果＝キャラ「こちらが…」→タップ1回→背景A＋本文。影響範囲＝①はエリア画面の char:true シーン（導入・準備中）、②はエリア画面の全背景遷移（同じ画像ならフェードが消える・異なる画像なら従来どおり）。bgChanges の使用箇所は1つのみで他の画面に波及しない。旧 idx-0725-charquote＝キャラカードの引用欄（一言）を納品データ charQuote.C から描画。納品が無ければHTMLの既定文をそのまま残すため既存クライアントは壊れない。Studio v1.264.0 以降が charQuote:{C:'「…」',…} を納品する。旧 idx-0725-tsushinfix＝openFvTsushin()内の window._fvSetupDone=false を削除（起動時初期化4行の写し込み事故）。FV通信を開くと初期設定フラグが落ち、ホーム→村長の家で初期設定シーン（ロアン）が開いていた。updateSurveyBtn()呼び出しは残置（フラグが真なら何もしないため無害）。旧 idx-0725-titlecard＝次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
+const INDEX_BUILD_ID = 'idx-0726-factap';  // 施設名ラベルをタップするとそのエリアの運勢が出るようにした＝第4段。★参照元＝納品済みの CLIENT.guidePersonal（Studio が十二親干法から生成）。新規データは増やしていない＝背景カードごとに持たせる案は採らず（三つ目の複製になるため）index で方位から絞る（✅シン裁定＝案あ）。★絞り込み＝selectedAreaKey を方位の漢字へ変換し items の area を部分一致で拾う。area は Studio 側で自由編集できる文字列（『東・中央エリア』等）のため複合エントリは両方の方位にヒットする＝命式の構造どおり（東は年支の蔵干が三つあるため3組6行になる）。★パネル＝案内板(guideBoardOverlay)はシーン遷移に組み込まれており流用するとシーンが進むため再利用しない。行のCSSクラス guide-personal-* だけ借りて見た目を揃えた新規オーバーレイ。★中身＝見出し『◯◯エリア』＋副題『いま見ているのは 劇場』＋各行『◯◯を見るとき → 施設』。施設名の層の食い違い（ラベルは方位施設・星別施設／ガイドは資源施設）は、見出しでエリアの話と示し副題でタップ対象を示すことで位置づけの違いが読めるようにした。★押せるのは対応する運勢がある画面だけ＝pointer-events を updateBgFacLabel で切り替え、押せるときだけ末尾に › を出す。★タップがシーンを進めないよう onclick で stopPropagation。z-index 40＝bgViewBlocker(24)・ラベル(25)より上＝背景鑑賞モード中も押せる。閉じ方はパネル外タップと×の両方。★影響範囲＝ラベルへの onclick／パネルのDOM／新設関数4本／updateBgFacLabel の分岐／CSS2行。setBg・逆引き表・シーン進行・鑑賞モード・案内板・引用欄・キャラカードは無改修。⚠実機検品事項＝★エリア画面でラベルに › が出てタップでパネルが開くか＝本版最大の判定点／★中身が方位どおりか（南＝夫・蓄財運／東＝3組6行／西・中央＝1組2行）／★タップでシーンが進んでしまわないか／★鑑賞モード中もタップできるか／★パネル外タップと×で閉じるか／★行の見た目が案内板と揃っているか／★運勢が無い画面でラベルが押せないか／JSエラーが出ないか。  旧 背景の施設名ラベルを新設＝第3段a（表示のみ）。Studio v1.284.0 が納品する fvData.bgFacLabels（{納品ファイル名:施設名}のフラット形・三状態を解決済み）を読み、背景の実ファイル名で引いて画面左上に出す。★フック＝setBg(className) の一箇所のみ＝全ての背景切替がここを通るため、シーン単位でなく【背景が実際に変わったとき】だけラベルが差し替わる（エリアの語りは7ブロックあり背景据え置きが多いのでちらつかない）。★クラス名でなく実ファイル名で引く＝エリア主画像 bg-{cls} と dirScenes の bg-jf-N は別クラスでも同じ画像を指すため。idx-0726-areatap で作った window._fvBgFileByClass をそのまま再利用（新設なし）。★該当する施設名が無い背景では自動的に消える＝画面ごとの出し分け条件は書いていない。納品されるのは村の背景だけなのでタイトル・ホームでは自然に出ない。★位置＝左上（top:54px left:14px）＝coinHud（top:54px right:14px）と左右対称。下部はテキスト欄と衝突するため避けた。★z-index:25＝bgViewBlocker(24) より上＝背景鑑賞モードでテキスト欄とキャラが消えてもラベルは残る（背景だけになった瞬間こそ『これは何か』が効くため）。第3段bでタップを載せる下地でもある。★pointer-events:none＝現時点では表示のみ。タップは第3段bで解禁する（押しても何も起きない状態を作らないため）。★影響範囲＝CLIENT に bgFacLabels の受け皿／FV_data.json からの取り込み1行／ラベルのDOM1つ／setBg への1行フック／updateBgFacLabel の新設。既存のシーン進行・鑑賞モード・背景切替・逆引き表・引用欄・エリア導入は無改修。⚠実機検品事項＝★エリアの背景ごとに左上へ施設名が出るか（南エリア→南エリア街並み→文化資料館→劇場）＝本版最大の判定点／★背景が変わらないシーン送りでちらつかないか／★鑑賞モードでテキストが消えてもラベルが残るか／★タイトル・ホームで出ないか／⚠★ホームやタイトルへ戻ったときラベルが残らないか＝setBg を通らない画面遷移があると消え残る可能性がある（残るようなら画面遷移側にも hide を足す）／★キャラや coinHud と重ならないか／★中央・内観でも出るか（村長の家／中央役場／執務室／中央会議室）。★★次段＝第3段b＝pointer-events を auto にしてタップ→そのエリアの運勢パネル（guidePersonal を area の方位文字で絞り込む・既に納品済みのため新規データ不要）。  旧 キャラカードの引用欄の折り返しを改善。症状＝「隣で一緒に、答えを探していきたいのです」（20字）で最後の「す」一字だけが次行に落ちる。原因＝幅が数ピクセル足りない（left/right 20px＋padding 16px＋letter-spacing 0.07em）。修正＝①left/right 20→14px・padding 16→12px②letter-spacing 0.07→0.03em（①②で約35pxの余裕＝20字前後は一行に収まる）③text-wrap: balance を追加＝台詞は依頼文の仕様上15〜25字の幅があり、幅を稼ぐだけでは長い台詞で必ず再発するため、溢れたときは19字＋1字ではなく均等に割る。iOS Safari 17.4 以降で有効で、未対応環境では従来の折り返しに戻るだけで害はない。影響範囲＝.char-card-quote と .char-card-quote-inner の二クラスのみ。引用欄は人物画像に重なるため、可読性を落とすフォント縮小（12→11px）は採らなかった。旧 idx-0726-areatap＝エリア導入の余分な二手を削除。症状＝タイトルカード→背景A（キャラ「こちらが、◆エリアです」）のあと、背景Aだけの画面→フェード→同じ背景A＋テキスト、と何も変わらない二段階が挿さる（タップ3回）。原因は二つ。①背景鑑賞モード＝エリア画面のタップ1回目で textbox とキャラを消してTAP待ちに入る。idx-0725-titlecard で「次がタイトルカードなら入らない」条件を足したが、キャラの口上シーンの次は通常シーンのため対象外だった。→修正＝現在のシーンにキャラが立っているときは鑑賞モードに入らない（!_curSc?.char）。風景シーン（char:false）での鑑賞モードは従来どおり残す。②背景切替の誤検出＝判定がクラス名の比較だった。エリア主画像は bg-{cls}、dirScenes は imgFile 経由の bg-jf-N で、クラス名は違うがどちらも同じ ◆エリア.png を指すため、無変化のoverlayフェードが走っていた。→修正＝背景クラス→実ファイル名の逆引き表 window._fvBgFileByClass を作り、実ファイル名で比較する。③付随＝①②を外すと背景無変化の進行経路が即時になりキャラがフェードなしで消えるため、キャラが立っていて次シーンに居ないときは fadeHideTextboxChar で消してから進む（タップは1回）。結果＝キャラ「こちらが…」→タップ1回→背景A＋本文。影響範囲＝①はエリア画面の char:true シーン（導入・準備中）、②はエリア画面の全背景遷移（同じ画像ならフェードが消える・異なる画像なら従来どおり）。bgChanges の使用箇所は1つのみで他の画面に波及しない。旧 idx-0725-charquote＝キャラカードの引用欄（一言）を納品データ charQuote.C から描画。納品が無ければHTMLの既定文をそのまま残すため既存クライアントは壊れない。Studio v1.264.0 以降が charQuote:{C:'「…」',…} を納品する。旧 idx-0725-tsushinfix＝openFvTsushin()内の window._fvSetupDone=false を削除（起動時初期化4行の写し込み事故）。FV通信を開くと初期設定フラグが落ち、ホーム→村長の家で初期設定シーン（ロアン）が開いていた。updateSurveyBtn()呼び出しは残置（フラグが真なら何もしないため無害）。旧 idx-0725-titlecard＝次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -4402,6 +4413,51 @@ function stopBgPan() {
 }
 
 // ── ユーティリティ ──
+// ★idx-0726-factap エリアの運勢パネル。
+// 参照元は納品済みの CLIENT.guidePersonal（Studio が十二親干法から生成）。新規データは増やしていない。
+// area は自由文字列（「東・中央エリア」等）のため方位の漢字で部分一致を取る＝複合エントリが両方にヒットする。
+function _bgFacAreaJp(){
+  try {
+    const k = (typeof selectedAreaKey !== 'undefined' && selectedAreaKey) ? String(selectedAreaKey) : '';
+    const m = { north:'北', south:'南', east:'東', west:'西', central:'中央',
+                N:'北', S:'南', E:'東', W:'西', C:'中央',
+                '北':'北','南':'南','東':'東','西':'西','中央':'中央' };
+    return m[k] || '';
+  } catch(e) { return ''; }
+}
+function _bgFacItems(jp){
+  try {
+    if (!jp) return [];
+    const items = (typeof CLIENT !== 'undefined' && CLIENT.guidePersonal && CLIENT.guidePersonal.items) || [];
+    return items.filter(it => String((it && it.area) || '').includes(jp));
+  } catch(e) { return []; }
+}
+function openBgFacPanel(){
+  try {
+    const jp = _bgFacAreaJp();
+    const hits = _bgFacItems(jp);
+    if (!jp || !hits.length) return;
+    const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const t = document.getElementById('bgFacPanelTitle');
+    const sub = document.getElementById('bgFacPanelSub');
+    const box = document.getElementById('bgFacPanelItems');
+    const lbl = document.getElementById('bgFacLabel');
+    if (t) t.textContent = jp + 'エリア';
+    const cur = lbl ? String(lbl.textContent || '') : '';
+    if (sub) { sub.textContent = cur ? ('いま見ているのは ' + cur) : ''; sub.style.display = cur ? 'block' : 'none'; }
+    if (box) box.innerHTML = hits.map(it =>
+      '<div class="guide-personal-item"><span class="guide-personal-label">' + esc(it.label) + '</span>'
+      + '<span class="guide-personal-arrow">\u2192</span>'
+      + '<span class="guide-personal-fac">' + esc(it.facility || '') + '</span></div>').join('');
+    const p = document.getElementById('bgFacPanel');
+    if (p) p.style.display = 'flex';
+  } catch(e) {}
+}
+function closeBgFacPanel(ev){
+  try { if (ev && ev.stopPropagation) ev.stopPropagation(); } catch(e) {}
+  const p = document.getElementById('bgFacPanel');
+  if (p) p.style.display = 'none';
+}
 // ★idx-0726-facname 背景の実ファイル名で施設名を引いて左上に出す。
 // クラス名ではなく実ファイル名で引くのは、エリア主画像(bg-{cls})と dirScenes(bg-jf-N)が
 // 別クラスでも同じ画像を指すため（idx-0726-areatap で作った逆引き表をそのまま使う）。
@@ -4413,8 +4469,14 @@ function updateBgFacLabel(className){
     const map  = (typeof CLIENT !== 'undefined' && CLIENT.bgFacLabels) || null;
     const file = (window._fvBgFileByClass || {})[className] || '';
     const name = (map && file && map[file]) || '';
-    if (name) { el.textContent = name; el.style.display = 'block'; }
-    else { el.textContent = ''; el.style.display = 'none'; }
+    if (name) {
+      el.textContent = name; el.style.display = 'block';
+      // 対応する運勢がある画面でだけ押せるようにする（押しても何も出ない状態を作らない）
+      const _tap = _bgFacItems(_bgFacAreaJp()).length > 0;
+      el.style.pointerEvents = _tap ? 'auto' : 'none';
+      el.style.cursor = _tap ? 'pointer' : '';
+      el.classList.toggle('tap', _tap);
+    } else { el.textContent = ''; el.style.display = 'none'; el.classList.remove('tap'); }
   } catch(e) {}
 }
 function setBg(className) {
