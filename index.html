@@ -2347,6 +2347,8 @@ body[data-line-browser="1"] .bg {
 <div id="backdropBlur"></div>
 <div id="app" aria-label="Fortune Village Trial Novel UI">
   <!-- コイン残高HUD -->
+  <!-- ★idx-0726-facname 背景の施設名ラベル。z-index は bgViewBlocker(24) より上＝鑑賞モードでも残る。第3段bでタップを載せるまでは pointer-events:none。 -->
+  <div id="bgFacLabel" style="display:none;position:absolute;top:54px;left:14px;z-index:25;padding:5px 11px;border-radius:6px;background:rgba(20,12,30,0.62);border:1px solid rgba(191,167,106,0.32);color:rgba(230,200,140,0.95);font-size:12px;font-weight:700;letter-spacing:0.04em;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.6);"></div>
   <div id="coinHud" onclick="openFVShop()" style="display:none;position:absolute;top:54px;right:14px;z-index:26;
     background:rgba(16,10,5,0.78);border:1px solid rgba(216,185,120,0.42);
     border-radius:999px;padding:5px 13px;font-size:12px;
@@ -2971,7 +2973,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0726-quotewrap';  // キャラカードの引用欄の折り返しを改善。症状＝「隣で一緒に、答えを探していきたいのです」（20字）で最後の「す」一字だけが次行に落ちる。原因＝幅が数ピクセル足りない（left/right 20px＋padding 16px＋letter-spacing 0.07em）。修正＝①left/right 20→14px・padding 16→12px②letter-spacing 0.07→0.03em（①②で約35pxの余裕＝20字前後は一行に収まる）③text-wrap: balance を追加＝台詞は依頼文の仕様上15〜25字の幅があり、幅を稼ぐだけでは長い台詞で必ず再発するため、溢れたときは19字＋1字ではなく均等に割る。iOS Safari 17.4 以降で有効で、未対応環境では従来の折り返しに戻るだけで害はない。影響範囲＝.char-card-quote と .char-card-quote-inner の二クラスのみ。引用欄は人物画像に重なるため、可読性を落とすフォント縮小（12→11px）は採らなかった。旧 idx-0726-areatap＝エリア導入の余分な二手を削除。症状＝タイトルカード→背景A（キャラ「こちらが、◆エリアです」）のあと、背景Aだけの画面→フェード→同じ背景A＋テキスト、と何も変わらない二段階が挿さる（タップ3回）。原因は二つ。①背景鑑賞モード＝エリア画面のタップ1回目で textbox とキャラを消してTAP待ちに入る。idx-0725-titlecard で「次がタイトルカードなら入らない」条件を足したが、キャラの口上シーンの次は通常シーンのため対象外だった。→修正＝現在のシーンにキャラが立っているときは鑑賞モードに入らない（!_curSc?.char）。風景シーン（char:false）での鑑賞モードは従来どおり残す。②背景切替の誤検出＝判定がクラス名の比較だった。エリア主画像は bg-{cls}、dirScenes は imgFile 経由の bg-jf-N で、クラス名は違うがどちらも同じ ◆エリア.png を指すため、無変化のoverlayフェードが走っていた。→修正＝背景クラス→実ファイル名の逆引き表 window._fvBgFileByClass を作り、実ファイル名で比較する。③付随＝①②を外すと背景無変化の進行経路が即時になりキャラがフェードなしで消えるため、キャラが立っていて次シーンに居ないときは fadeHideTextboxChar で消してから進む（タップは1回）。結果＝キャラ「こちらが…」→タップ1回→背景A＋本文。影響範囲＝①はエリア画面の char:true シーン（導入・準備中）、②はエリア画面の全背景遷移（同じ画像ならフェードが消える・異なる画像なら従来どおり）。bgChanges の使用箇所は1つのみで他の画面に波及しない。旧 idx-0725-charquote＝キャラカードの引用欄（一言）を納品データ charQuote.C から描画。納品が無ければHTMLの既定文をそのまま残すため既存クライアントは壊れない。Studio v1.264.0 以降が charQuote:{C:'「…」',…} を納品する。旧 idx-0725-tsushinfix＝openFvTsushin()内の window._fvSetupDone=false を削除（起動時初期化4行の写し込み事故）。FV通信を開くと初期設定フラグが落ち、ホーム→村長の家で初期設定シーン（ロアン）が開いていた。updateSurveyBtn()呼び出しは残置（フラグが真なら何もしないため無害）。旧 idx-0725-titlecard＝次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
+const INDEX_BUILD_ID = 'idx-0726-facname';  // 背景の施設名ラベルを新設＝第3段a（表示のみ）。Studio v1.284.0 が納品する fvData.bgFacLabels（{納品ファイル名:施設名}のフラット形・三状態を解決済み）を読み、背景の実ファイル名で引いて画面左上に出す。★フック＝setBg(className) の一箇所のみ＝全ての背景切替がここを通るため、シーン単位でなく【背景が実際に変わったとき】だけラベルが差し替わる（エリアの語りは7ブロックあり背景据え置きが多いのでちらつかない）。★クラス名でなく実ファイル名で引く＝エリア主画像 bg-{cls} と dirScenes の bg-jf-N は別クラスでも同じ画像を指すため。idx-0726-areatap で作った window._fvBgFileByClass をそのまま再利用（新設なし）。★該当する施設名が無い背景では自動的に消える＝画面ごとの出し分け条件は書いていない。納品されるのは村の背景だけなのでタイトル・ホームでは自然に出ない。★位置＝左上（top:54px left:14px）＝coinHud（top:54px right:14px）と左右対称。下部はテキスト欄と衝突するため避けた。★z-index:25＝bgViewBlocker(24) より上＝背景鑑賞モードでテキスト欄とキャラが消えてもラベルは残る（背景だけになった瞬間こそ『これは何か』が効くため）。第3段bでタップを載せる下地でもある。★pointer-events:none＝現時点では表示のみ。タップは第3段bで解禁する（押しても何も起きない状態を作らないため）。★影響範囲＝CLIENT に bgFacLabels の受け皿／FV_data.json からの取り込み1行／ラベルのDOM1つ／setBg への1行フック／updateBgFacLabel の新設。既存のシーン進行・鑑賞モード・背景切替・逆引き表・引用欄・エリア導入は無改修。⚠実機検品事項＝★エリアの背景ごとに左上へ施設名が出るか（南エリア→南エリア街並み→文化資料館→劇場）＝本版最大の判定点／★背景が変わらないシーン送りでちらつかないか／★鑑賞モードでテキストが消えてもラベルが残るか／★タイトル・ホームで出ないか／⚠★ホームやタイトルへ戻ったときラベルが残らないか＝setBg を通らない画面遷移があると消え残る可能性がある（残るようなら画面遷移側にも hide を足す）／★キャラや coinHud と重ならないか／★中央・内観でも出るか（村長の家／中央役場／執務室／中央会議室）。★★次段＝第3段b＝pointer-events を auto にしてタップ→そのエリアの運勢パネル（guidePersonal を area の方位文字で絞り込む・既に納品済みのため新規データ不要）。  旧 キャラカードの引用欄の折り返しを改善。症状＝「隣で一緒に、答えを探していきたいのです」（20字）で最後の「す」一字だけが次行に落ちる。原因＝幅が数ピクセル足りない（left/right 20px＋padding 16px＋letter-spacing 0.07em）。修正＝①left/right 20→14px・padding 16→12px②letter-spacing 0.07→0.03em（①②で約35pxの余裕＝20字前後は一行に収まる）③text-wrap: balance を追加＝台詞は依頼文の仕様上15〜25字の幅があり、幅を稼ぐだけでは長い台詞で必ず再発するため、溢れたときは19字＋1字ではなく均等に割る。iOS Safari 17.4 以降で有効で、未対応環境では従来の折り返しに戻るだけで害はない。影響範囲＝.char-card-quote と .char-card-quote-inner の二クラスのみ。引用欄は人物画像に重なるため、可読性を落とすフォント縮小（12→11px）は採らなかった。旧 idx-0726-areatap＝エリア導入の余分な二手を削除。症状＝タイトルカード→背景A（キャラ「こちらが、◆エリアです」）のあと、背景Aだけの画面→フェード→同じ背景A＋テキスト、と何も変わらない二段階が挿さる（タップ3回）。原因は二つ。①背景鑑賞モード＝エリア画面のタップ1回目で textbox とキャラを消してTAP待ちに入る。idx-0725-titlecard で「次がタイトルカードなら入らない」条件を足したが、キャラの口上シーンの次は通常シーンのため対象外だった。→修正＝現在のシーンにキャラが立っているときは鑑賞モードに入らない（!_curSc?.char）。風景シーン（char:false）での鑑賞モードは従来どおり残す。②背景切替の誤検出＝判定がクラス名の比較だった。エリア主画像は bg-{cls}、dirScenes は imgFile 経由の bg-jf-N で、クラス名は違うがどちらも同じ ◆エリア.png を指すため、無変化のoverlayフェードが走っていた。→修正＝背景クラス→実ファイル名の逆引き表 window._fvBgFileByClass を作り、実ファイル名で比較する。③付随＝①②を外すと背景無変化の進行経路が即時になりキャラがフェードなしで消えるため、キャラが立っていて次シーンに居ないときは fadeHideTextboxChar で消してから進む（タップは1回）。結果＝キャラ「こちらが…」→タップ1回→背景A＋本文。影響範囲＝①はエリア画面の char:true シーン（導入・準備中）、②はエリア画面の全背景遷移（同じ画像ならフェードが消える・異なる画像なら従来どおり）。bgChanges の使用箇所は1つのみで他の画面に波及しない。旧 idx-0725-charquote＝キャラカードの引用欄（一言）を納品データ charQuote.C から描画。納品が無ければHTMLの既定文をそのまま残すため既存クライアントは壊れない。Studio v1.264.0 以降が charQuote:{C:'「…」',…} を納品する。旧 idx-0725-tsushinfix＝openFvTsushin()内の window._fvSetupDone=false を削除（起動時初期化4行の写し込み事故）。FV通信を開くと初期設定フラグが落ち、ホーム→村長の家で初期設定シーン（ロアン）が開いていた。updateSurveyBtn()呼び出しは残置（フラグが真なら何もしないため無害）。旧 idx-0725-titlecard＝次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3047,6 +3049,7 @@ const CLIENT = {
   params: { north: 0, east: 70, south: 42, west: 15, central: 69 },
   meishiki: "戊午・乙卯・甲戌",  // サンプル命式（data.jsonで上書き）
   guidePersonal: null,
+  bgFacLabels: null,
   achievements: null
 };
 
@@ -3164,6 +3167,8 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
     window._fvSpheres = fvData.fvData?.spheres || null;
     // あなた専用ガイド（スタジオが生成した guidePersonal）を取り込む
     if (fvData.fvData?.guidePersonal) CLIENT.guidePersonal = fvData.fvData.guidePersonal;
+    // ★idx-0726-facname 背景の施設名（Studio v1.284.0 が三状態を解決して納品）
+    if (fvData.fvData?.bgFacLabels) CLIENT.bgFacLabels = fvData.fvData.bgFacLabels;
     // areaInfoをAREA_INFOに反映（Studio v1で編集した値を使用）
     AREA_INFO = JSON.parse(JSON.stringify(AREA_INFO_DEFAULT));
     const customAreaInfo = fvData.fvData?.areaInfo || {};
@@ -4397,8 +4402,24 @@ function stopBgPan() {
 }
 
 // ── ユーティリティ ──
+// ★idx-0726-facname 背景の実ファイル名で施設名を引いて左上に出す。
+// クラス名ではなく実ファイル名で引くのは、エリア主画像(bg-{cls})と dirScenes(bg-jf-N)が
+// 別クラスでも同じ画像を指すため（idx-0726-areatap で作った逆引き表をそのまま使う）。
+// 該当する施設名が無い背景では自動的に消える＝画面ごとの出し分けは要らない。
+function updateBgFacLabel(className){
+  try {
+    const el = document.getElementById('bgFacLabel');
+    if (!el) return;
+    const map  = (typeof CLIENT !== 'undefined' && CLIENT.bgFacLabels) || null;
+    const file = (window._fvBgFileByClass || {})[className] || '';
+    const name = (map && file && map[file]) || '';
+    if (name) { el.textContent = name; el.style.display = 'block'; }
+    else { el.textContent = ''; el.style.display = 'none'; }
+  } catch(e) {}
+}
 function setBg(className) {
   $("bg").className = `bg ${className}`;
+  updateBgFacLabel(className);
   if (BG_PAN_CONFIG[className]) {
     startBgPan(className);
   } else {
