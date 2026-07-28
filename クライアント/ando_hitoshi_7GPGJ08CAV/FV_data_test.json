@@ -1,5 +1,5 @@
 {
-  "name": "ando_hitoshi",
+  "name": "安藤 準",
   "birthday": "",
   "dataVersion": 4,
   "updateNote": "東エリア、西エリア、南エリア、リリースしました。",
@@ -177,12 +177,12 @@
         {
           "text": "道の奥に見えているのが、北エリアを支える図書館・書院です。\n石造りの落ち着いた建物は、周囲の街並みの中で、静かな存在感を放っています。\nここでは、知識や記録が大切に扱われ、時を越えて残るものとして守られています。",
           "imgStep": "s3",
-          "imgFile": "北_エリアLMK.png"
+          "imgFile": "北_星施設.png"
         },
         {
           "text": "その少し手前には、市場・交易所があります。\nここは、ただ品物が売り買いされる場所ではありません。\n必要なもの、積み重ねられた経験、誰かが残した知恵が、人から人へ、山の地層のように静かに受け継がれていく場所です。",
           "imgStep": "s3b",
-          "imgFile": "北_星施設.png"
+          "imgFile": "北_エリアLMK.png"
         },
         {
           "text": "住民たちは、書物を読み、記録を確かめ、必要な品や経験を受け渡しています。\n人々の営みは急がず、ひとつずつ確かめるように進んでいきます。\n北エリアでは、知恵はその場だけで終わらず、残され、読み継がれ、次の誰かへと渡っていきます。",
@@ -224,12 +224,12 @@
         {
           "imgStep": "s3",
           "text": "南の核となる食堂や劇場は、誰か一人が中心に立つ場所というより、多くの人が同じ目線で集まれる、開かれた器です。扉は広く、席と席のあいだにも余白があり、そこには垣根のない、隔てのない雰囲気が流れています。",
-          "imgFile": "南_エリアLMK.png"
+          "imgFile": "南_星施設.png"
         },
         {
           "imgStep": "s3b",
           "text": "その中心にある賑わい寄合所では、思いを表に出すことが、特別な才能ではなく、対等な集まりの中で自然に育っていきます。話す人、聞く人、うなずく人、それぞれの存在が表現の一部となり、ひとつの場を形づくっています。このエリアでの表現・伝達は、強く主張するためのものではなく、協和を生み、仲間とのつながりの中で安心感を育み、仲間の中で声を通わせていく力として働きます。",
-          "imgFile": "南_星施設.png"
+          "imgFile": "南_エリアLMK.png"
         },
         {
           "imgStep": "s5",
@@ -251,12 +251,12 @@
         {
           "imgStep": "s7",
           "text": "その中心にある旅立ち広場は、勢いよく飛び出すための場所というより、これまで蓄えてきたものを確認し、整然と積まれた準備を胸に、一歩を踏み出すための場です。",
-          "imgFile": "東_星施設CU.png"
+          "imgFile": "東_エリアLMKCU.png"
         },
         {
           "imgStep": "s6",
           "text": "生活蓄積庫には、身近な暮らしを守るための品々が安定して保管され、必要な時に必要なものを取り出せるよう、すみずみまで整えられています。",
-          "imgFile": "東_施設CU.png"
+          "imgFile": "東_星施設CU.png"
         },
         {
           "imgStep": "s5",
@@ -283,12 +283,12 @@
         {
           "text": "街の奥には、役所と法務館が構えています。そこは声を荒らして物事を決める場ではなく、定められた手順を守り、必要な判断を静かに下すための器です。規律、秩序、統制が行き届いているため、誰か一人の感情に流されることなく、村全体の信頼を保つ役割を担っています。",
           "imgStep": "s6",
-          "imgFile": "西_施設CU.png"
+          "imgFile": "西_星施設CU.png"
         },
         {
           "imgStep": "s7",
           "text": "その中心にある名誉登録所では、責任を引き受けた人の働きや、まとめ役として果たした務めが丁寧に記録されます。ここで重んじられるのは、目立つ成果だけではありません。場を乱さず、必要なときに前へ出て、役目が終われば静かに引くこと。その引き際まで含めて、品位ある働きとして扱われます。",
-          "imgFile": "西_星施設CU.png"
+          "imgFile": "西_エリアLMKCU.png"
         },
         {
           "text": "このエリアの力は、日常では、約束を守る姿勢、役割を途中で投げ出さない態度、そして自分の立場にふさわしい振る舞いとして表れます。何でも背負い込む必要はありませんが、任されたことには筋を通し、終えるべき時にはきちんと区切りをつけることが大切です。",
@@ -302,6 +302,50 @@
         }
       ],
       "C": []
+    },
+    "kaniKantei": {
+      "fudo": [
+        {
+          "kan": "戊",
+          "dirs": [
+            "北",
+            "西"
+          ],
+          "chikei": [
+            "山"
+          ],
+          "line": "山があります。動かない土台を持っています。"
+        },
+        {
+          "kan": "乙",
+          "dirs": [
+            "南"
+          ],
+          "chikei": [
+            "草原"
+          ],
+          "line": "草原が広がっています。しなやかで、粘り強さを持ちます。"
+        },
+        {
+          "kan": "丁",
+          "dirs": [
+            "東"
+          ],
+          "chikei": [
+            "畑"
+          ],
+          "line": "村に明かりが灯っています。誰かの希望の光になります。"
+        }
+      ],
+      "kachikan": {
+        "kan": "甲",
+        "symbol": "大樹",
+        "line": "目標に向かって成長することを大切にする村です。"
+      },
+      "shinnen": {
+        "kan": "乙",
+        "line": "折れずに、形を変えてでも生き延びようとします。"
+      }
     },
     "areaInfo": {
       "west": {
@@ -330,7 +374,7 @@
       "S": "リンク・スフィア"
     },
     "guidePersonal": {
-      "clientName": "ando_hitoshi",
+      "clientName": "安藤 準",
       "items": [
         {
           "label": "父を見るとき",
@@ -340,12 +384,12 @@
         {
           "label": "きょうだいを見るとき",
           "area": "南・中央エリア",
-          "facility": "牧場"
+          "facility": "牧場、養鶏場"
         },
         {
           "label": "妻を見るとき",
           "area": "東エリア",
-          "facility": "農場"
+          "facility": "穀物店"
         },
         {
           "label": "母を見るとき",
@@ -355,7 +399,7 @@
         {
           "label": "子どもを見るとき",
           "area": "西エリア",
-          "facility": "金鉱山"
+          "facility": "細工屋"
         },
         {
           "label": "財運を見るとき",
@@ -365,12 +409,12 @@
         {
           "label": "協調運を見るとき",
           "area": "南・中央エリア",
-          "facility": "牧場"
+          "facility": "牧場、養鶏場"
         },
         {
           "label": "蓄財運を見るとき",
           "area": "東エリア",
-          "facility": "農場"
+          "facility": "穀物店"
         },
         {
           "label": "健康運を見るとき",
@@ -380,10 +424,77 @@
         {
           "label": "名誉運を見るとき",
           "area": "西エリア",
-          "facility": "金鉱山"
+          "facility": "細工屋"
         }
       ]
-    }
+    },
+    "areaVirtues": {
+      "北": "知恵・学び",
+      "中央": "豊かさ・愛・財",
+      "南": "表現・伝達",
+      "東": "生活・幸福",
+      "西": "名誉・責任"
+    },
+    "bgFacLabels": {
+      "北エリア.png": "北エリア",
+      "北_街並み.png": "北エリア街並み",
+      "北_星施設CU.png": "学習支援所",
+      "北_エリアLMKCU.png": "図書館・書院",
+      "南エリア.png": "南エリア",
+      "南_街並み.png": "南エリア街並み",
+      "南_星施設CU.png": "公会堂",
+      "南_エリアLMKCU.png": "劇場",
+      "東エリア.png": "東エリア",
+      "東_街並み.png": "東エリア街並み",
+      "東_星施設CU.png": "備蓄倉庫",
+      "東_エリアLMKCU.png": "村民会館",
+      "西エリア.png": "西エリア",
+      "西_街並み.png": "西エリア街並み",
+      "西_星施設CU.png": "任務管理所",
+      "西_エリアLMKCU.png": "役所・法務館"
+    },
+    "areaCells": {
+      "北": {
+        "kan": "戊",
+        "geo": "山",
+        "star": "禄存星",
+        "res": [
+          "採石場"
+        ]
+      },
+      "南": {
+        "kan": "乙",
+        "geo": "草原",
+        "star": "石門星",
+        "res": [
+          "牧場"
+        ]
+      },
+      "東": {
+        "kan": "丁",
+        "geo": "畑",
+        "star": "司禄星",
+        "res": [
+          "精錬所・鍛冶場",
+          "焼き場"
+        ]
+      },
+      "西": {
+        "kan": "戊",
+        "geo": "山",
+        "star": "牽牛星",
+        "res": [
+          "採石場"
+        ]
+      },
+      "中央": {
+        "kan": "甲",
+        "geo": "大樹",
+        "star": "石門星",
+        "res": []
+      }
+    },
+    "miniMapSvg": "<svg viewBox=\"0 0 460 460\" style=\"width:100%;max-width:420px;display:block;margin:6px auto 0\"><path d=\"M 193.2,193.2 A 52 52 0 0 1 266.8,193.2 L 357.3,102.7 L 276.6,56.1 L 183.4,56.1 L 102.7,102.7 Z\" fill=\"#000000\" fill-opacity=\"0.02\" stroke=\"none\" style=\"cursor:pointer\" data-area=\"北\" data-on=\"#c9a84c|0.13\" data-off=\"#000000|0.02\"></path><path d=\"M 266.8,193.2 A 52 52 0 0 1 266.8,266.8 L 357.3,357.3 L 403.9,276.6 L 403.9,183.4 L 357.3,102.7 Z\" fill=\"#000000\" fill-opacity=\"0.02\" stroke=\"none\" style=\"cursor:pointer\" data-area=\"東\" data-on=\"#c9a84c|0.13\" data-off=\"#000000|0.02\"></path><path d=\"M 266.8,266.8 A 52 52 0 0 1 193.2,266.8 L 102.7,357.3 L 183.4,403.9 L 276.6,403.9 L 357.3,357.3 Z\" fill=\"#000000\" fill-opacity=\"0.02\" stroke=\"none\" style=\"cursor:pointer\" data-area=\"南\" data-on=\"#c9a84c|0.13\" data-off=\"#000000|0.02\"></path><path d=\"M 193.2,266.8 A 52 52 0 0 1 193.2,193.2 L 102.7,102.7 L 56.1,183.4 L 56.1,276.6 L 102.7,357.3 Z\" fill=\"#000000\" fill-opacity=\"0.02\" stroke=\"none\" style=\"cursor:pointer\" data-area=\"西\" data-on=\"#c9a84c|0.13\" data-off=\"#000000|0.02\"></path><polygon points=\"276.6,56.1 357.3,102.7 403.9,183.4 403.9,276.6 357.3,357.3 276.6,403.9 183.4,403.9 102.7,357.3 56.1,276.6 56.1,183.4 102.7,102.7 183.4,56.1\" fill=\"none\" stroke=\"#8a7f68\" stroke-width=\"1.4\" pointer-events=\"none\"/><polygon points=\"267.3,90.9 331.8,128.2 369.1,192.7 369.1,267.3 331.8,331.8 267.3,369.1 192.7,369.1 128.2,331.8 90.9,267.3 90.9,192.7 128.2,128.2 192.7,90.9\" fill=\"none\" stroke=\"#cfc5ae\" stroke-width=\"0.7\" pointer-events=\"none\"/><polygon points=\"258.0,125.7 306.4,153.6 334.3,202.0 334.3,258.0 306.4,306.4 258.0,334.3 202.0,334.3 153.6,306.4 125.7,258.0 125.7,202.0 153.6,153.6 202.0,125.7\" fill=\"none\" stroke=\"#cfc5ae\" stroke-width=\"0.7\" pointer-events=\"none\"/><polygon points=\"248.6,160.5 280.9,179.1 299.5,211.4 299.5,248.6 280.9,280.9 248.6,299.5 211.4,299.5 179.1,280.9 160.5,248.6 160.5,211.4 179.1,179.1 211.4,160.5\" fill=\"none\" stroke=\"#cfc5ae\" stroke-width=\"0.7\" pointer-events=\"none\"/><line x1=\"266.8\" y1=\"193.2\" x2=\"357.3\" y2=\"102.7\" stroke=\"#8a7f68\" stroke-width=\"1.6\" stroke-linecap=\"round\" pointer-events=\"none\"/><line x1=\"266.8\" y1=\"266.8\" x2=\"357.3\" y2=\"357.3\" stroke=\"#8a7f68\" stroke-width=\"1.6\" stroke-linecap=\"round\" pointer-events=\"none\"/><line x1=\"193.2\" y1=\"266.8\" x2=\"102.7\" y2=\"357.3\" stroke=\"#8a7f68\" stroke-width=\"1.6\" stroke-linecap=\"round\" pointer-events=\"none\"/><line x1=\"193.2\" y1=\"193.2\" x2=\"102.7\" y2=\"102.7\" stroke=\"#8a7f68\" stroke-width=\"1.6\" stroke-linecap=\"round\" pointer-events=\"none\"/><circle cx=\"230\" cy=\"230\" r=\"52\" fill=\"#7fae86\" fill-opacity=\"0.10\" stroke=\"#9db79f\" stroke-width=\"0.8\" style=\"cursor:pointer\" data-area=\"中央\" data-on=\"#c9a84c|0.20\" data-off=\"#7fae86|0.10\"></circle><text x=\"230\" y=\"196\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" fill=\"#5a6b58\" pointer-events=\"none\">中央</text><text x=\"230\" y=\"209\" text-anchor=\"middle\" font-size=\"9\" fill=\"#6a7568\" pointer-events=\"none\">大樹</text><g style=\"cursor:pointer\" data-fac=\"中央|c1\" data-on=\"#8a7f68|1.5\" data-off=\"#a9c2ab|0.7\"><rect data-fac=\"中央|c1\" data-on=\"#8a7f68|1.5\" data-off=\"#a9c2ab|0.7\" x=\"214.0\" y=\"220.5\" width=\"32\" height=\"15\" rx=\"4\" fill=\"#eef4ec\" stroke=\"#a9c2ab\" stroke-width=\"0.7\"/><text x=\"230\" y=\"231.2\" text-anchor=\"middle\" font-size=\"9\" fill=\"#44553f\">全景</text></g><g style=\"cursor:pointer\" data-fac=\"中央|c2\" data-on=\"#8a7f68|1.5\" data-off=\"#a9c2ab|0.7\"><rect data-fac=\"中央|c2\" data-on=\"#8a7f68|1.5\" data-off=\"#a9c2ab|0.7\" x=\"204.5\" y=\"238.5\" width=\"51\" height=\"15\" rx=\"4\" fill=\"#eef4ec\" stroke=\"#a9c2ab\" stroke-width=\"0.7\"/><text x=\"230\" y=\"249.2\" text-anchor=\"middle\" font-size=\"9\" fill=\"#44553f\">村長の家</text></g><g style=\"cursor:pointer\" data-fac=\"中央|c3\" data-on=\"#8a7f68|1.5\" data-off=\"#a9c2ab|0.7\"><rect data-fac=\"中央|c3\" data-on=\"#8a7f68|1.5\" data-off=\"#a9c2ab|0.7\" x=\"214.0\" y=\"256.5\" width=\"32\" height=\"15\" rx=\"4\" fill=\"#eef4ec\" stroke=\"#a9c2ab\" stroke-width=\"0.7\"/><text x=\"230\" y=\"267.2\" text-anchor=\"middle\" font-size=\"9\" fill=\"#44553f\">役場</text></g><text x=\"230.0\" y=\"168\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#6a5a3a\" pointer-events=\"none\">北</text><g style=\"cursor:pointer\" data-fac=\"北|fix\" data-on=\"#8a7f68|1.5\" data-off=\"#ddd3bf|0.7\"><rect data-fac=\"北|fix\" data-on=\"#8a7f68|1.5\" data-off=\"#ddd3bf|0.7\" x=\"191.0\" y=\"92.0\" width=\"78\" height=\"18\" rx=\"4\" fill=\"#fdfbf6\" stroke=\"#ddd3bf\" stroke-width=\"0.7\"/><text x=\"230\" y=\"104.8\" text-anchor=\"middle\" font-size=\"10.5\" fill=\"#5a544c\">図書館・書院</text></g><g style=\"cursor:pointer\" data-fac=\"北|lmk\" data-on=\"#8a7f68|1.5\" data-off=\"#c9b98f|0.7\"><rect data-fac=\"北|lmk\" data-on=\"#8a7f68|1.5\" data-off=\"#c9b98f|0.7\" x=\"196.0\" y=\"114.0\" width=\"68\" height=\"18\" rx=\"4\" fill=\"#f4eddd\" stroke=\"#c9b98f\" stroke-width=\"0.7\"/><text x=\"230\" y=\"126.8\" text-anchor=\"middle\" font-size=\"10.5\" fill=\"#6a5a3a\">学習支援所</text></g><text x=\"298.0\" y=\"236\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#6a5a3a\" pointer-events=\"none\">東</text><g style=\"cursor:pointer\" data-fac=\"東|fix\" data-on=\"#8a7f68|1.5\" data-off=\"#ddd3bf|0.7\"><rect data-fac=\"東|fix\" data-on=\"#8a7f68|1.5\" data-off=\"#ddd3bf|0.7\" x=\"319.5\" y=\"210.0\" width=\"57\" height=\"18\" rx=\"4\" fill=\"#fdfbf6\" stroke=\"#ddd3bf\" stroke-width=\"0.7\"/><text x=\"348\" y=\"222.8\" text-anchor=\"middle\" font-size=\"10.5\" fill=\"#5a544c\">村民会館</text></g><g style=\"cursor:pointer\" data-fac=\"東|lmk\" data-on=\"#8a7f68|1.5\" data-off=\"#c9b98f|0.7\"><rect data-fac=\"東|lmk\" data-on=\"#8a7f68|1.5\" data-off=\"#c9b98f|0.7\" x=\"319.5\" y=\"232.0\" width=\"57\" height=\"18\" rx=\"4\" fill=\"#f4eddd\" stroke=\"#c9b98f\" stroke-width=\"0.7\"/><text x=\"348\" y=\"244.8\" text-anchor=\"middle\" font-size=\"10.5\" fill=\"#6a5a3a\">備蓄倉庫</text></g><text x=\"230.0\" y=\"304\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#6a5a3a\" pointer-events=\"none\">南</text><g style=\"cursor:pointer\" data-fac=\"南|fix\" data-on=\"#8a7f68|1.5\" data-off=\"#ddd3bf|0.7\"><rect data-fac=\"南|fix\" data-on=\"#8a7f68|1.5\" data-off=\"#ddd3bf|0.7\" x=\"212.5\" y=\"328.0\" width=\"35\" height=\"18\" rx=\"4\" fill=\"#fdfbf6\" stroke=\"#ddd3bf\" stroke-width=\"0.7\"/><text x=\"230\" y=\"340.8\" text-anchor=\"middle\" font-size=\"10.5\" fill=\"#5a544c\">劇場</text></g><g style=\"cursor:pointer\" data-fac=\"南|lmk\" data-on=\"#8a7f68|1.5\" data-off=\"#c9b98f|0.7\"><rect data-fac=\"南|lmk\" data-on=\"#8a7f68|1.5\" data-off=\"#c9b98f|0.7\" x=\"207.0\" y=\"350.0\" width=\"46\" height=\"18\" rx=\"4\" fill=\"#f4eddd\" stroke=\"#c9b98f\" stroke-width=\"0.7\"/><text x=\"230\" y=\"362.8\" text-anchor=\"middle\" font-size=\"10.5\" fill=\"#6a5a3a\">公会堂</text></g><text x=\"162.0\" y=\"236\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#6a5a3a\" pointer-events=\"none\">西</text><g style=\"cursor:pointer\" data-fac=\"西|fix\" data-on=\"#8a7f68|1.5\" data-off=\"#ddd3bf|0.7\"><rect data-fac=\"西|fix\" data-on=\"#8a7f68|1.5\" data-off=\"#ddd3bf|0.7\" x=\"73.0\" y=\"210.0\" width=\"78\" height=\"18\" rx=\"4\" fill=\"#fdfbf6\" stroke=\"#ddd3bf\" stroke-width=\"0.7\"/><text x=\"112\" y=\"222.8\" text-anchor=\"middle\" font-size=\"10.5\" fill=\"#5a544c\">役所・法務館</text></g><g style=\"cursor:pointer\" data-fac=\"西|lmk\" data-on=\"#8a7f68|1.5\" data-off=\"#c9b98f|0.7\"><rect data-fac=\"西|lmk\" data-on=\"#8a7f68|1.5\" data-off=\"#c9b98f|0.7\" x=\"78.0\" y=\"232.0\" width=\"68\" height=\"18\" rx=\"4\" fill=\"#f4eddd\" stroke=\"#c9b98f\" stroke-width=\"0.7\"/><text x=\"112\" y=\"244.8\" text-anchor=\"middle\" font-size=\"10.5\" fill=\"#6a5a3a\">任務管理所</text></g></svg>"
   },
-  "exportedAt": "2026-07-09T12:46:03.705Z"
+  "exportedAt": "2026-07-28T05:09:07.524Z"
 }
