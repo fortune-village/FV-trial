@@ -2774,8 +2774,6 @@ body[data-line-browser="1"] .bg {
       <button class="home-btn" id="btnAbout">フォーチュン・ヴィレッジについて</button>
       <button class="home-btn" id="btnVillage">村長の家へ</button>
       <button class="home-btn" id="btnKantei">鑑定室へ</button>
-      <!-- ★idx-0728-map 納品に miniMapSvg があるときだけ出す（旧クライアントでは出ない） -->
-      <button class="home-btn" id="btnMap" style="display:none">村の地図を見る</button>
       <div id="homeUpdateInfo" class="home-update-info">
         <div class="home-update-label">更新情報</div>
         <div class="home-update-text" id="home-update-text">中央の施設を「中央村役場」に、村のパラメータを「村のスフィアエネルギー」に改称しました</div>
@@ -2796,18 +2794,6 @@ body[data-line-browser="1"] .bg {
     </div>
   </div>
 
-  <!-- ★idx-0728-map 村の地図。Studio が組み立て済みのSVGを納品する＝index は座標を一切持たない。 -->
-  <div id="villageMapOverlay" class="guide-board-overlay">
-    <div class="guide-board-inner">
-      <div class="guide-board-deco"><div class="guide-board-deco-mark"></div></div>
-      <h1 class="guide-board-title">村の地図</h1>
-      <div class="guide-board-deco"></div>
-      <div id="villageMapSvg" onclick="_vmTap(event)" style="margin:6px auto 0"></div>
-      <div id="villageMapPanel" style="margin-top:12px;padding:12px 14px;border:1px solid rgba(120,90,50,0.28);border-radius:10px;background:rgba(255,250,235,0.5)"></div>
-      <button class="guide-board-close" id="villageMapCloseBtn">閉じる</button>
-    </div>
-  </div>
-
   <!-- 村の案内板オーバーレイ -->
   <div id="guideBoardOverlay" class="guide-board-overlay">
     <div class="guide-board-inner">
@@ -2817,8 +2803,8 @@ body[data-line-browser="1"] .bg {
       <div class="guide-board-deco"><div class="guide-board-deco-mark"></div></div>
       <p class="guide-board-desc">このページは、村を読むための入口です。<br>各エリアに表れる人生テーマと、<br>あなた専用の注目点をご案内します。</p>
 
-      <!-- 案内図 -->
-      <div class="guide-compass-wrap">
+      <!-- 案内図（★idx-0728-map 納品に miniMapSvg があるときは下の村の地図と入れ替わる） -->
+      <div class="guide-compass-wrap" id="guideCompassStatic">
         <div class="guide-compass-corner-tr"></div>
         <div class="guide-compass-corner-bl"></div>
         <div class="guide-compass-grid">
@@ -2851,6 +2837,12 @@ body[data-line-browser="1"] .bg {
           </div>
           <div class="guide-area-card empty"></div>
         </div>
+      </div>
+
+      <!-- ★idx-0728-map 村の地図。Studio が組み立て済みのSVGを納品する＝index は座標を一切持たない。 -->
+      <div id="villageMapWrap" style="display:none">
+        <div id="villageMapSvg" onclick="_vmTap(event)" style="margin:2px auto 0"></div>
+        <div id="villageMapPanel" style="margin-top:10px;padding:12px 14px;border:1px solid rgba(120,90,50,0.28);border-radius:10px;background:rgba(255,250,235,0.5)"></div>
       </div>
 
       <!-- 接続線 -->
@@ -2999,7 +2991,7 @@ if (isTestView) {
   document.body.appendChild(_sfBtn);
 }
 // ── ビルドID（index.html本体に直書き。配信物の新旧をスクショで判別するため。indexを更新するたびに手で更新）──
-const INDEX_BUILD_ID = 'idx-0728-map [TEST]';  // ホームに「村の地図を見る」を新設＝ミニFVマップの表示（✅シン裁定2026-07-28＝申し送りC＝案②／置き場所＝案あ）。★★裁定の核＝【座標は Studio が決め、状態は index が持つ】。Studio（v1.346.0）が組み立て済みのSVGを fvData.miniMapSvg として納品し、index は座標の計算を一切持たない＝描画ロジックが一箇所に留まる（案①＝純粋関数 fvMiniMapSvg を index へ移設 は、座標が二箇所になるため不採用）。★選択状態はSVGに焼き込まれていない＝Studio が data-area / data-fac（タップ対象の識別子）と data-on / data-off（選択・非選択の見た目）を持たせて納品し、index はその属性を読んで fill・stroke を差し替える。★色の値まで属性で渡している＝index に色を書くと同じ意味の源泉が二つになるため。★タップは【イベント委譲】（closest('[data-area]')）＝SVG に関数名が書かれていないので Studio 側の関数名に依存しない。これにより『SVGを移設すると onclick の関数名を差し替える必要がある』という当初の課題が構造的に消えた。★パネル＝既存の bgFacPanel（z-index 40）は流用せず、地図オーバーレイの中に自前のパネル領域を持たせた＝z-index の競合が起きず既存DOMに触らない。ただし中身の生成は _bgFacGov / _bgFacItems を再利用する＝意味の源泉を二つ作らない。行の見た目も guide-personal-* を借りる。★オーバーレイは guide-board-overlay のクラスをそのまま使う＝style.css は無改修。★ボタンは miniMapSvg を納品しているクライアントでだけ出す（既定 display:none ／取り込み時に表示）＝旧クライアントは従来どおり。★影響範囲＝ホームのボタン1つ／オーバーレイのDOM1つ／CLIENT の受け皿2つ／取り込み3行／新設関数5本／イベント登録2行。setBg・逆引き表・シーン進行・鑑賞モード・案内板・引用欄・キャラカード・bgFacPanel・updateBgFacLabel・style.css は無改修。⚠実機検品事項＝★ホームに「村の地図を見る」が出るか＝本版最大の判定点／★押すと地図が開くか／★エリアをタップすると区画が色づき、その区画のパネルが出るか／★施設名をタップすると枠が太くなり『えらんだのは ◯◯』が出るか／★同じ場所の再タップで選択が外れるか／★『司るもの』と運勢の行が方位どおりか（北=知恵・学び／南=表現・伝達／東=生活・幸福／西=名誉・責任／中央=豊かさ・愛・財）／★閉じるボタンで戻るか／★地図のタップでホームの画面が進んでしまわないか／★十二支や干支が地図に出ていないか（客に見せない）／★miniMapSvg を納品していないクライアントでボタンが出ないか＝後方互換／JSエラーが出ないか。  旧 運勢パネルの上部に『司るもの』を追加。★発端＝北の『図書館・書院』をタップしても図書館の情報が出ないとシン指摘。★構造＝背景に出している施設は三層あり導出元が違う。方位施設（図書館・書院）は方位の五徳から導かれ命式不問／星別施設（私塾）は主星×方位／資源施設（精錬所・鍛冶場）は干から。guidePersonal が持つのは資源施設だけなので、方位施設をタップしても対応する行が無かった。★対処＝施設ごとに出し分けるのではなく、すべてのカードで同じパネルを出し上部に『司るもの』を足す。図書館・書院は『知恵・学び』の器そのものなので上部だけで説明がつき、星別施設も資源施設も同じエリアの話なので情報が増えるだけで害がない。施設ごとの分岐ロジックが要らない。★参照元＝CLIENT.areaVirtues（Studio v1.288.0 が正典 FVAREA_DICT.virtues から組み立てて納品）。index に直書きしていない＝意味層の源泉は正典に一本化する。★中身＝北:知恵・学び／南:表現・伝達／東:生活・幸福／西:名誉・責任／中央:豊かさ・愛・財。『印徳』等の用語と人物象（母・目上／子ども・目下）は出さない（✅シン裁定＝人物は今回のエリア表示では除外）。★開く条件を緩めた＝運勢の行が無くても司るものがあればパネルは成立する。ラベルのタップ可否判定も同じ条件に揃えた。★影響範囲＝CLIENT の受け皿／取り込み1行／パネルDOMに1行／_bgFacGov の新設／openBgFacPanel の2箇所／updateBgFacLabel の判定。setBg・逆引き表・シーン進行・鑑賞モード・案内板・引用欄は無改修。⚠実機検品事項＝★パネル上部に『司るもの 知恵・学び』が出るか＝本版最大の判定点／★方位ごとに正しい値か（南:表現・伝達／東:生活・幸福／西:名誉・責任／中央:豊かさ・愛・財）／★人物象が出ていないか／★運勢の行が従来どおり出るか／★Studio が v1.288.0 未満で納品した（areaVirtues が無い）データでも従来どおり動くか＝後方互換の確認／JSエラーが出ないか。  旧 施設名ラベルをタップするとそのエリアの運勢が出るようにした＝第4段。★参照元＝納品済みの CLIENT.guidePersonal（Studio が十二親干法から生成）。新規データは増やしていない＝背景カードごとに持たせる案は採らず（三つ目の複製になるため）index で方位から絞る（✅シン裁定＝案あ）。★絞り込み＝selectedAreaKey を方位の漢字へ変換し items の area を部分一致で拾う。area は Studio 側で自由編集できる文字列（『東・中央エリア』等）のため複合エントリは両方の方位にヒットする＝命式の構造どおり（東は年支の蔵干が三つあるため3組6行になる）。★パネル＝案内板(guideBoardOverlay)はシーン遷移に組み込まれており流用するとシーンが進むため再利用しない。行のCSSクラス guide-personal-* だけ借りて見た目を揃えた新規オーバーレイ。★中身＝見出し『◯◯エリア』＋副題『いま見ているのは 劇場』＋各行『◯◯を見るとき → 施設』。施設名の層の食い違い（ラベルは方位施設・星別施設／ガイドは資源施設）は、見出しでエリアの話と示し副題でタップ対象を示すことで位置づけの違いが読めるようにした。★押せるのは対応する運勢がある画面だけ＝pointer-events を updateBgFacLabel で切り替え、押せるときだけ末尾に › を出す。★タップがシーンを進めないよう onclick で stopPropagation。z-index 40＝bgViewBlocker(24)・ラベル(25)より上＝背景鑑賞モード中も押せる。閉じ方はパネル外タップと×の両方。★影響範囲＝ラベルへの onclick／パネルのDOM／新設関数4本／updateBgFacLabel の分岐／CSS2行。setBg・逆引き表・シーン進行・鑑賞モード・案内板・引用欄・キャラカードは無改修。⚠実機検品事項＝★エリア画面でラベルに › が出てタップでパネルが開くか＝本版最大の判定点／★中身が方位どおりか（南＝夫・蓄財運／東＝3組6行／西・中央＝1組2行）／★タップでシーンが進んでしまわないか／★鑑賞モード中もタップできるか／★パネル外タップと×で閉じるか／★行の見た目が案内板と揃っているか／★運勢が無い画面でラベルが押せないか／JSエラーが出ないか。  旧 背景の施設名ラベルを新設＝第3段a（表示のみ）。Studio v1.284.0 が納品する fvData.bgFacLabels（{納品ファイル名:施設名}のフラット形・三状態を解決済み）を読み、背景の実ファイル名で引いて画面左上に出す。★フック＝setBg(className) の一箇所のみ＝全ての背景切替がここを通るため、シーン単位でなく【背景が実際に変わったとき】だけラベルが差し替わる（エリアの語りは7ブロックあり背景据え置きが多いのでちらつかない）。★クラス名でなく実ファイル名で引く＝エリア主画像 bg-{cls} と dirScenes の bg-jf-N は別クラスでも同じ画像を指すため。idx-0726-areatap で作った window._fvBgFileByClass をそのまま再利用（新設なし）。★該当する施設名が無い背景では自動的に消える＝画面ごとの出し分け条件は書いていない。納品されるのは村の背景だけなのでタイトル・ホームでは自然に出ない。★位置＝左上（top:54px left:14px）＝coinHud（top:54px right:14px）と左右対称。下部はテキスト欄と衝突するため避けた。★z-index:25＝bgViewBlocker(24) より上＝背景鑑賞モードでテキスト欄とキャラが消えてもラベルは残る（背景だけになった瞬間こそ『これは何か』が効くため）。第3段bでタップを載せる下地でもある。★pointer-events:none＝現時点では表示のみ。タップは第3段bで解禁する（押しても何も起きない状態を作らないため）。★影響範囲＝CLIENT に bgFacLabels の受け皿／FV_data.json からの取り込み1行／ラベルのDOM1つ／setBg への1行フック／updateBgFacLabel の新設。既存のシーン進行・鑑賞モード・背景切替・逆引き表・引用欄・エリア導入は無改修。⚠実機検品事項＝★エリアの背景ごとに左上へ施設名が出るか（南エリア→南エリア街並み→文化資料館→劇場）＝本版最大の判定点／★背景が変わらないシーン送りでちらつかないか／★鑑賞モードでテキストが消えてもラベルが残るか／★タイトル・ホームで出ないか／⚠★ホームやタイトルへ戻ったときラベルが残らないか＝setBg を通らない画面遷移があると消え残る可能性がある（残るようなら画面遷移側にも hide を足す）／★キャラや coinHud と重ならないか／★中央・内観でも出るか（村長の家／中央役場／執務室／中央会議室）。★★次段＝第3段b＝pointer-events を auto にしてタップ→そのエリアの運勢パネル（guidePersonal を area の方位文字で絞り込む・既に納品済みのため新規データ不要）。  旧 キャラカードの引用欄の折り返しを改善。症状＝「隣で一緒に、答えを探していきたいのです」（20字）で最後の「す」一字だけが次行に落ちる。原因＝幅が数ピクセル足りない（left/right 20px＋padding 16px＋letter-spacing 0.07em）。修正＝①left/right 20→14px・padding 16→12px②letter-spacing 0.07→0.03em（①②で約35pxの余裕＝20字前後は一行に収まる）③text-wrap: balance を追加＝台詞は依頼文の仕様上15〜25字の幅があり、幅を稼ぐだけでは長い台詞で必ず再発するため、溢れたときは19字＋1字ではなく均等に割る。iOS Safari 17.4 以降で有効で、未対応環境では従来の折り返しに戻るだけで害はない。影響範囲＝.char-card-quote と .char-card-quote-inner の二クラスのみ。引用欄は人物画像に重なるため、可読性を落とすフォント縮小（12→11px）は採らなかった。旧 idx-0726-areatap＝エリア導入の余分な二手を削除。症状＝タイトルカード→背景A（キャラ「こちらが、◆エリアです」）のあと、背景Aだけの画面→フェード→同じ背景A＋テキスト、と何も変わらない二段階が挿さる（タップ3回）。原因は二つ。①背景鑑賞モード＝エリア画面のタップ1回目で textbox とキャラを消してTAP待ちに入る。idx-0725-titlecard で「次がタイトルカードなら入らない」条件を足したが、キャラの口上シーンの次は通常シーンのため対象外だった。→修正＝現在のシーンにキャラが立っているときは鑑賞モードに入らない（!_curSc?.char）。風景シーン（char:false）での鑑賞モードは従来どおり残す。②背景切替の誤検出＝判定がクラス名の比較だった。エリア主画像は bg-{cls}、dirScenes は imgFile 経由の bg-jf-N で、クラス名は違うがどちらも同じ ◆エリア.png を指すため、無変化のoverlayフェードが走っていた。→修正＝背景クラス→実ファイル名の逆引き表 window._fvBgFileByClass を作り、実ファイル名で比較する。③付随＝①②を外すと背景無変化の進行経路が即時になりキャラがフェードなしで消えるため、キャラが立っていて次シーンに居ないときは fadeHideTextboxChar で消してから進む（タップは1回）。結果＝キャラ「こちらが…」→タップ1回→背景A＋本文。影響範囲＝①はエリア画面の char:true シーン（導入・準備中）、②はエリア画面の全背景遷移（同じ画像ならフェードが消える・異なる画像なら従来どおり）。bgChanges の使用箇所は1つのみで他の画面に波及しない。旧 idx-0725-charquote＝キャラカードの引用欄（一言）を納品データ charQuote.C から描画。納品が無ければHTMLの既定文をそのまま残すため既存クライアントは壊れない。Studio v1.264.0 以降が charQuote:{C:'「…」',…} を納品する。旧 idx-0725-tsushinfix＝openFvTsushin()内の window._fvSetupDone=false を削除（起動時初期化4行の写し込み事故）。FV通信を開くと初期設定フラグが落ち、ホーム→村長の家で初期設定シーン（ロアン）が開いていた。updateSurveyBtn()呼び出しは残置（フラグが真なら何もしないため無害）。旧 idx-0725-titlecard＝次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
+const INDEX_BUILD_ID = 'idx-0728-map2 [TEST]';  // 村の地図を【村の案内板の中】へ移設し、静的な案内図と入れ替えた（✅シン裁定2026-07-28）。★経緯＝idx-0728-map ではホームに「村の地図を見る」を新設したが、シン指摘＝置き場所はホームではなく村長の家のハブ、かつハブには既に『村の読み方を確認する』があり役割が被る。→ 裁定＝案内板の一部として地図も見られるようにすればハブの項目を増やさずに済む。★★さらに調べると案内板には既に静的な案内図（3×3グリッドで北/西/中央/東/南にテーマ文字）があり、これが地図の原型だった＝同じ性格の図が二つ並ぶ。しかもテーマ文字は index に直書き（親・学び・継承／配偶者・パートナー 等）で、納品される areaVirtues（知恵・学び／名誉・責任 等）と語が違う＝【意味層の源泉が二つ】。★裁定＝案A＝静的な案内図を地図に置き換える。意味の源泉が正典（areaVirtues）に一本化される。★後方互換＝miniMapSvg を納品していないクライアントでは静的な案内図がそのまま出る（_vmMount が入れ替えを行わない）。★撤去したもの＝ホームの『村の地図を見る』ボタン／独立オーバーレイ villageMapOverlay／そのイベント登録2つ／openVillageMap・closeVillageMap。温存ではなく撤去したのは、ボタンだけ残すと『押しても何も起きない』状態になるため（v1.282.0 の三状態と同じ考え方）。★差し込み位置＝showGuideBoardOverlay() の先頭で _vmMount() を呼ぶ＝案内板を開くたびに地図を組み直す（クライアント切替にも追随する）。★案内板の『あなた専用ガイド』（全エリアの行の一覧）とは粒度が違うので共存する＝地図＝選んだエリアだけ／一覧＝全エリア。★変わっていないもの＝ハブの選択肢6つ・ロアンの台詞・案内板のタイトルと説明文・専用ガイドの節・地図の描画と塗り替えとタップ（_vmPaint／_vmTap／_vmPanel）。★影響範囲＝案内板のDOM（静的図に id 付与＋地図ブロック1つ）／showGuideBoardOverlay の先頭1行／_vmMount への差し替え／ホーム側の撤去4点。Studio・style.css・setBg・シーン進行・鑑賞モード・bgFacPanel・キャラカードは無改修。⚠実機検品事項＝★村長の家＞村の読み方を確認する→案内板に地図が出るか＝本版最大の判定点／★静的な案内図（親・学び・継承 等）が消えているか／★エリアと施設名のタップが従来どおり効くか／★パネルの『司るもの』と運勢の行が出るか／★その下の『あなた専用ガイド』が従来どおり出るか／★案内板を閉じてもう一度開いても地図が出るか（_vmMount の再実行）／★ホームに地図のボタンが無いか／★miniMapSvg を納品していないクライアントで静的な案内図が出るか＝後方互換／JSエラーが出ないか。  旧 ホームに「村の地図を見る」を新設＝ミニFVマップの表示（✅シン裁定2026-07-28＝申し送りC＝案②／置き場所＝案あ）。★★裁定の核＝【座標は Studio が決め、状態は index が持つ】。Studio（v1.346.0）が組み立て済みのSVGを fvData.miniMapSvg として納品し、index は座標の計算を一切持たない＝描画ロジックが一箇所に留まる（案①＝純粋関数 fvMiniMapSvg を index へ移設 は、座標が二箇所になるため不採用）。★選択状態はSVGに焼き込まれていない＝Studio が data-area / data-fac（タップ対象の識別子）と data-on / data-off（選択・非選択の見た目）を持たせて納品し、index はその属性を読んで fill・stroke を差し替える。★色の値まで属性で渡している＝index に色を書くと同じ意味の源泉が二つになるため。★タップは【イベント委譲】（closest('[data-area]')）＝SVG に関数名が書かれていないので Studio 側の関数名に依存しない。これにより『SVGを移設すると onclick の関数名を差し替える必要がある』という当初の課題が構造的に消えた。★パネル＝既存の bgFacPanel（z-index 40）は流用せず、地図オーバーレイの中に自前のパネル領域を持たせた＝z-index の競合が起きず既存DOMに触らない。ただし中身の生成は _bgFacGov / _bgFacItems を再利用する＝意味の源泉を二つ作らない。行の見た目も guide-personal-* を借りる。★オーバーレイは guide-board-overlay のクラスをそのまま使う＝style.css は無改修。★ボタンは miniMapSvg を納品しているクライアントでだけ出す（既定 display:none ／取り込み時に表示）＝旧クライアントは従来どおり。★影響範囲＝ホームのボタン1つ／オーバーレイのDOM1つ／CLIENT の受け皿2つ／取り込み3行／新設関数5本／イベント登録2行。setBg・逆引き表・シーン進行・鑑賞モード・案内板・引用欄・キャラカード・bgFacPanel・updateBgFacLabel・style.css は無改修。⚠実機検品事項＝★ホームに「村の地図を見る」が出るか＝本版最大の判定点／★押すと地図が開くか／★エリアをタップすると区画が色づき、その区画のパネルが出るか／★施設名をタップすると枠が太くなり『えらんだのは ◯◯』が出るか／★同じ場所の再タップで選択が外れるか／★『司るもの』と運勢の行が方位どおりか（北=知恵・学び／南=表現・伝達／東=生活・幸福／西=名誉・責任／中央=豊かさ・愛・財）／★閉じるボタンで戻るか／★地図のタップでホームの画面が進んでしまわないか／★十二支や干支が地図に出ていないか（客に見せない）／★miniMapSvg を納品していないクライアントでボタンが出ないか＝後方互換／JSエラーが出ないか。  旧 運勢パネルの上部に『司るもの』を追加。★発端＝北の『図書館・書院』をタップしても図書館の情報が出ないとシン指摘。★構造＝背景に出している施設は三層あり導出元が違う。方位施設（図書館・書院）は方位の五徳から導かれ命式不問／星別施設（私塾）は主星×方位／資源施設（精錬所・鍛冶場）は干から。guidePersonal が持つのは資源施設だけなので、方位施設をタップしても対応する行が無かった。★対処＝施設ごとに出し分けるのではなく、すべてのカードで同じパネルを出し上部に『司るもの』を足す。図書館・書院は『知恵・学び』の器そのものなので上部だけで説明がつき、星別施設も資源施設も同じエリアの話なので情報が増えるだけで害がない。施設ごとの分岐ロジックが要らない。★参照元＝CLIENT.areaVirtues（Studio v1.288.0 が正典 FVAREA_DICT.virtues から組み立てて納品）。index に直書きしていない＝意味層の源泉は正典に一本化する。★中身＝北:知恵・学び／南:表現・伝達／東:生活・幸福／西:名誉・責任／中央:豊かさ・愛・財。『印徳』等の用語と人物象（母・目上／子ども・目下）は出さない（✅シン裁定＝人物は今回のエリア表示では除外）。★開く条件を緩めた＝運勢の行が無くても司るものがあればパネルは成立する。ラベルのタップ可否判定も同じ条件に揃えた。★影響範囲＝CLIENT の受け皿／取り込み1行／パネルDOMに1行／_bgFacGov の新設／openBgFacPanel の2箇所／updateBgFacLabel の判定。setBg・逆引き表・シーン進行・鑑賞モード・案内板・引用欄は無改修。⚠実機検品事項＝★パネル上部に『司るもの 知恵・学び』が出るか＝本版最大の判定点／★方位ごとに正しい値か（南:表現・伝達／東:生活・幸福／西:名誉・責任／中央:豊かさ・愛・財）／★人物象が出ていないか／★運勢の行が従来どおり出るか／★Studio が v1.288.0 未満で納品した（areaVirtues が無い）データでも従来どおり動くか＝後方互換の確認／JSエラーが出ないか。  旧 施設名ラベルをタップするとそのエリアの運勢が出るようにした＝第4段。★参照元＝納品済みの CLIENT.guidePersonal（Studio が十二親干法から生成）。新規データは増やしていない＝背景カードごとに持たせる案は採らず（三つ目の複製になるため）index で方位から絞る（✅シン裁定＝案あ）。★絞り込み＝selectedAreaKey を方位の漢字へ変換し items の area を部分一致で拾う。area は Studio 側で自由編集できる文字列（『東・中央エリア』等）のため複合エントリは両方の方位にヒットする＝命式の構造どおり（東は年支の蔵干が三つあるため3組6行になる）。★パネル＝案内板(guideBoardOverlay)はシーン遷移に組み込まれており流用するとシーンが進むため再利用しない。行のCSSクラス guide-personal-* だけ借りて見た目を揃えた新規オーバーレイ。★中身＝見出し『◯◯エリア』＋副題『いま見ているのは 劇場』＋各行『◯◯を見るとき → 施設』。施設名の層の食い違い（ラベルは方位施設・星別施設／ガイドは資源施設）は、見出しでエリアの話と示し副題でタップ対象を示すことで位置づけの違いが読めるようにした。★押せるのは対応する運勢がある画面だけ＝pointer-events を updateBgFacLabel で切り替え、押せるときだけ末尾に › を出す。★タップがシーンを進めないよう onclick で stopPropagation。z-index 40＝bgViewBlocker(24)・ラベル(25)より上＝背景鑑賞モード中も押せる。閉じ方はパネル外タップと×の両方。★影響範囲＝ラベルへの onclick／パネルのDOM／新設関数4本／updateBgFacLabel の分岐／CSS2行。setBg・逆引き表・シーン進行・鑑賞モード・案内板・引用欄・キャラカードは無改修。⚠実機検品事項＝★エリア画面でラベルに › が出てタップでパネルが開くか＝本版最大の判定点／★中身が方位どおりか（南＝夫・蓄財運／東＝3組6行／西・中央＝1組2行）／★タップでシーンが進んでしまわないか／★鑑賞モード中もタップできるか／★パネル外タップと×で閉じるか／★行の見た目が案内板と揃っているか／★運勢が無い画面でラベルが押せないか／JSエラーが出ないか。  旧 背景の施設名ラベルを新設＝第3段a（表示のみ）。Studio v1.284.0 が納品する fvData.bgFacLabels（{納品ファイル名:施設名}のフラット形・三状態を解決済み）を読み、背景の実ファイル名で引いて画面左上に出す。★フック＝setBg(className) の一箇所のみ＝全ての背景切替がここを通るため、シーン単位でなく【背景が実際に変わったとき】だけラベルが差し替わる（エリアの語りは7ブロックあり背景据え置きが多いのでちらつかない）。★クラス名でなく実ファイル名で引く＝エリア主画像 bg-{cls} と dirScenes の bg-jf-N は別クラスでも同じ画像を指すため。idx-0726-areatap で作った window._fvBgFileByClass をそのまま再利用（新設なし）。★該当する施設名が無い背景では自動的に消える＝画面ごとの出し分け条件は書いていない。納品されるのは村の背景だけなのでタイトル・ホームでは自然に出ない。★位置＝左上（top:54px left:14px）＝coinHud（top:54px right:14px）と左右対称。下部はテキスト欄と衝突するため避けた。★z-index:25＝bgViewBlocker(24) より上＝背景鑑賞モードでテキスト欄とキャラが消えてもラベルは残る（背景だけになった瞬間こそ『これは何か』が効くため）。第3段bでタップを載せる下地でもある。★pointer-events:none＝現時点では表示のみ。タップは第3段bで解禁する（押しても何も起きない状態を作らないため）。★影響範囲＝CLIENT に bgFacLabels の受け皿／FV_data.json からの取り込み1行／ラベルのDOM1つ／setBg への1行フック／updateBgFacLabel の新設。既存のシーン進行・鑑賞モード・背景切替・逆引き表・引用欄・エリア導入は無改修。⚠実機検品事項＝★エリアの背景ごとに左上へ施設名が出るか（南エリア→南エリア街並み→文化資料館→劇場）＝本版最大の判定点／★背景が変わらないシーン送りでちらつかないか／★鑑賞モードでテキストが消えてもラベルが残るか／★タイトル・ホームで出ないか／⚠★ホームやタイトルへ戻ったときラベルが残らないか＝setBg を通らない画面遷移があると消え残る可能性がある（残るようなら画面遷移側にも hide を足す）／★キャラや coinHud と重ならないか／★中央・内観でも出るか（村長の家／中央役場／執務室／中央会議室）。★★次段＝第3段b＝pointer-events を auto にしてタップ→そのエリアの運勢パネル（guidePersonal を area の方位文字で絞り込む・既に納品済みのため新規データ不要）。  旧 キャラカードの引用欄の折り返しを改善。症状＝「隣で一緒に、答えを探していきたいのです」（20字）で最後の「す」一字だけが次行に落ちる。原因＝幅が数ピクセル足りない（left/right 20px＋padding 16px＋letter-spacing 0.07em）。修正＝①left/right 20→14px・padding 16→12px②letter-spacing 0.07→0.03em（①②で約35pxの余裕＝20字前後は一行に収まる）③text-wrap: balance を追加＝台詞は依頼文の仕様上15〜25字の幅があり、幅を稼ぐだけでは長い台詞で必ず再発するため、溢れたときは19字＋1字ではなく均等に割る。iOS Safari 17.4 以降で有効で、未対応環境では従来の折り返しに戻るだけで害はない。影響範囲＝.char-card-quote と .char-card-quote-inner の二クラスのみ。引用欄は人物画像に重なるため、可読性を落とすフォント縮小（12→11px）は採らなかった。旧 idx-0726-areatap＝エリア導入の余分な二手を削除。症状＝タイトルカード→背景A（キャラ「こちらが、◆エリアです」）のあと、背景Aだけの画面→フェード→同じ背景A＋テキスト、と何も変わらない二段階が挿さる（タップ3回）。原因は二つ。①背景鑑賞モード＝エリア画面のタップ1回目で textbox とキャラを消してTAP待ちに入る。idx-0725-titlecard で「次がタイトルカードなら入らない」条件を足したが、キャラの口上シーンの次は通常シーンのため対象外だった。→修正＝現在のシーンにキャラが立っているときは鑑賞モードに入らない（!_curSc?.char）。風景シーン（char:false）での鑑賞モードは従来どおり残す。②背景切替の誤検出＝判定がクラス名の比較だった。エリア主画像は bg-{cls}、dirScenes は imgFile 経由の bg-jf-N で、クラス名は違うがどちらも同じ ◆エリア.png を指すため、無変化のoverlayフェードが走っていた。→修正＝背景クラス→実ファイル名の逆引き表 window._fvBgFileByClass を作り、実ファイル名で比較する。③付随＝①②を外すと背景無変化の進行経路が即時になりキャラがフェードなしで消えるため、キャラが立っていて次シーンに居ないときは fadeHideTextboxChar で消してから進む（タップは1回）。結果＝キャラ「こちらが…」→タップ1回→背景A＋本文。影響範囲＝①はエリア画面の char:true シーン（導入・準備中）、②はエリア画面の全背景遷移（同じ画像ならフェードが消える・異なる画像なら従来どおり）。bgChanges の使用箇所は1つのみで他の画面に波及しない。旧 idx-0725-charquote＝キャラカードの引用欄（一言）を納品データ charQuote.C から描画。納品が無ければHTMLの既定文をそのまま残すため既存クライアントは壊れない。Studio v1.264.0 以降が charQuote:{C:'「…」',…} を納品する。旧 idx-0725-tsushinfix＝openFvTsushin()内の window._fvSetupDone=false を削除（起動時初期化4行の写し込み事故）。FV通信を開くと初期設定フラグが落ち、ホーム→村長の家で初期設定シーン（ロアン）が開いていた。updateSurveyBtn()呼び出しは残置（フラグが真なら何もしないため無害）。旧 idx-0725-titlecard＝次シーンがタイトルカードのときは背景鑑賞モードに入らない。従来はエリア画面の全タップで textbox/char をフェードアウト→TAP待ち→2回目のタップ、の二段構えになっており、「では、◯エリアへご案内します」の直後に人物のいない部屋を挟んで再タップを強いていた。1回のタップで fadeHideTextboxChar→sceneIndex++→タイトルカードへ自動遷移する。エリアの風景を見せる背景鑑賞モード自体は従来どおり残す。旧 idx-0725-charintro＝キャラクターカードをデータ駆動化＝名前を charNames.central、本文を charIntro.C（Studioが分解済みで納品する{label,en,body}の配列）から描画。charIntro が無い/空なら既定の静的文をそのまま残すため既存クライアントは壊れない。データ駆動時は .from-data で nth-child の英字見出しを止め、納品された en を出す（項目が欠けても位置がずれない）。旧 idx-0725-choicewidth＝2列時のボタン幅を詰める（左右余白26→40px・列間10→24px。行間はdenseで8pxのまま）。背後のキャラクターを見せるため。旧 idx-0725-charname＝静的シーン配列(introScenes/guideScenes/councilScenes/northAreaScenes)のname べた書き"ロアン"を FV_data.json の char.name で上書き。上書き処理は旧 data.json 経路にのみ存在し、Studio が data.json を出力しないため実行されていなかった。旧 idx-0725-choicegrid＝選択肢レイアウトを個数列挙から行数基準へ一般化（4つ以上=2列／奇数=最後を全幅／3行以上=詰める）。全景納品でハブが7個になり型が付かず全幅1列に落ちてキャラを覆う不具合の修正。旧 idx-0717-trial3＝trial2の内容＋「について」パネルから村の読み方のガイドを非表示（ホーム経由の導線を閉鎖・DOMとハンドラは温存）
 {
   const _bb = document.createElement('div');
   // style.css側の :root { --css-build-id } を読んで連結表示（CSS未反映/キャッシュ/読込失敗をスクショで判別）
@@ -3203,7 +3195,6 @@ fetch(isTestView ? `${clientBase}FV_data_test.json?t=${Date.now()}` : `${clientB
     // ★idx-0728-map 村の地図（Studio v1.346.0 が組み立て済みSVGを納品）と、エリアのセル（v1.338.0）
     if (fvData.fvData?.miniMapSvg) CLIENT.miniMapSvg = fvData.fvData.miniMapSvg;
     if (fvData.fvData?.areaCells) CLIENT.areaCells = fvData.fvData.areaCells;
-    try { const _mb = document.getElementById('btnMap'); if (_mb) _mb.style.display = CLIENT.miniMapSvg ? '' : 'none'; } catch(e) {}
     // areaInfoをAREA_INFOに反映（Studio v1で編集した値を使用）
     AREA_INFO = JSON.parse(JSON.stringify(AREA_INFO_DEFAULT));
     const customAreaInfo = fvData.fvData?.areaInfo || {};
@@ -4501,22 +4492,20 @@ function closeBgFacPanel(ev){
 // data-on / data-off（選択・非選択の見た目）を読んで index が作る＝【座標はStudio、状態はindex】。
 var _vmSel = null;   // 選択中のエリア（'北' 等）
 var _vmFac = null;   // 選択中の施設（'北|fix' 等）
-function openVillageMap(){
+// 案内板を開くたびに呼ぶ。納品に地図があれば静的な案内図と入れ替え、無ければ静的な案内図のまま（後方互換）。
+function _vmMount(){
   try{
-    const ov = document.getElementById('villageMapOverlay');
-    const box = document.getElementById('villageMapSvg');
-    const svg = (typeof CLIENT !== 'undefined' && CLIENT.miniMapSvg) || '';
-    if(!ov || !box || !svg) return;
+    const wrap = document.getElementById('villageMapWrap');
+    const box  = document.getElementById('villageMapSvg');
+    const st   = document.getElementById('guideCompassStatic');
+    const svg  = (typeof CLIENT !== 'undefined' && CLIENT.miniMapSvg) || '';
+    if(!wrap || !box) return;
+    if(!svg){ wrap.style.display = 'none'; if(st) st.style.display = ''; return; }
+    if(st) st.style.display = 'none';
     box.innerHTML = svg;
     _vmSel = null; _vmFac = null;
     _vmPaint(); _vmPanel();
-    ov.classList.add('show');
-  }catch(e){}
-}
-function closeVillageMap(){
-  try{
-    const ov = document.getElementById('villageMapOverlay');
-    if(ov) ov.classList.remove('show');
+    wrap.style.display = '';
   }catch(e){}
 }
 // 塗り替え＝色の値も data 属性から取る（index にハードコードしない＝源泉は Studio に一本化する）。
@@ -5764,6 +5753,7 @@ function showGuide() {
 
 // ── 村の案内板オーバーレイ ──
 function showGuideBoardOverlay() {
+  try { _vmMount(); } catch(e) {}   // ★idx-0728-map 村の地図を案内図の位置に組み込む
   const title = $("guidePersonalTitle");
   const items = $("guidePersonalItems");
   const body  = $("guidePersonalBody");
@@ -6803,10 +6793,6 @@ function next() {
 }
 
 // ── ボタンイベント ──
-// ★idx-0728-map 村の地図。#app 全体がタップで進むため stopPropagation を入れる。
-$("btnMap").addEventListener("click", (e) => { e.stopPropagation(); openVillageMap(); });
-$("villageMapCloseBtn").addEventListener("click", (e) => { e.stopPropagation(); closeVillageMap(); });
-
 $("btnAbout").addEventListener("click", (e) => {
   e.stopPropagation();
   if (videoPlaying) return;
